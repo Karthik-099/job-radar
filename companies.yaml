@@ -5,6 +5,14 @@ companies:
   ats: ashby
   slug: 1password
   jobs_at_discovery: 74
+- name: 360Learning
+  ats: lever
+  slug: 360learning
+  learned_from: indeed_world
+- name: AbbVie
+  ats: smartrecruiters
+  slug: AbbVie
+  learned_from: indeed_world
 - name: Accenture
   ats: workday
   url: https://accenture.wd103.myworkdayjobs.com/AccentureCareers
@@ -47,6 +55,10 @@ companies:
   ats: smartrecruiters
   slug: allegro
   jobs_at_discovery: 1
+- name: ANALOG
+  ats: ashby
+  slug: analog
+  learned_from: indeed_world
 - name: Analog Devices
   ats: workday
   url: https://analogdevices.wd1.myworkdayjobs.com/External
@@ -128,6 +140,10 @@ companies:
 - name: Celonis
   ats: greenhouse
   slug: celonis
+- name: Centre for Strategic Infocomm Technologies (CSIT)
+  ats: lever
+  slug: csit
+  learned_from: indeed_world
 - name: Cerebras
   ats: ashby
   slug: cerebras
@@ -174,6 +190,10 @@ companies:
 - name: Coinbase
   ats: greenhouse
   slug: coinbase
+- name: Como
+  ats: ashby
+  slug: como
+  learned_from: indeed_world
 - name: Contentful
   ats: greenhouse
   slug: contentful
@@ -208,6 +228,10 @@ companies:
 - name: Datadog
   ats: greenhouse
   slug: datadog
+- name: DBS Bank
+  ats: workday
+  url: https://dbs.wd3.myworkdayjobs.com/DBS_Careers
+  learned_from: indeed_world
 - name: DeepL
   ats: ashby
   slug: deepl
@@ -223,6 +247,10 @@ companies:
   ats: ashby
   slug: depot
   jobs_at_discovery: 1
+- name: Devoteam
+  ats: smartrecruiters
+  slug: Devoteam
+  learned_from: indeed_world
 - name: Discord
   ats: greenhouse
   slug: discord
@@ -297,6 +325,10 @@ companies:
   ats: greenhouse
   slug: gocardless
   jobs_at_discovery: 32
+- name: Gojob
+  ats: lever
+  slug: gojob
+  learned_from: indeed_world
 - name: Grab
   ats: smartrecruiters
   slug: grab
@@ -306,6 +338,10 @@ companies:
 - name: Groww
   ats: greenhouse
   slug: groww
+- name: Hastings Direct
+  ats: workday
+  url: https://hastingsdirect.wd3.myworkdayjobs.com/external_careers
+  learned_from: indeed_world
 - name: HelloFresh
   ats: greenhouse
   slug: hellofresh
@@ -369,6 +405,10 @@ companies:
 - name: Kong
   ats: ashby
   slug: kong
+- name: KPN
+  ats: smartrecruiters
+  slug: KPN
+  learned_from: indeed_world
 - name: Kyndryl
   ats: workday
   url: https://kyndryl.wd5.myworkdayjobs.com/KyndrylProfessionalCareers
@@ -461,6 +501,10 @@ companies:
 - name: Netskope
   ats: greenhouse
   slug: netskope
+- name: NEURA Robotics
+  ats: ashby
+  slug: neura-robotics-gmbh
+  learned_from: indeed_world
 - name: New Relic
   ats: greenhouse
   slug: newrelic
@@ -559,6 +603,10 @@ companies:
 - name: PostHog
   ats: ashby
   slug: posthog
+- name: Protex AI
+  ats: ashby
+  slug: protex%20ai
+  learned_from: indeed_world
 - name: Qonto
   ats: lever
   slug: qonto
@@ -619,6 +667,10 @@ companies:
 - name: ServiceNow
   ats: smartrecruiters
   slug: servicenow
+- name: Siena AI
+  ats: ashby
+  slug: siena
+  learned_from: indeed_world
 - name: Sigmoid
   ats: greenhouse
   slug: sigmoid
@@ -745,6 +797,10 @@ companies:
 - name: Upbound
   ats: greenhouse
   slug: upbound
+- name: Valarian Technologies
+  ats: lever
+  slug: valarian
+  learned_from: indeed_world
 - name: Vantage
   ats: ashby
   slug: vantage
@@ -756,6 +812,10 @@ companies:
   ats: greenhouse
   slug: veriff
   jobs_at_discovery: 10
+- name: Version 1
+  ats: smartrecruiters
+  slug: Version1
+  learned_from: indeed_world
 - name: Visa
   ats: workday
   url: https://visa.wd5.myworkdayjobs.com/Visa

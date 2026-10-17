@@ -1,0 +1,145 @@
+{
+ "finished_at": "2026-10-17T19:40:45+00:00",
+ "duration_seconds": 68.3,
+ "raw": 1197,
+ "unique": 955,
+ "fresh": 955,
+ "kept": 129,
+ "kept_india": 11,
+ "kept_remote": 11,
+ "kept_abroad": 103,
+ "dry_run": false,
+ "sources": [
+  {
+   "name": "greenhouse",
+   "jobs": 17,
+   "seconds": 40.1,
+   "error": ""
+  },
+  {
+   "name": "lever",
+   "jobs": 0,
+   "seconds": 9.1,
+   "error": ""
+  },
+  {
+   "name": "ashby",
+   "jobs": 21,
+   "seconds": 21.7,
+   "error": ""
+  },
+  {
+   "name": "smartrecruiters",
+   "jobs": 3,
+   "seconds": 49.8,
+   "error": ""
+  },
+  {
+   "name": "workday",
+   "jobs": 14,
+   "seconds": 10.2,
+   "error": ""
+  },
+  {
+   "name": "remotive",
+   "jobs": 0,
+   "seconds": 1.0,
+   "error": ""
+  },
+  {
+   "name": "remoteok",
+   "jobs": 2,
+   "seconds": 1.0,
+   "error": ""
+  },
+  {
+   "name": "weworkremotely",
+   "jobs": 3,
+   "seconds": 1.2,
+   "error": ""
+  },
+  {
+   "name": "himalayas",
+   "jobs": 34,
+   "seconds": 1.7,
+   "error": ""
+  },
+  {
+   "name": "jobicy",
+   "jobs": 4,
+   "seconds": 1.5,
+   "error": ""
+  },
+  {
+   "name": "arbeitnow",
+   "jobs": 14,
+   "seconds": 1.3,
+   "error": ""
+  },
+  {
+   "name": "hn",
+   "jobs": 5,
+   "seconds": 3.4,
+   "error": ""
+  },
+  {
+   "name": "indeed",
+   "jobs": 0,
+   "seconds": 1.2,
+   "error": "ImportError: cannot import name 'scrape_jobs' from 'jobspy' (/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/jobspy/__init__.py)"
+  },
+  {
+   "name": "naukri",
+   "jobs": 0,
+   "seconds": 10.6,
+   "error": "_DeadlockError: deadlock detected by _ModuleLock('jobspy.model') at 140070304640976"
+  },
+  {
+   "name": "linkedin",
+   "jobs": 0,
+   "seconds": 1.2,
+   "error": "_DeadlockError: deadlock detected by _ModuleLock('jobspy.model') at 140070304640976"
+  },
+  {
+   "name": "indeed_world",
+   "jobs": 1080,
+   "seconds": 33.5,
+   "error": ""
+  },
+  {
+   "name": "linkedin_world",
+   "jobs": 0,
+   "seconds": 1.2,
+   "error": "ImportError: cannot import name 'scrape_jobs' from 'jobspy' (/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/jobspy/__init__.py)"
+  }
+ ],
+ "rejections": {
+  "title_not_target": 521,
+  "title_excluded": 102,
+  "needs_local_language": 91,
+  "abroad_country_not_listed": 45,
+  "too_much_experience": 43,
+  "description_excluded": 10,
+  "too_old": 10,
+  "abroad_no_sponsorship": 2,
+  "company_excluded": 2
+ },
+ "companies_learned": 15,
+ "reposts_flagged": 0,
+ "llm_scored": 16,
+ "llm_cached": 0,
+ "closed_found": 0,
+ "kept_by_source": {
+  "greenhouse": 10,
+  "workday": 10,
+  "arbeitnow": 8,
+  "ashby": 8,
+  "jobicy": 3,
+  "himalayas": 11,
+  "indeed_world": 72,
+  "smartrecruiters": 3,
+  "weworkremotely": 2,
+  "hn": 3,
+  "remoteok": 1
+ }
+}
