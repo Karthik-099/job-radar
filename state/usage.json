@@ -1,8 +1,9 @@
 {
  "2026-10": {
-  "minutes": 7,
+  "minutes": 8,
   "runs": {
-   "scan": 2
+   "scan": 2,
+   "status": 1
   }
  }
 }
