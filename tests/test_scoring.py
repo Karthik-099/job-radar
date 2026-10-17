@@ -10,7 +10,7 @@ from src.models import Job
 
 @pytest.fixture(autouse=True)
 def _no_real_fallback(monkeypatch):
-    monkeypatch.setattr(scoring, "fallback_providers", lambda: [])
+    monkeypatch.setattr(scoring, "fallback_providers", lambda in_ci=False: [])
 
 
 def _job(i=1, desc="Kubernetes Terraform"):
@@ -137,7 +137,7 @@ def test_openrouter_fallback_only_when_primary_closes(tmp_path, monkeypatch):
     backup = scoring.Provider("openrouter", "u", "K2", ("free:free",), {})
     monkeypatch.setattr(scoring, "available_providers", lambda in_ci: [(primary, "m1")])
     called = []
-    monkeypatch.setattr(scoring, "fallback_providers", lambda: called.append(1) or [(backup, "free:free")])
+    monkeypatch.setattr(scoring, "fallback_providers", lambda in_ci=False: called.append(1) or [(backup, "free:free")])
 
     def fake(p, model, resume, batch, timeout=60):
         if p.name == "groq":
@@ -155,8 +155,28 @@ def test_openrouter_not_used_when_primary_keeps_up(tmp_path, monkeypatch):
     primary = scoring.Provider("groq", "u", "K1", ("m1",), {})
     monkeypatch.setattr(scoring, "available_providers", lambda in_ci: [(primary, "m1")])
     called = []
-    monkeypatch.setattr(scoring, "fallback_providers", lambda: called.append(1) or [])
+    monkeypatch.setattr(scoring, "fallback_providers", lambda in_ci=False: called.append(1) or [])
     monkeypatch.setattr(scoring, "call_provider",
                         lambda p, m, r, batch, timeout=60: [{"id": j.id, "score": 7} for j in batch])
     stats = scoring.score_jobs([_job(i) for i in range(8)], time_budget=10)
     assert stats["llm"] == 8 and not called
+
+
+def test_broken_lane_closes_and_hands_work_back(tmp_path, monkeypatch):
+    """Regression: GitHub Models returned non-JSON for every batch and ate the whole queue."""
+    monkeypatch.setattr(scoring.ScoreCache.__init__, "__defaults__", (tmp_path / "cache.json",))
+    broken = scoring.Provider("broken", "u", "K1", ("m1",), {})
+    good = scoring.Provider("good", "u", "K2", ("m2",), {})
+    monkeypatch.setattr(scoring, "available_providers", lambda in_ci: [(broken, "m1"), (good, "m2")])
+
+    def fake(p, model, resume, batch, timeout=60):
+        if p.name == "broken":
+            raise ValueError("not json")
+        import time as _t
+        _t.sleep(0.05)
+        return [{"id": j.id, "score": 7} for j in batch]
+
+    monkeypatch.setattr(scoring, "call_provider", fake)
+    jobs = [_job(i) for i in range(40)]
+    stats = scoring.score_jobs(jobs, time_budget=10)
+    assert stats["llm"] == 40 and stats["failed_batches"] <= 3

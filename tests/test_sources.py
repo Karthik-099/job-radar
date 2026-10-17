@@ -18,3 +18,12 @@ def test_parse_workday_url():
 
 def test_html_to_text_unescapes():
     assert html_to_text("&lt;p&gt;Hello&lt;/p&gt;<b>world</b>").replace("\n", " ").split() == ["Hello", "world"]
+
+
+def test_jobspy_parallel_first_import_is_safe():
+    """Regression: concurrent first imports of jobspy deadlocked in CI."""
+    from concurrent.futures import ThreadPoolExecutor
+    from src.sources.jobspy_source import load_jobspy
+    with ThreadPoolExecutor(6) as pool:
+        fns = list(pool.map(lambda _: load_jobspy(), range(6)))
+    assert all(callable(f) for f in fns)

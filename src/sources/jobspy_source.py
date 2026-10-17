@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import math
 import random
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timezone
@@ -67,8 +68,18 @@ def row_to_job(row: dict[str, Any], site: str) -> Job:
     )
 
 
+_IMPORT_LOCK = threading.Lock()
+
+
+def load_jobspy() -> Any:
+    """Import jobspy exactly once. Concurrent first imports from worker threads deadlock on module locks."""
+    with _IMPORT_LOCK:
+        from jobspy import scrape_jobs
+    return scrape_jobs
+
+
 def _query(site: str, term: str, loc: dict[str, Any], cfg: dict[str, Any], ctx: FetchContext) -> list[Job]:
-    from jobspy import scrape_jobs  # imported lazily: heavy (pandas) and optional for other sources
+    scrape_jobs = load_jobspy()
 
     if ctx.time_left() <= 0:
         return []

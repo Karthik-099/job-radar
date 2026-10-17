@@ -35,6 +35,7 @@ from .state import JobStore
 from .tracking import check_closed, track_reposts
 
 log = logging.getLogger("job_radar")
+JOBSPY_SOURCES = {"indeed", "naukri", "google", "linkedin", "indeed_world", "linkedin_world"}
 
 # Run budget: a 3-hourly cron must stay well inside 2,000 free minutes/month.
 FETCH_BUDGET_SECONDS = 180
@@ -124,6 +125,8 @@ def run(args: argparse.Namespace) -> int:
     ctx = FetchContext(prefs=prefs, backfill=args.backfill, deadline=time.monotonic() + args.budget,
                        known_urls=store.seen_urls,
                        countries=[c.strip().lower() for c in args.countries.split(",") if c.strip()])
+    if any(n in JOBSPY_SOURCES for n in names):
+        jobspy_source.load_jobspy()  # import on the main thread first (parallel first-imports deadlock)
     results = run_sources(names, ctx, timeout=args.budget + 15) if names else []
     raw = [j for r in results for j in r.jobs]
 
