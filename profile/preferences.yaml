@@ -1,0 +1,243 @@
+# job-radar preferences. Edit freely; every run re-reads this file.
+# Patterns are case-insensitive regular expressions matched on word boundaries.
+
+titles:
+  # A title must match one of these AND none of the excludes.
+  include:
+    - devops
+    - dev ops
+    - devsecops
+    - secops engineer
+    - site reliability
+    - sre
+    - reliability engineer
+    - platform (engineer|engineering|developer|ops|reliability|infrastructure)
+    - (cloud|infrastructure|infra|kubernetes|internal|developer|ml|ai) platform
+    - cloud (engineer|engineering|operations|ops|support|infrastructure|native|reliability|security engineer|devops|administrator|consultant|specialist|automation)
+    - (aws|azure|gcp|google cloud|openshift) (engineer|devops|administrator|specialist|consultant|platform|sre|cloud engineer)
+    - cloudops
+    - infrastructure (engineer|engineering|developer|automation|operations|ops|reliability|specialist|software engineer)
+    - infra engineer
+    - software engineer,? (- )?(infrastructure|infra|platform|reliability|cloud|devops)
+    - kubernetes
+    - k8s
+    - containeri[sz]ation
+    - terraform
+    - ci ?/ ?cd
+    - build (and|&) release
+    - release engineer
+    - build engineer
+    - deployment engineer
+    - production engineer
+    - production support engineer
+    - observability
+    - monitoring engineer
+    - bizops engineer
+    - techops
+    - systems? reliability
+    - linux (engineer|administrator|admin|system)
+    - systems? (engineer|administrator) ?(-|,|\(|–)? ?(linux|cloud|devops|infrastructure|hpc|kubernetes)
+    - mlops
+    - ml ops
+    - llmops
+    - ml infrastructure
+    - ai infrastructure
+    - ai infra
+    - gpu
+    - hpc
+  exclude:
+    - senior
+    - sr
+    - staff
+    - principal
+    - lead
+    - manager
+    - head
+    - director
+    - architect
+    - vp
+    - vice president
+    - avp
+    - svp
+    - evp
+    - chief
+    - distinguished
+    - iii
+    - iv
+    - intern
+    - internship
+    - sales
+    - account executive
+    - recruiter
+    - marketing
+    - presales
+    - pre-sales
+    - expert
+    - mentor
+    - trainer
+    - tutor
+    - faculty
+    # Level numbers that mean 4+ years: "SRE 3", "Engineer - 4", "L4".
+    - (engineer|sre|developer|devops)\s*[-–,]?\s*[3-9]
+    - l[4-9]
+    - sde ?(3|iii)
+
+# Training institutes and "job guarantee" academies that post fake openings.
+company_exclude:
+  - academy
+  - institute
+  - training
+  - edutech
+  - codeplusplus
+
+# Dropped if found anywhere in the description.
+description_exclude:
+  - security clearance
+  - ts/sci
+  - us citizens? only
+  - must be a us citizen
+  - u\.s\. citizenship (is )?required
+
+goals:
+  daily_applications: 5   # shown in the morning email; the dashboard has its own setting
+
+experience:
+  # Drop jobs whose stated minimum experience is above this many years.
+  max_required_years: 3
+
+recency:
+  max_age_days: 30
+  keep_unknown_date: true
+
+locations:
+  # India (any city, India-remote) is always kept and ranked first.
+  # Remote roles open to India/APAC/worldwide come second.
+  # Abroad roles are kept if the country is listed here, or if the JD mentions visa sponsorship/relocation.
+  # Countries where a junior hire from India is realistic (work-visa routes exist and employers use them).
+  # Onsite jobs anywhere else are kept only if the JD mentions sponsorship or relocation.
+  abroad_countries: [germany, netherlands, ireland, uk, uae, saudi arabia, qatar, singapore, malaysia, japan,
+                     canada, australia, new zealand, poland, sweden, finland, denmark, norway, estonia, lithuania,
+                     czechia, austria, switzerland, luxembourg, portugal, spain, belgium, france]
+  abroad_keep_if_visa: true
+  abroad_drop_if_no_sponsorship: true
+  keep_unknown_location: true
+  # Drop jobs abroad whose JD is not in English or asks for fluent German/Dutch/French/etc.
+  drop_local_language: true
+  region_weights: {india: 3.0, remote: 2.0, abroad: 1.0, unknown: 0.5}
+  # Extra rank inside India (added to a 0.75 base, max 1.0). Bangalore first, then Pune and Hyderabad.
+  city_boost: {bangalore: 0.25, bengaluru: 0.25, pune: 0.15, hyderabad: 0.15, remote: 0.1}
+
+target_companies:
+  - Mastercard
+  - Razorpay
+  - Grafana Labs
+  - Harness
+  - Chargebee
+  - PhonePe
+  - CRED
+  - Datadog
+  - Elastic
+  - Confluent
+  - GitLab
+  - JFrog
+  - Snyk
+  - Red Hat
+  - Cisco
+  - Nutanix
+  - Intuit
+  - Walmart Global Tech
+  - SAP Labs
+  - Salesforce
+  - ServiceNow
+  - Atlassian
+
+sources:
+  # JobSpy boards. hours_old is the look-back per scheduled run (state dedupes repeats);
+  # --backfill widens it to recency.max_age_days.
+  indeed:
+    enabled: true
+    hours_old: 72
+    results_wanted: 40
+    search_terms: [devops engineer, site reliability engineer, sre, platform engineer, cloud engineer, kubernetes, devsecops, mlops engineer, cloud operations engineer, infrastructure engineer, aws devops, azure devops]
+    locations:
+      - {location: "Bangalore", country: india}
+      - {location: "Pune", country: india}
+      - {location: "Hyderabad", country: india}
+      - {location: "India", country: india}
+  naukri:
+    enabled: true
+    hours_old: 72
+    results_wanted: 40
+    search_terms: [devops engineer, site reliability engineer, platform engineer, cloud engineer, kubernetes, devsecops, mlops, aws devops, azure devops]
+    locations:
+      - {location: "Bangalore"}
+      - {location: "Pune"}
+      - {location: "Hyderabad"}
+      - {location: "India", remote: true}
+  # Worldwide: Indeed's 71 non-India country sites. Countries in every_run are scanned every run, the rest
+  # rotate (rotate_per_run per run), so the whole list is covered roughly every 2 days. Look back a week
+  # because each rotated country is visited only every couple of days.
+  indeed_world:
+    enabled: true
+    hours_old: 168
+    results_wanted: 25
+    search_terms: [devops engineer, site reliability engineer, platform engineer, cloud engineer]
+    every_run: [germany, netherlands, ireland, uk, united arab emirates, singapore]
+    rotate_per_run: 8
+    rotation_hours: 6
+  # LinkedIn accepts any country, so this reaches the rest of the world. Kept small: LinkedIn throttles.
+  linkedin_world:
+    enabled: true
+    hours_old: 168
+    results_wanted: 25
+    search_terms: [devops engineer]
+    rotate_per_run: 4
+    rotation_hours: 6
+    countries: [germany, netherlands, ireland, united kingdom, united arab emirates, saudi arabia, qatar, singapore,
+                malaysia, japan, canada, australia, new zealand, poland, sweden, finland, denmark, norway, estonia,
+                lithuania, czechia, austria, switzerland, luxembourg, portugal, spain, belgium, france, italy,
+                israel, south korea, taiwan, hong kong, vietnam, thailand, indonesia, philippines, bahrain, kuwait,
+                oman, egypt, morocco, south africa, kenya, nigeria, brazil, mexico, argentina, chile, colombia,
+                romania, hungary, greece, turkey, ukraine, serbia, croatia, bulgaria, latvia, cyprus, malta,
+                iceland, sri lanka, bangladesh, nepal, pakistan, united states]
+  google:
+    enabled: false   # JobSpy Google Jobs: often returns nothing from CI IPs; try with --source google
+  linkedin:
+    enabled: true    # best effort: public guest search only, no login; silently skipped when blocked
+    hours_old: 48
+    results_wanted: 25
+    search_terms: [devops engineer, site reliability engineer, platform engineer]
+    locations:
+      - {location: "Bengaluru, Karnataka, India"}
+      - {location: "India"}
+
+  # Company career sites from companies.yaml (add more with `python -m src.discover "Company"`).
+  ats:
+    search_terms: [devops, site reliability, sre, platform engineer, cloud engineer, kubernetes, infrastructure, mlops]
+  greenhouse: {enabled: true}
+  lever: {enabled: true}
+  ashby: {enabled: true}
+  smartrecruiters: {enabled: true}
+  workday: {enabled: true}
+
+  # Free public boards (no key).
+  remotive: {enabled: true}
+  remoteok: {enabled: true}
+  weworkremotely: {enabled: true}
+  himalayas: {enabled: true}
+  jobicy: {enabled: true}
+  arbeitnow: {enabled: true}   # only visa-sponsored postings (Europe)
+  hn: {enabled: true}          # latest "Ask HN: Who is hiring?"
+
+  # Keyed APIs: off (not needed; the free sources above cover India well).
+  adzuna:
+    enabled: false
+    hours_old: 72
+    search_terms: [devops engineer, site reliability engineer, platform engineer, cloud engineer]
+    locations:
+      - {country: in, where: Bangalore}
+      - {country: in}
+  jooble:
+    enabled: false
+    search_terms: [devops engineer, site reliability engineer, platform engineer]
+    locations: [Bangalore, India]

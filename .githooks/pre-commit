@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Blocks commits that contain secrets. Enable once per clone:  git config core.hooksPath .githooks
+set -euo pipefail
+fail=0
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+# 1. Secret files must never be staged.
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  case "$f" in
+    .env.example) ;;
+    .env|*/.env|.env.*|*.pem|*.key|client_secret*.json|credentials*.json|token*.json)
+      echo "BLOCKED: secret file staged: $f"; fail=1 ;;
+  esac
+done <<< "$staged"
+
+# 2. Key-shaped strings in staged content (Groq, Google, GitHub, OAuth refresh tokens).
+pattern='gsk_[A-Za-z0-9]{20,}|sk-or-[A-Za-z0-9-]{20,}|AIza[0-9A-Za-z_-]{30,}|AQ\.[A-Za-z0-9_-]{30,}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|1//[A-Za-z0-9_-]{30,}'
+if git diff --cached -U0 | grep -E '^\+' | grep -Eq "$pattern"; then
+  echo "BLOCKED: staged changes contain something that looks like an API key or token:"
+  git diff --cached -U0 | grep -E '^\+' | grep -Eo "$pattern" | sed -E 's/(.{4}).*/\1…(redacted)/' | sort -u
+  fail=1
+fi
+
+# 3. Contact details must stay out of the repo (resume.md is scored by an external LLM).
+if git diff --cached -U0 -- profile/ | grep -E '^\+' | grep -Eiq '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[a-z]{2,}|\+91[- ]?[0-9]{10}'; then
+  echo "BLOCKED: email address or phone number in profile/. Remove contact details before committing."
+  fail=1
+fi
+
+[ "$fail" -eq 0 ] || { echo "Commit aborted. (Bypass only if you are certain: git commit --no-verify)"; exit 1; }

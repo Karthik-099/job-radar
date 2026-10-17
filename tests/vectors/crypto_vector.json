@@ -1,0 +1,20 @@
+{
+ "password": "correct horse battery staple",
+ "plaintext": {
+  "hello": "job radar",
+  "jobs": [
+   {
+    "id": "abc",
+    "score": 8.5
+   }
+  ],
+  "unicode": "Bengaluru · ₹"
+ },
+ "blob": {
+  "v": 1,
+  "salt": "AAECAwQFBgcICQoLDA0ODw==",
+  "iv": "ZGVmZ2hpamtsbW5v",
+  "iters": 600000,
+  "ct": "8cLn59Bnl0e7+3eKETPOuaD3x6chHl4lksdz0yo8weU9njd5JDhA1pBrwYnwmUqwHmrACK1PCZDzZ8vMvwLWByhUFJjG2vWlIGAA2fw23X8UYl1PDOh5DoXG3cPIwTG6nee5Pg=="
+ }
+}

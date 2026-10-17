@@ -1,0 +1,27 @@
+# Tests and a secret scan on code changes (bot commits that only touch state/ don't trigger this).
+name: ci
+
+on:
+  push:
+    branches: [prod]
+    paths: ["src/**", "tests/**", "dashboard/**", "scripts/**", "requirements*.txt", ".github/workflows/**", "profile/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: bash scripts/scan_secrets.sh
+      - run: pip install --disable-pip-version-check -q -r requirements-dev.txt
+      - run: python -m pytest -q
+      - run: node tests/js/crypto.test.mjs

@@ -1,0 +1,5 @@
+# Minimal set for the update-status workflow (no scraping libraries: installs in seconds).
+PyYAML==6.0.3
+requests==2.34.2
+cryptography==50.0.2
+python-dateutil==2.9.0.post0

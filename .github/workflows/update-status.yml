@@ -1,0 +1,61 @@
+# Applies status changes sent from the dashboard (Applied, Shortlisted, ...) to state/jobs.json,
+# then republishes the dashboard. Triggered only by workflow_dispatch with your fine-grained token.
+name: update-status
+
+on:
+  workflow_dispatch:
+    inputs:
+      changes:
+        description: 'JSON list: [{"id":"...","status":"applied","at":"...","note":"..."}]'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: job-radar-state
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start timer
+        run: echo "STARTED=$(date +%s)" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: prod
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-status.txt
+
+      - name: Install (small set)
+        run: pip install --disable-pip-version-check -q -r requirements-status.txt
+
+      - name: Apply changes
+        env:
+          CHANGES: ${{ inputs.changes }}   # passed as data via env, never pasted into the script
+        run: python -m src.update_status
+
+      - name: Re-export dashboard
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: python -m src.main --no-fetch --no-score --export --limit 0
+
+      - name: Record minutes and commit state
+        if: always()
+        run: |
+          python -m src.budget record --seconds "$(( $(date +%s) - STARTED + 20 ))" --kind status
+          bash scripts/commit_state.sh "status"
+
+      - name: Publish dashboard
+        env:
+          DASHBOARD_REPO_TOKEN: ${{ secrets.DASHBOARD_REPO_TOKEN }}
+          DASHBOARD_REPO: ${{ vars.DASHBOARD_REPO || format('{0}/job-radar-dashboard', github.repository_owner) }}
+        run: bash scripts/publish_dashboard.sh

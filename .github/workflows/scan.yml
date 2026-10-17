@@ -1,0 +1,79 @@
+# Every 3 hours: find jobs, score them, update state, publish the encrypted dashboard, email a digest.
+# Cost guard: ~3 billed minutes per run x 8 runs/day ~ 720 of the 2,000 free minutes/month. The budget
+# step skips the run (in ~10s) once this month's recorded usage passes 1,700 minutes.
+name: scan
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"   # :17 past every 3rd hour UTC (off the busy top of the hour)
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Look back 30 days (use for the first run)"
+        type: boolean
+        default: false
+      max_llm:
+        description: "Max jobs sent to the AI this run (cache hits are free)"
+        type: string
+        default: "40"
+
+permissions:
+  contents: write   # commit state/ to this private repo
+  issues: write     # email digest via a GitHub issue
+  models: read      # GitHub Models as a third free AI fallback
+
+concurrency:
+  group: job-radar-state   # shared with update-status: one writer at a time
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Start timer
+        run: echo "STARTED=$(date +%s)" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: prod
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Minutes budget guard
+        id: budget
+        run: python -m src.budget check --limit 1700
+
+      - name: Install
+        if: steps.budget.outputs.skip != 'true'
+        run: pip install --disable-pip-version-check -q -r requirements.txt
+
+      - name: Scan, score, export, notify
+        if: steps.budget.outputs.skip != 'true'
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
+          MAX_LLM: ${{ inputs.max_llm || '40' }}
+          BACKFILL: ${{ inputs.backfill && '--backfill' || '' }}
+        run: python -m src.main --export --notify --limit 0 --max-llm "$MAX_LLM" $BACKFILL
+
+      - name: Record minutes and commit state
+        if: always() && steps.budget.outputs.skip != 'true'
+        run: |
+          python -m src.budget record --seconds "$(( $(date +%s) - STARTED + 25 ))" --kind scan
+          bash scripts/commit_state.sh "scan"
+
+      - name: Publish dashboard
+        if: success() && steps.budget.outputs.skip != 'true'
+        env:
+          DASHBOARD_REPO_TOKEN: ${{ secrets.DASHBOARD_REPO_TOKEN }}
+          DASHBOARD_REPO: ${{ vars.DASHBOARD_REPO || format('{0}/job-radar-dashboard', github.repository_owner) }}
+        run: bash scripts/publish_dashboard.sh
