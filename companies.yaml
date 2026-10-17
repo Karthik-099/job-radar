@@ -299,6 +299,10 @@ companies:
   ats: workday
   url: https://db.wd3.myworkdayjobs.com/DBWebsite
   learned_from: indeed
+- name: Deutscher Sparkassen Verlag GmbH
+  ats: workday
+  url: https://dsvgruppe.wd103.myworkdayjobs.com/DSV
+  learned_from: indeed_world
 - name: Devoteam
   ats: smartrecruiters
   slug: Devoteam
@@ -744,6 +748,10 @@ companies:
 - name: Plaid
   ats: ashby
   slug: plaid
+- name: Planet
+  ats: workday
+  url: https://planet.wd3.myworkdayjobs.com/Planet
+  learned_from: indeed_world
 - name: PlanetScale
   ats: greenhouse
   slug: planetscale
