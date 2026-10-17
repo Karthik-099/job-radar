@@ -61,6 +61,32 @@ def _is_generic(job: Job) -> bool:
     return city in _GENERIC_CITY or len(city) == 2  # two-letter state code
 
 
+def merge_multi_city(jobs: list[Job]) -> list[Job]:
+    """Same company + title + country posted for several cities is one application: keep one card and
+    list the cities ("Bengaluru / Pune / Hyderabad"). Needs job.country, so run after enrich()."""
+    groups: dict[tuple[str, str, str], Job] = {}
+    out: list[Job] = []
+    for job in jobs:
+        if not job.country:
+            out.append(job)
+            continue
+        key = (normalize_company(job.company), _norm_text(job.title), job.country)
+        first = groups.get(key)
+        if first is None:
+            groups[key] = job
+            out.append(job)
+            continue
+        _merge(first, job)
+        if len(job.description or "") > len(first.description or ""):
+            first.description = job.description
+        city = normalize_location(job.location)
+        if city and city not in normalize_location(first.location) and city not in first.location.lower():
+            cities = [c.strip() for c in first.location.split(" / ") if c.strip()]
+            if len(cities) < 4:
+                first.location = " / ".join([*cities, job.location.split(",")[0].strip()])
+    return out
+
+
 def _merge_generic_locations(jobs: list[Job]) -> list[Job]:
     """Second pass: "Mastercard | SRE II | MH, India" is the same posting as "... | Pune, India".
     Merge a city-less listing into the city-specific one with the same company + title + country."""

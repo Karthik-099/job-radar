@@ -58,3 +58,15 @@ def test_generic_state_location_merges_into_city():
     assert len(out) == 2
     pune = next(j for j in out if "Pune" in j.location)
     assert "https://appcast/2" in pune.alt_urls
+
+
+def test_multi_city_posting_becomes_one_job():
+    from src.dedupe import merge_multi_city
+    a = job(company="Infosys", location="Bengaluru, India", url="https://n/1")
+    b = job(company="Infosys", location="Pune, India", url="https://n/2")
+    c = job(company="Infosys", location="Hyderabad, India", url="https://n/3")
+    for j in (a, b, c):
+        j.country = "india"
+    out = merge_multi_city([a, b, c])
+    assert len(out) == 1 and out[0].location == "Bengaluru, India / Pune / Hyderabad"
+    assert {"https://n/2", "https://n/3"} <= set(out[0].alt_urls)

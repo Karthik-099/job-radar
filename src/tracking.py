@@ -44,33 +44,39 @@ def _parse(value: str | None) -> datetime | None:
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
-# ------------------------------------------------------------------------------------------- ghost jobs
+# ------------------------------------------------------------------------------------------- same role / ghost jobs
 def fingerprint(job: Job) -> str:
-    return f"{normalize_company(job.company)}|{_norm_text(job.title)}"
+    """One role at one company in one country, whatever city, board or posting id it shows up under."""
+    return f"{normalize_company(job.company)}|{_norm_text(job.title)}|{job.country or job.region}"
 
 
-def track_reposts(jobs: list[Job], meta: dict[str, Any]) -> int:
-    """Record each new posting under its company+title fingerprint; flag ones that keep coming back.
-
-    A role re-posted 3+ times in 60 days (new ids/urls each time) is often an evergreen or ghost listing.
-    """
+def drop_same_role(fresh: list[Job], tracked: dict[str, Job], meta: dict[str, Any]) -> tuple[list[Job], int]:
+    """Drop jobs whose role is already tracked (new id, same company + title + country), and count those
+    re-posts. A role re-posted 3+ times in 60 days is flagged on the tracked job: often an evergreen or ghost
+    listing. Returns (genuinely new jobs, number of repeats dropped)."""
     seen: dict[str, list[list[str]]] = meta.setdefault("fingerprints", {})
+    today = _now().date().isoformat()
     cutoff = (_now() - timedelta(days=REPOST_WINDOW_DAYS)).date().isoformat()
-    flagged = 0
-    for job in jobs:
+    by_fp = {fingerprint(j): j for j in tracked.values()}
+    new: list[Job] = []
+    dropped = 0
+    for job in fresh:
         fp = fingerprint(job)
         entries = [e for e in seen.get(fp, []) if e[1] >= cutoff]
         if job.id not in {e[0] for e in entries}:
-            entries.append([job.id, _now().date().isoformat()])
+            entries.append([job.id, today])
         seen[fp] = entries[-10:]
-        if len(entries) >= REPOST_THRESHOLD and "reposted" not in job.flags:
-            job.flags.append("reposted")
-            job.reasons.append(f"re-posted {len(entries)}x in 60d")
-            flagged += 1
-    # Drop fingerprints that have aged out entirely so state stays small.
+        existing = by_fp.get(fp)
+        if existing is None:
+            by_fp[fp] = job
+            new.append(job)
+            continue
+        dropped += 1
+        if len(entries) >= REPOST_THRESHOLD and "reposted" not in existing.flags:
+            existing.flags.append("reposted")
     for fp in [k for k, v in seen.items() if not v or v[-1][1] < cutoff]:
         del seen[fp]
-    return flagged
+    return new, dropped
 
 
 # ------------------------------------------------------------------------------------------- closed jobs

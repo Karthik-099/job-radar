@@ -19,7 +19,7 @@ import time
 from datetime import datetime, timezone
 
 from .config import STATE_DIR, Preferences, load_preferences
-from .dedupe import dedupe, drop_seen
+from .dedupe import dedupe, drop_seen, merge_multi_city
 from .filters import JobFilter, enrich
 from .envsecrets import install_log_redaction, load_dotenv
 from .learn import learn_companies
@@ -32,7 +32,7 @@ from .recommend import apply_next, rank
 from .scoring import score_jobs
 from .envsecrets import secret
 from .state import JobStore
-from .tracking import check_closed, track_reposts
+from .tracking import check_closed, drop_same_role
 
 log = logging.getLogger("job_radar")
 JOBSPY_SOURCES = {"indeed", "naukri", "google", "linkedin", "indeed_world", "linkedin_world"}
@@ -134,15 +134,16 @@ def run(args: argparse.Namespace) -> int:
     for job in raw:
         enrich(job, prefs)
         job.description = (job.description or "")[:MAX_DESCRIPTION_CHARS]
-    unique = dedupe(raw)
+    unique = merge_multi_city(dedupe(raw))
     fresh = drop_seen(unique, store.seen_ids, store.seen_urls)
     jf = JobFilter(prefs)
     kept = jf.apply(fresh)
+    kept, repeats = drop_same_role(kept, store.jobs, store.meta)  # same role already tracked: not new
     for job in kept:
         rank(job, prefs)
     kept.sort(key=lambda j: j.apply_priority or 0, reverse=True)
     learned = learn_companies([j for j in unique if jf.title_ok(j.title)], dry_run=args.dry_run)
-    ghosts = track_reposts(kept, store.meta)
+    ghosts = sum("reposted" in j.flags for j in store.jobs.values())
 
     # 3. Pool = everything still tracked plus this run's jobs; LLM-score the most promising unscored ones.
     pool = list({j.id: j for j in [*store.jobs.values(), *kept]}.values())
@@ -177,6 +178,10 @@ def run(args: argparse.Namespace) -> int:
         "rejections": dict(jf.rejections.most_common()),
         "companies_learned": len(learned),
         "reposts_flagged": ghosts,
+        "repeats_skipped": repeats,
+        "sources_ok": sum(1 for r in results if not r.error),
+        "sources_total": len(results),
+        "sources_failed": ", ".join(r.name for r in results if r.error),
         "llm_scored": score_stats.get("llm", 0), "llm_cached": score_stats.get("cached", 0),
         "closed_found": closed_stats.get("closed", 0),
     }
@@ -188,7 +193,7 @@ def run(args: argparse.Namespace) -> int:
     stats["kept_by_source"] = by_source
     print("\nkept by source: " + ", ".join(f"{k}={v}" for k, v in sorted(by_source.items(), key=lambda kv: -kv[1])))
     print(f"raw={len(raw)} unique={len(unique)} fresh={len(fresh)} kept={len(kept)} rejected={dict(jf.rejections)}")
-    print(f"companies learned: {len(learned)} | reposts flagged: {ghosts} | "
+    print(f"companies learned: {len(learned)} | same role skipped: {repeats} | reposts flagged: {ghosts} | "
           f"llm scored: {stats['llm_scored']} (cache hits {stats['llm_cached']}) | closed found: {stats['closed_found']}")
 
     if args.dry_run:
@@ -201,6 +206,8 @@ def run(args: argparse.Namespace) -> int:
     for job in kept:  # same objects as in pool; add() keeps existing ones
         store.jobs[job.id] = job
     _record_daily(store.meta, kept)
+    if names:  # a real scan, not a status-only re-export
+        _record_run(store.meta, stats, fresh_count=len(unique), already=len(unique) - len(fresh) + repeats)
     pruned = store.prune()
     store.meta["last_run"] = stats
     store.save()
@@ -223,6 +230,18 @@ def run(args: argparse.Namespace) -> int:
     print(f"run duration: {round(time.monotonic() - started, 1)}s")
     write_summary(stats)
     return 0 if (not results or any(not r.error for r in results)) else 2
+
+
+def _record_run(meta: dict, stats: dict, fresh_count: int, already: int) -> None:
+    """One line per scan for the dashboard's run history (last 7 days of 3-hourly runs)."""
+    runs = meta.setdefault("runs", [])
+    runs.append({
+        "at": stats["finished_at"], "added": stats["kept"], "already_tracked": already, "seen": fresh_count,
+        "scored": stats["llm_scored"], "seconds": stats["duration_seconds"],
+        "sources_ok": stats["sources_ok"], "sources_total": stats["sources_total"],
+        "trigger": "schedule" if os.environ.get("GITHUB_EVENT_NAME") == "schedule" else "manual",
+    })
+    del runs[:-56]
 
 
 def _record_daily(meta: dict, kept: list[Job]) -> None:

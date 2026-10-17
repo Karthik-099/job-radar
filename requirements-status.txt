@@ -3,3 +3,4 @@ PyYAML==6.0.3
 requests==2.34.2
 cryptography==50.0.2
 python-dateutil==2.9.0.post0
+beautifulsoup4==4.15.0

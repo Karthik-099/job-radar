@@ -5,9 +5,12 @@
   const { deriveKey, decryptBlob, encryptWithKey, decryptWithKey } = window.JRCrypto;
 
   // ------------------------------------------------------------------ constants and state
-  const STATUSES = ["new", "shortlisted", "applied", "interview", "offer", "rejected", "ignored"];
-  const LABEL = { new: "New", shortlisted: "Shortlisted", applied: "Applied", interview: "Interview",
-    offer: "Offer", rejected: "Rejected", ignored: "Ignored" };
+  // Your pipeline, in order. "Shortlisted" = the company shortlisted you after you applied.
+  const STATUSES = ["new", "applied", "shortlisted", "interview", "offer", "rejected", "ignored"];
+  const LABEL = { new: "New", applied: "Applied", shortlisted: "Shortlisted", interview: "Interview",
+    offer: "Offer", rejected: "Rejected", ignored: "Hidden" };
+  const STAGE_VAR = { new: "--st-new", applied: "--st-applied", shortlisted: "--st-shortlisted", interview: "--st-interview",
+    offer: "--st-offer", rejected: "--st-rejected", ignored: "--st-new" };
   const REGION = { india: "India", remote: "Remote", abroad: "Abroad", unknown: "Unclear" };
   const LOCK_AFTER_MS = 15 * 60 * 1000;
   const SYNC_DEBOUNCE_MS = 90 * 1000;
@@ -35,8 +38,11 @@
       else if (k === "dataset") Object.assign(node.dataset, v);
       else node.setAttribute(k, v === true ? "" : v);
     }
-    for (const kid of kids.flat()) if (kid !== null && kid !== undefined && kid !== false)
+    for (const kid of kids.flat()) {
+      if (kid === null || kid === undefined || kid === false) continue;
+      if (typeof kid === "string" && /^(null|undefined|none|nan)+$/i.test(kid.trim())) continue; // never show "nullnull"
       node.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+    }
     return node;
   }
   const svg = (tag, attrs = {}) => {
@@ -267,6 +273,7 @@
       for (const c of changes) if (S.local.overrides[c.id]) S.local.overrides[c.id].sent = true;
       S.local.lastSync = new Date().toISOString();
       S.local.lastSyncError = "";
+      if (!keepalive) toast("Saved to GitHub. Other devices show it in about 2-3 minutes (press Refresh there).");
     } catch (e) {
       S.local.lastSyncError = e.message || "Sync failed";
     }
@@ -339,11 +346,23 @@
       class: cls, type: "button", "aria-pressed": String(st === status),
       onclick: (e) => { e.stopPropagation(); setStatus(j, st === status && status !== "new" ? "new" : status); },
     }, text);
-    if (compact) return [mk("applied", st === "applied" ? "✓ Applied" : "Mark applied", "btn small good"), mk("shortlisted", "Shortlist"), mk("ignored", "Hide")];
-    return STATUSES.map((s) => mk(s, LABEL[s]));
+    if (compact) {
+      if (st === "new" || st === "ignored") return [mk("applied", "✓ Mark applied", "btn small good"), mk("ignored", st === "ignored" ? "Unhide" : "Hide")];
+      return [stageSelect(j)];
+    }
+    return STATUSES.map((s) => mk(s, LABEL[s], `btn small stage-btn st-${s}`));
   }
+  function stageSelect(j) {
+    const st = statusOf(j);
+    return el("label", { class: "stage-select" }, el("span", { class: "sr-only" }, "Stage"),
+      el("select", { class: `st-${st}`, "aria-label": `Stage for ${j.title}`, onclick: (e) => e.stopPropagation(),
+        onchange: (e) => setStatus(j, e.target.value) },
+        STATUSES.map((s) => el("option", { value: s, selected: s === st }, LABEL[s]))));
+  }
+  function stageChip(st) { return el("span", { class: `chip stage st-${st}` }, el("i", { class: "dot" }), LABEL[st]); }
   function jobCard(j) {
-    return el("article", { class: `card${(j.flags || []).includes("closed") ? " closed" : ""}` },
+    const st = statusOf(j);
+    return el("article", { class: `card st-${st}${(j.flags || []).includes("closed") ? " closed" : ""}` },
       el("div", { class: "card-head" },
         el("div", {},
           el("button", { class: "card-title", type: "button", onclick: () => openDrawer(j) }, j.title),
@@ -351,7 +370,7 @@
         scoreBadge(j)),
       metaLine(j),
       (j.reasons || []).length ? el("div", { class: "reasons" }, j.reasons.join(" · ")) : null,
-      el("div", { class: "chips" }, flagChips(j)),
+      el("div", { class: "chips" }, st !== "new" ? stageChip(st) : null, flagChips(j)),
       el("div", { class: "card-actions" }, extLink("Open job ↗", j.url, "btn primary small"), statusButtons(j, true),
         el("button", { class: "btn small", type: "button", onclick: () => openDrawer(j) }, "Details")));
   }
@@ -364,6 +383,41 @@
   function tile(label, value, note, extra) {
     return el("div", { class: "tile" }, el("div", { class: "label" }, label), el("div", { class: "value" }, value),
       note && el("div", { class: "note" }, note), extra);
+  }
+
+  // ------------------------------------------------------------------ scanner status
+  function nextRunAt(schedule) {
+    const every = schedule?.every_hours || 3, minute = schedule?.minute_utc ?? 17;
+    const d = new Date();
+    d.setUTCSeconds(0, 0);
+    for (let i = 0; i < 24 * 60; i++) {
+      d.setUTCMinutes(d.getUTCMinutes() + 1);
+      if (d.getUTCMinutes() === minute && d.getUTCHours() % every === 0) return d;
+    }
+    return null;
+  }
+  function inLabel(ms) {
+    const m = Math.max(0, Math.round(ms / 60000));
+    return m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${m % 60}m`;
+  }
+  function scannerPanel() {
+    const runs = S.data.runs || [];
+    const last = runs[runs.length - 1];
+    const lr = S.data.last_run || {};
+    const next = nextRunAt(S.data.schedule);
+    const ok = last ? last.sources_ok === last.sources_total : !lr.sources_failed;
+    const today = runs.filter((r) => localDay(r.at) === localDay(Date.now()));
+    const addedToday = today.reduce((n, r) => n + (r.added || 0), 0);
+    const cell = (label, value, note, cls) => el("div", { class: `scan-cell ${cls || ""}` },
+      el("div", { class: "label" }, label), el("div", { class: "value" }, value), note && el("div", { class: "note" }, note));
+    return el("section", { class: "scanner", "aria-label": "Scanner status" },
+      cell("Last scan", last ? agoLabel(last.at) : agoLabel(S.data.generated_at),
+        last ? `${ok ? "✓ all sources OK" : `⚠ ${last.sources_total - last.sources_ok} of ${last.sources_total} sources failed`}` : "", ok ? "ok" : "warn"),
+      cell("Added last scan", last ? `+${fmtInt(last.added)}` : "–", last ? `${fmtInt(last.already_tracked)} already tracked, skipped` : ""),
+      cell("Added today", `+${fmtInt(addedToday)}`, `${today.length} scan${today.length === 1 ? "" : "s"} today`),
+      cell("Next scan", next ? `in ${inLabel(next - Date.now())}` : "–",
+        next ? `about ${next.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}, every 3 hours` : ""),
+      cell("AI scored last scan", last ? fmtInt(last.scored) : "–", last ? `run took ${Math.round(last.seconds)}s` : ""));
   }
 
   // ------------------------------------------------------------------ Today
@@ -382,7 +436,7 @@
     const follow = (S.data.follow_ups || []).map((f) => S.byId.get(f.id)).filter((j) => j && statusOf(j) === "applied");
     const a = S.data.analytics?.funnel || {};
 
-    root.append(
+    root.append(scannerPanel(),
       el("div", { class: "tiles" },
         tile("Applied today", `${today} / ${goal}`, today >= goal ? "Goal met. Nice work." : `${goal - today} to go`, bar),
         tile("Streak", `${st} day${st === 1 ? "" : "s"}`, "days in a row with an application"),
@@ -403,10 +457,12 @@
     groups.new = groups.new.filter((j) => !(j.flags || []).includes("closed")).sort((a, b) => (b.prio || 0) - (a.prio || 0)).slice(0, 60);
     const toggle = el("label", {}, el("input", { type: "checkbox", checked: S.showIgnored, onchange: (e) => { S.showIgnored = e.target.checked; render(); } }), " Show hidden");
     const board = el("div", { class: "board" }, cols.map((s) => {
-      const col = el("div", { class: "col", dataset: { status: s }, "aria-label": `${LABEL[s]} column` },
-        el("h3", {}, LABEL[s], el("span", {}, s === "new" ? "top 60" : String(groups[s].length))),
+      const col = el("div", { class: `col st-${s}`, dataset: { status: s }, "aria-label": `${LABEL[s]} column` },
+        el("h3", {}, el("span", { class: "col-title" }, el("i", { class: "dot" }), LABEL[s]),
+          el("span", { class: "count-pill" }, s === "new" ? "top 60" : String(groups[s].length))),
+        groups[s].length ? null : el("div", { class: "col-empty" }, s === "applied" ? "Mark jobs applied from Today" : "Drop cards here"),
         groups[s].map((j) => el("div", {
-          class: "mini", draggable: "true", tabindex: "0", role: "button", "aria-label": `${j.title} at ${j.company}`,
+          class: `mini st-${s}`, draggable: "true", tabindex: "0", role: "button", "aria-label": `${j.title} at ${j.company}`,
           ondragstart: (e) => e.dataTransfer.setData("text/plain", j.id),
           onclick: () => openDrawer(j), onkeydown: (e) => { if (e.key === "Enter") openDrawer(j); },
         }, el("div", { class: "t" }, j.title), el("div", { class: "c" }, j.company),
@@ -443,7 +499,7 @@
     const horizon = { "24h": DAY, "3d": 3 * DAY, "7d": 7 * DAY, "30d": 30 * DAY }[f.posted];
     return S.jobs.filter((j) => {
       const st = statusOf(j);
-      if (f.status === "open" && (!isOpen(j) || st !== "new" && st !== "shortlisted")) return false;
+      if (f.status === "open" && (!isOpen(j) || st !== "new")) return false;
       if (f.status && f.status !== "open" && st !== f.status) return false;
       if (f.region && j.region !== f.region) return false;
       if (horizon && postedAt(j) < Date.now() - horizon) return false;
@@ -464,7 +520,7 @@
     const search = el("input", { type: "search", placeholder: "Search title, company, city", value: f.q, "aria-label": "Search jobs" });
     search.addEventListener("input", () => { f.q = search.value; S.tableLimit = 100; drawRows(); });
     const filters = el("div", { class: "filters" }, search,
-      sel("status", "Status", [["open", "Open (new + shortlisted)"], ["", "Any status"], ...STATUSES.map((s) => [s, LABEL[s]])]),
+      sel("status", "Status", [["open", "Not applied yet"], ["", "Any status"], ...STATUSES.map((s) => [s, LABEL[s]])]),
       sel("region", "Region", [["", "All regions"], ["india", "India"], ["remote", "Remote"], ["abroad", "Abroad"]]),
       sel("posted", "Posted", [["", "Any time"], ["24h", "Last 24h"], ["3d", "Last 3 days"], ["7d", "Last 7 days"], ["30d", "Last 30 days"]]),
       sel("minScore", "Minimum fit", [["", "Any fit"], ["5", "Fit 5+"], ["6", "Fit 6+"], ["7", "Fit 7+"], ["8", "Fit 8+"]]),
@@ -550,13 +606,14 @@
   function shortDate(iso) { const d = new Date(`${iso}T00:00:00`); return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }); }
 
   // Vertical bars over days; one or more stacked series; optional dashed goal line. Hover/focus tooltip per day.
-  function barChart({ title, sub, rows, series, goal }) {
+  function barChart({ title, sub, rows, series, goal, dateFmt }) {
+    const fmtDate = dateFmt || shortDate;
     const W = 640, H = 220, L = 34, R = 8, T = 10, B = 26;
     const box = el("div", { class: "chart" }, el("h3", {}, title), el("div", { class: "sub" }, sub));
     if (series.length > 1) box.append(el("div", { class: "legend" }, series.map((s) => { const i = el("i"); i.style.background = cssVar(s.color); return el("span", {}, i, s.label); })));
     const totals = rows.map((r) => series.reduce((a, s) => a + (r[s.key] || 0), 0));
     const max = niceMax(Math.max(1, goal || 0, ...totals));
-    const plotW = W - L - R, plotH = H - T - B, step = plotW / rows.length, bw = Math.max(3, step - 2);
+    const plotW = W - L - R, plotH = H - T - B, step = plotW / rows.length, bw = Math.min(28, Math.max(3, step - 2));
     const y = (v) => T + plotH - (v / max) * plotH;
     const root = svg("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `${title}. ${sub}` });
     for (const t of [0, max / 2, max]) {
@@ -581,9 +638,9 @@
         acc += v;
       });
       const hit = svg("rect", { x: L + i * step, y: T, width: step, height: plotH, fill: "transparent", tabindex: "0",
-        "aria-label": `${shortDate(r.date)}: ${series.map((s) => `${s.label} ${r[s.key] || 0}`).join(", ")}` });
+        "aria-label": `${fmtDate(r.date)}: ${series.map((s) => `${s.label} ${r[s.key] || 0}`).join(", ")}` });
       const show = () => {
-        tip.replaceChildren(el("div", { class: "sub" }, shortDate(r.date)),
+        tip.replaceChildren(el("div", { class: "sub" }, fmtDate(r.date)),
           ...series.map((s) => { const k = el("span", { class: "key" }); k.style.background = cssVar(s.color); return el("div", { class: "row" }, k, el("strong", {}, fmtInt(r[s.key] || 0)), " ", s.label); }),
           series.length > 1 ? el("div", { class: "row" }, el("strong", {}, fmtInt(totals[i])), " total") : "");
         tip.classList.remove("hidden");
@@ -595,8 +652,9 @@
       hit.addEventListener("mouseenter", show); hit.addEventListener("focus", show);
       hit.addEventListener("mouseleave", () => tip.classList.add("hidden")); hit.addEventListener("blur", () => tip.classList.add("hidden"));
       root.append(hit);
-      if ((rows.length - 1 - i) % 7 === 0) { // weekly ticks anchored on today: never collide
-        const lab = svg("text", { x: L + (i + 0.5) * step, y: H - 8, "text-anchor": "middle", class: "axis-label" }); lab.textContent = shortDate(r.date); root.append(lab);
+      const tickEvery = Math.max(1, Math.ceil(rows.length / 5));
+      if ((rows.length - 1 - i) % tickEvery === 0) { // ticks anchored on the latest bar: never collide
+        const lab = svg("text", { x: L + (i + 0.5) * step, y: H - 8, "text-anchor": "middle", class: "axis-label" }); lab.textContent = dateFmt ? fmtDate(r.date).split(",")[0] : shortDate(r.date); root.append(lab);
       }
     });
     if (goal) {
@@ -604,6 +662,68 @@
       const g = svg("text", { x: W - R, y: y(goal) - 5, "text-anchor": "end", class: "goal-text" }); g.textContent = `goal ${goal}/day`; root.append(g);
     }
     box.append(root, tip);
+    return box;
+  }
+  // Donut: identity by color AND by labelled legend rows with counts and %, 2px surface gaps between slices.
+  function donut(title, sub, items, centerLabel) {
+    const box = el("div", { class: "chart donut-card" }, el("h3", {}, title), el("div", { class: "sub" }, sub));
+    const total = items.reduce((n, i) => n + i.value, 0);
+    const R = 78, r = 52, C = 100;
+    const root = svg("svg", { viewBox: "0 0 200 200", role: "img", "aria-label": `${title}: ${items.map((i) => `${i.label} ${i.value}`).join(", ")}` });
+    const tip = el("div", { class: "tooltip hidden", role: "status" });
+    if (!total) {
+      root.append(svg("circle", { cx: C, cy: C, r: (R + r) / 2, fill: "none", stroke: cssVar("--grid"), "stroke-width": R - r }));
+    } else {
+      let a0 = -Math.PI / 2;
+      const shown = items.filter((i) => i.value > 0);
+      for (const it of shown) {
+        const frac = it.value / total;
+        const a1 = a0 + frac * 2 * Math.PI;
+        const large = a1 - a0 > Math.PI ? 1 : 0;
+        const p = (rad, ang) => `${C + rad * Math.cos(ang)},${C + rad * Math.sin(ang)}`;
+        const d = shown.length === 1
+          ? `M${C - R},${C} a${R},${R} 0 1,0 ${2 * R},0 a${R},${R} 0 1,0 ${-2 * R},0 M${C - r},${C} a${r},${r} 0 1,1 ${2 * r},0 a${r},${r} 0 1,1 ${-2 * r},0`
+          : `M${p(R, a0)} A${R},${R} 0 ${large} 1 ${p(R, a1)} L${p(r, a1)} A${r},${r} 0 ${large} 0 ${p(r, a0)} Z`;
+        const slice = svg("path", { d, fill: cssVar(it.color), stroke: cssVar("--surface"), "stroke-width": 2, "fill-rule": "evenodd",
+          tabindex: "0", class: "slice", "aria-label": `${it.label}: ${it.value} (${Math.round(100 * frac)}%)` });
+        const show = () => {
+          tip.replaceChildren(el("div", { class: "row" }, el("strong", {}, fmtInt(it.value)), ` ${it.label} · ${Math.round(100 * frac)}%`));
+          tip.classList.remove("hidden");
+          tip.style.left = "50%"; tip.style.top = "56px"; tip.style.transform = "translateX(-50%)";
+        };
+        slice.addEventListener("mouseenter", show); slice.addEventListener("focus", show);
+        slice.addEventListener("mouseleave", () => tip.classList.add("hidden")); slice.addEventListener("blur", () => tip.classList.add("hidden"));
+        root.append(slice);
+        a0 = a1;
+      }
+    }
+    const big = svg("text", { x: C, y: C + 4, "text-anchor": "middle", class: "donut-total" }); big.textContent = fmtInt(total);
+    const small = svg("text", { x: C, y: C + 22, "text-anchor": "middle", class: "donut-label" }); small.textContent = centerLabel;
+    root.append(big, small);
+    const legend = el("ul", { class: "donut-legend" }, items.map((it) => {
+      const key = el("i"); key.style.background = cssVar(it.color);
+      return el("li", {}, key, el("span", { class: "lbl" }, it.label), el("strong", {}, fmtInt(it.value)),
+        el("span", { class: "pct" }, total ? `${Math.round((100 * it.value) / total)}%` : "–"));
+    }));
+    box.append(el("div", { class: "donut-wrap" }, el("div", { class: "donut-svg" }, root, tip), legend));
+    return box;
+  }
+  function runsChart(runs) {
+    const box = el("div", { class: "chart" }, el("h3", {}, "Jobs added per scan"),
+      el("div", { class: "sub" }, "Every scan over the last 7 days. Jobs already on your list are never added twice."));
+    if (!runs.length) { box.append(el("div", { class: "empty" }, "Run history starts with the next scan.")); return box; }
+    const rows = runs.map((r) => ({ date: r.at, added: r.added || 0 }));
+    const chart = barChart({ title: "", sub: "", rows, series: [{ key: "added", label: "New jobs added", color: "--s1" }], dateFmt: (iso) => new Date(iso).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit" }) });
+    chart.querySelector("h3")?.remove(); chart.querySelector(".sub")?.remove();
+    chart.classList.remove("chart"); chart.classList.add("chart-inner");
+    const recent = runs.slice(-8).reverse();
+    box.append(chart, el("div", { class: "table-wrap" }, el("table", {},
+      el("thead", {}, el("tr", {}, ["When", "Added", "Already tracked", "AI scored", "Sources OK", "Took"].map((h, i) => el("th", { class: i ? "num" : "", scope: "col" }, h)))),
+      el("tbody", {}, recent.map((r) => el("tr", {},
+        el("td", {}, new Date(r.at).toLocaleString([], { weekday: "short", hour: "2-digit", minute: "2-digit" }), r.trigger === "manual" ? el("span", { class: "chip" }, "manual") : null),
+        el("td", { class: "num" }, el("strong", {}, `+${fmtInt(r.added)}`)), el("td", { class: "num" }, fmtInt(r.already_tracked)),
+        el("td", { class: "num" }, fmtInt(r.scored)), el("td", { class: "num" }, `${r.sources_ok}/${r.sources_total}`),
+        el("td", { class: "num" }, `${Math.round(r.seconds)}s`)))))));
     return box;
   }
   function hbars(title, sub, items, fmt) {
@@ -625,13 +745,27 @@
       tile("New matches this week", fmtInt(w.new), `${delta >= 0 ? "+" : ""}${fmtInt(delta)} vs last week`),
       tile("Strong fits this week", fmtInt(w.good), "fit 6+ of 10"),
       tile("Applications", fmtInt(fu.applied), "all time"),
-      tile("Response rate", fu.applied ? `${Math.round((100 * (fu.responded || 0)) / fu.applied)}%` : "–", "any reply: interview, offer or rejection"),
+      tile("Response rate", fu.applied ? `${Math.round((100 * (fu.responded || 0)) / fu.applied)}%` : "–", "shortlisted, interview, offer or rejection"),
       tile("Interviews", fmtInt(fu.interviews), fu.applied ? `${Math.round((100 * (fu.interviews || 0)) / fu.applied)}% of applications` : ""),
       tile("Offers", fmtInt(fu.offers), "")));
 
     const days = appliedDays();
     const appliedRows = (an.daily || []).map((d) => ({ date: d.date, applied: days.get(d.date) || 0 }));
+    const counts = Object.fromEntries(STATUSES.map((s) => [s, 0]));
+    for (const j of S.jobs) counts[statusOf(j)] += 1;
+    const mq = an.match_quality || {};
+    const reg = an.regions || {};
+    root.append(el("div", { class: "donuts" },
+      donut("Your pipeline", "Every job you have moved past New", ["applied", "shortlisted", "interview", "offer", "rejected"]
+        .map((s) => ({ label: LABEL[s], value: counts[s], color: STAGE_VAR[s] })), "in progress"),
+      donut("Where this week's jobs are", "New matching jobs, last 7 days", [
+        { label: "India", value: reg.india || 0, color: "--s1" }, { label: "Remote", value: reg.remote || 0, color: "--s2" },
+        { label: "Abroad", value: reg.abroad || 0, color: "--s3" }], "new jobs"),
+      donut("Match quality", "Open jobs by resume fit", [
+        { label: "Strong (8+)", value: mq.strong || 0, color: "--q-strong" }, { label: "Good (6-8)", value: mq.good || 0, color: "--q-good" },
+        { label: "Weak (<6)", value: mq.weak || 0, color: "--q-weak" }], "open jobs")));
     const charts = el("div", { class: "charts" },
+      runsChart(S.data.runs || []),
       barChart({ title: "New matching jobs per day", sub: "Last 30 days, by region", rows: an.daily || [],
         series: [{ key: "india", label: "India", color: "--s1" }, { key: "remote", label: "Remote", color: "--s2" }, { key: "abroad", label: "Abroad", color: "--s3" }] }),
       barChart({ title: "Your applications per day", sub: "Last 30 days, against your daily goal", rows: appliedRows,
@@ -643,7 +777,7 @@
       momentumTable(an.momentum || []),
       hbars("Application funnel", "All time", [
         { label: "Tracked", value: fu.tracked || 0 }, { label: "Applied", value: fu.applied || 0 },
-        { label: "Got a reply", value: fu.responded || 0 }, { label: "Interviews", value: fu.interviews || 0 }, { label: "Offers", value: fu.offers || 0 },
+        { label: "Shortlisted", value: fu.shortlisted || 0 }, { label: "Interviews", value: fu.interviews || 0 }, { label: "Offers", value: fu.offers || 0 },
       ], (i) => fmtInt(i.value)),
       hbars("Where this week's jobs came from", "Matching jobs by source", Object.entries(an.sources || {}).map(([k, v]) => ({ label: k, value: v })), (i) => fmtInt(i.value)));
     root.append(charts);
@@ -690,8 +824,8 @@
     root.append(el("div", { class: "settings" },
       el("div", { class: "box" }, el("h3", {}, "Daily goal"), el("p", {}, "Applications per day. Drives the Today progress bar, streak and the goal line in Insights."),
         goal, el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: saveSettings }, "Save"))),
-      el("div", { class: "box" }, el("h3", {}, "Sync status changes (optional)"),
-        el("p", {}, "Without this, your Applied/Shortlisted marks are saved on this device only. With it, they are saved to your private repo and show up on every device after the next run."),
+      el("div", { class: "box" }, el("h3", {}, "Sync across devices and browsers"),
+        el("p", {}, "Each browser keeps its own copy of your marks. With a token, every change (Applied, Shortlisted, notes) is sent to your private job-radar repo, and the dashboard is rebuilt in about 2-3 minutes. Then any browser, phone or Google profile shows the same thing after pressing Refresh."),
         el("p", {}, "Create a fine-grained token: GitHub, Settings, Developer settings, Fine-grained tokens, Generate. Repository access: only job-radar. Permissions: Actions read and write. Nothing else."),
         el("label", {}, "Repository", repo), el("label", {}, "Token", token),
         el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: saveSettings }, "Save"),
@@ -700,7 +834,7 @@
           S.local.token ? el("button", { class: "btn", type: "button", onclick: async () => { S.local.token = ""; await saveLocal(); render(); } }, "Remove token") : null),
         status),
       el("div", { class: "box" }, el("h3", {}, "Privacy"),
-        el("p", {}, "Data is decrypted in this browser only. The key lives in memory and is wiped when you lock, close the tab, or after 15 minutes idle. Settings and the token are stored encrypted with your passphrase."),
+        el("p", {}, "Your passphrase never leaves this browser and is forgotten when you lock, close the tab, or after 15 minutes idle. The token above is saved here encrypted with your passphrase. \"Export my statuses\" downloads your list as a file. \"Clear this device\" removes the token and unsynced marks from this browser only."),
         el("div", { class: "row" }, el("button", { class: "btn", type: "button", onclick: exportMine }, "Export my statuses"),
           el("button", { class: "btn", type: "button", onclick: () => { if (confirm("Delete saved settings, token and unsynced marks from this device?")) { try { localStorage.removeItem(LS.local); localStorage.removeItem(LS.salt); } catch (_) { /* fine */ } lock(); } } }, "Clear this device")))));
   }

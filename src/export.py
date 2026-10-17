@@ -79,8 +79,10 @@ def analytics(jobs: list[Job], daily: dict[str, dict[str, int]], now: datetime) 
 
     statuses = Counter(j.status for j in jobs)
     applied_ever = [j for j in jobs if any(h.get("status") == "applied" for h in j.history) or j.status in
-                    ("applied", "interview", "offer", "rejected")]
-    responded = [j for j in applied_ever if j.status in ("interview", "offer", "rejected")]
+                    ("applied", "shortlisted", "interview", "offer", "rejected")]
+    responded = [j for j in applied_ever if j.status in ("shortlisted", "interview", "offer", "rejected")]
+    shortlisted = [j for j in applied_ever if j.status in ("shortlisted", "interview", "offer")
+                   or any(h.get("status") == "shortlisted" for h in j.history)]
     interviews = [j for j in applied_ever if j.status in ("interview", "offer")
                   or any(h.get("status") == "interview" for h in j.history)]
 
@@ -94,7 +96,12 @@ def analytics(jobs: list[Job], daily: dict[str, dict[str, int]], now: datetime) 
         "sources": dict(Counter(j.source for j in week).most_common(12)),
         "statuses": dict(statuses),
         "funnel": {"tracked": len(jobs), "applied": len(applied_ever), "responded": len(responded),
-                   "interviews": len(interviews), "offers": statuses.get("offer", 0)},
+                   "shortlisted": len(shortlisted), "interviews": len(interviews), "offers": statuses.get("offer", 0)},
+        "match_quality": {
+            "strong": sum(1 for j in jobs if j.status == "new" and (j.score or 0) >= 8),
+            "good": sum(1 for j in jobs if j.status == "new" and 6 <= (j.score or 0) < 8),
+            "weak": sum(1 for j in jobs if j.status == "new" and (j.score or 0) < 6),
+        },
         "week": {"new": len(week), "good": len(good_week), "prev_new": len(prev),
                  "india": sum(j.region == "india" for j in week), "remote": sum(j.region == "remote" for j in week),
                  "abroad": sum(j.region == "abroad" for j in week)},
@@ -110,6 +117,8 @@ def build_payload(jobs: list[Job], meta: dict[str, Any], now: datetime | None = 
         "v": 1,
         "generated_at": now.isoformat(timespec="seconds"),
         "last_run": {k: v for k, v in (meta.get("last_run") or {}).items() if not isinstance(v, (list, dict))},
+        "schedule": {"every_hours": 3, "minute_utc": 17},  # mirrors the cron in .github/workflows/scan.yml
+        "runs": (meta.get("runs") or [])[-56:],
         "jobs": [compact(j) for j in chosen],
         "apply_next": [j.id for j in picks],
         "follow_ups": [{"id": j.id, "since": (last_status_change(j) or now).isoformat(timespec="seconds")} for j in due],

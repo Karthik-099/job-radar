@@ -16,12 +16,25 @@ def _job(i=1, **kw):
     return Job(**base)
 
 
-def test_reposts_flagged_after_threshold():
+def test_same_role_is_not_added_again_and_reposts_are_flagged():
     meta: dict = {}
-    for i in range(3):
-        j = _job(i, url=f"https://x/{i}", location=f"City{i}")  # different ids, same company+title
-        tracking.track_reposts([j], meta)
-    assert "reposted" in j.flags
+    first = _job(0, url="https://x/0", location="Bengaluru", country="india")
+    tracked = {first.id: first}
+    new, dropped = tracking.drop_same_role([first], {}, meta)
+    assert new == [first] and dropped == 0
+    for i in (1, 2):  # same company + title + country, new posting ids/urls/cities
+        repost = _job(i, url=f"https://x/{i}", location=f"Pune {i}", country="india")
+        new, dropped = tracking.drop_same_role([repost], tracked, meta)
+        assert new == [] and dropped == 1
+    assert "reposted" in first.flags
+
+
+def test_same_title_other_country_is_a_different_job():
+    meta: dict = {}
+    blr = _job(0, location="Bengaluru", country="india")
+    dub = _job(1, url="https://x/1", location="Dublin", country="ireland")
+    new, _ = tracking.drop_same_role([dub], {blr.id: blr}, meta)
+    assert new == [dub]
 
 
 def test_follow_ups_after_seven_days():
