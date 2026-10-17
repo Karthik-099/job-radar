@@ -1,43 +1,43 @@
 {
- "finished_at": "2026-10-17T19:40:45+00:00",
- "duration_seconds": 68.3,
- "raw": 1197,
- "unique": 955,
- "fresh": 955,
- "kept": 129,
- "kept_india": 11,
- "kept_remote": 11,
- "kept_abroad": 103,
+ "finished_at": "2026-10-17T19:52:56+00:00",
+ "duration_seconds": 238.4,
+ "raw": 4962,
+ "unique": 2840,
+ "fresh": 2754,
+ "kept": 354,
+ "kept_india": 242,
+ "kept_remote": 2,
+ "kept_abroad": 109,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
-   "jobs": 17,
-   "seconds": 40.1,
+   "jobs": 7,
+   "seconds": 36.8,
    "error": ""
   },
   {
    "name": "lever",
-   "jobs": 0,
-   "seconds": 9.1,
+   "jobs": 2,
+   "seconds": 10.6,
    "error": ""
   },
   {
    "name": "ashby",
-   "jobs": 21,
-   "seconds": 21.7,
+   "jobs": 29,
+   "seconds": 23.7,
    "error": ""
   },
   {
    "name": "smartrecruiters",
-   "jobs": 3,
-   "seconds": 49.8,
+   "jobs": 38,
+   "seconds": 72.6,
    "error": ""
   },
   {
    "name": "workday",
-   "jobs": 14,
-   "seconds": 10.2,
+   "jobs": 38,
+   "seconds": 20.7,
    "error": ""
   },
   {
@@ -49,97 +49,94 @@
   {
    "name": "remoteok",
    "jobs": 2,
-   "seconds": 1.0,
+   "seconds": 1.2,
    "error": ""
   },
   {
    "name": "weworkremotely",
    "jobs": 3,
-   "seconds": 1.2,
+   "seconds": 0.7,
    "error": ""
   },
   {
    "name": "himalayas",
    "jobs": 34,
-   "seconds": 1.7,
+   "seconds": 2.1,
    "error": ""
   },
   {
    "name": "jobicy",
    "jobs": 4,
-   "seconds": 1.5,
+   "seconds": 1.4,
    "error": ""
   },
   {
    "name": "arbeitnow",
    "jobs": 14,
-   "seconds": 1.3,
+   "seconds": 1.4,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 5,
-   "seconds": 3.4,
+   "seconds": 3.5,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 0,
-   "seconds": 1.2,
-   "error": "ImportError: cannot import name 'scrape_jobs' from 'jobspy' (/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/jobspy/__init__.py)"
+   "jobs": 1920,
+   "seconds": 37.2,
+   "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 0,
-   "seconds": 10.6,
-   "error": "_DeadlockError: deadlock detected by _ModuleLock('jobspy.model') at 140070304640976"
+   "jobs": 1440,
+   "seconds": 101.0,
+   "error": ""
   },
   {
    "name": "linkedin",
-   "jobs": 0,
-   "seconds": 1.2,
-   "error": "_DeadlockError: deadlock detected by _ModuleLock('jobspy.model') at 140070304640976"
+   "jobs": 110,
+   "seconds": 26.9,
+   "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 1080,
-   "seconds": 33.5,
+   "jobs": 1266,
+   "seconds": 39.9,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 0,
-   "seconds": 1.2,
-   "error": "ImportError: cannot import name 'scrape_jobs' from 'jobspy' (/opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/jobspy/__init__.py)"
+   "jobs": 50,
+   "seconds": 14.3,
+   "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 521,
-  "title_excluded": 102,
-  "needs_local_language": 91,
-  "abroad_country_not_listed": 45,
-  "too_much_experience": 43,
-  "description_excluded": 10,
-  "too_old": 10,
-  "abroad_no_sponsorship": 2,
-  "company_excluded": 2
+  "title_not_target": 1365,
+  "title_excluded": 468,
+  "too_much_experience": 267,
+  "needs_local_language": 154,
+  "abroad_country_not_listed": 112,
+  "description_excluded": 18,
+  "too_old": 11,
+  "company_excluded": 3,
+  "abroad_no_sponsorship": 2
  },
- "companies_learned": 15,
- "reposts_flagged": 0,
- "llm_scored": 16,
+ "companies_learned": 49,
+ "reposts_flagged": 1,
+ "llm_scored": 91,
  "llm_cached": 0,
  "closed_found": 0,
  "kept_by_source": {
-  "greenhouse": 10,
+  "indeed": 208,
+  "linkedin": 31,
+  "naukri": 12,
   "workday": 10,
-  "arbeitnow": 8,
-  "ashby": 8,
-  "jobicy": 3,
-  "himalayas": 11,
-  "indeed_world": 72,
-  "smartrecruiters": 3,
-  "weworkremotely": 2,
-  "hn": 3,
-  "remoteok": 1
+  "smartrecruiters": 6,
+  "indeed_world": 97,
+  "ashby": 2,
+  "linkedin_world": 1
  }
 }

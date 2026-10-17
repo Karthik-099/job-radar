@@ -9,10 +9,18 @@ companies:
   ats: lever
   slug: 360learning
   learned_from: indeed_world
+- name: ABB
+  ats: workday
+  url: https://abb.wd3.myworkdayjobs.com/External_Career_Page
+  learned_from: indeed
 - name: AbbVie
   ats: smartrecruiters
   slug: AbbVie
   learned_from: indeed_world
+- name: Accelya Group
+  ats: workday
+  url: https://accelya.wd103.myworkdayjobs.com/Careers
+  learned_from: indeed
 - name: Accenture
   ats: workday
   url: https://accenture.wd103.myworkdayjobs.com/AccentureCareers
@@ -25,9 +33,17 @@ companies:
 - name: Agoda
   ats: greenhouse
   slug: agoda
+- name: Ahead
+  ats: lever
+  slug: thinkahead
+  learned_from: indeed
 - name: Airbnb
   ats: greenhouse
   slug: airbnb
+- name: Airbus
+  ats: workday
+  url: https://ag.wd3.myworkdayjobs.com/Airbus
+  learned_from: indeed
 - name: Aircall
   ats: lever
   slug: aircall
@@ -102,12 +118,20 @@ companies:
   ats: ashby
   slug: bounce
   jobs_at_discovery: 8
+- name: Brainlab
+  ats: smartrecruiters
+  slug: Brainlab
+  learned_from: indeed_world
 - name: Brex
   ats: greenhouse
   slug: brex
 - name: Broadcom
   ats: workday
   url: https://broadcom.wd1.myworkdayjobs.com/External_Career
+- name: Broadridge
+  ats: workday
+  url: https://broadridge.wd5.myworkdayjobs.com/Careers
+  learned_from: indeed_world
 - name: Buffer
   ats: ashby
   slug: buffer
@@ -137,6 +161,10 @@ companies:
   ats: smartrecruiters
   slug: cars24
   jobs_at_discovery: 1
+- name: CDK Global
+  ats: workday
+  url: https://cdk.wd1.myworkdayjobs.com/CDK
+  learned_from: indeed
 - name: Celonis
   ats: greenhouse
   slug: celonis
@@ -243,10 +271,22 @@ companies:
 - name: Delivery Hero
   ats: smartrecruiters
   slug: deliveryhero
+- name: Dentsu
+  ats: workday
+  url: https://dentsuaegis.wd3.myworkdayjobs.com/DAN_GLOBAL
+  learned_from: indeed
+- name: Depop
+  ats: workday
+  url: https://etsy.wd5.myworkdayjobs.com/Depop_Careers
+  learned_from: indeed_world
 - name: Depot
   ats: ashby
   slug: depot
   jobs_at_discovery: 1
+- name: Deutsche Bank
+  ats: workday
+  url: https://db.wd3.myworkdayjobs.com/DBWebsite
+  learned_from: indeed
 - name: Devoteam
   ats: smartrecruiters
   slug: Devoteam
@@ -269,6 +309,14 @@ companies:
   ats: ashby
   slug: doppler
   jobs_at_discovery: 1
+- name: DOW
+  ats: workday
+  url: https://dow.wd1.myworkdayjobs.com/ExternalCareers
+  learned_from: indeed
+- name: Drees & Sommer Digital Services
+  ats: smartrecruiters
+  slug: DreesSommerSE
+  learned_from: indeed_world
 - name: Dropbox
   ats: greenhouse
   slug: dropbox
@@ -305,6 +353,10 @@ companies:
   ats: lever
   slug: fly
   jobs_at_discovery: 1
+- name: Freshfields
+  ats: workday
+  url: https://freshfields.wd3.myworkdayjobs.com/FBD_101
+  learned_from: indeed_world
 - name: Freshworks
   ats: smartrecruiters
   slug: freshworks
@@ -321,6 +373,14 @@ companies:
 - name: Glance
   ats: greenhouse
   slug: glance
+- name: Global Payments
+  ats: workday
+  url: https://tsys.wd1.myworkdayjobs.com/TSYS
+  learned_from: indeed_world
+- name: Glomopay
+  ats: ashby
+  slug: glomo
+  learned_from: indeed
 - name: GoCardless
   ats: greenhouse
   slug: gocardless
@@ -328,6 +388,10 @@ companies:
 - name: Gojob
   ats: lever
   slug: gojob
+  learned_from: indeed_world
+- name: GOLDBECK
+  ats: workday
+  url: https://goldbeck.wd103.myworkdayjobs.com/goldbeck-jobs
   learned_from: indeed_world
 - name: Grab
   ats: smartrecruiters
@@ -338,14 +402,26 @@ companies:
 - name: Groww
   ats: greenhouse
   slug: groww
+- name: H COMPANY
+  ats: ashby
+  slug: hcompany
+  learned_from: indeed_world
 - name: Hastings Direct
   ats: workday
   url: https://hastingsdirect.wd3.myworkdayjobs.com/external_careers
+  learned_from: indeed_world
+- name: Haven
+  ats: workday
+  url: https://havenleisureltd.wd107.myworkdayjobs.com/Haven
   learned_from: indeed_world
 - name: HelloFresh
   ats: greenhouse
   slug: hellofresh
   jobs_at_discovery: 405
+- name: HELPLINE
+  ats: smartrecruiters
+  slug: EVERIENCE
+  learned_from: indeed_world
 - name: Helsing
   ats: greenhouse
   slug: helsing
@@ -356,6 +432,10 @@ companies:
 - name: HighRadius
   ats: greenhouse
   slug: highradius
+- name: Hitachi Solutions North America
+  ats: smartrecruiters
+  slug: HitachiSolutions
+  learned_from: indeed
 - name: Honeycomb
   ats: greenhouse
   slug: honeycomb
@@ -366,10 +446,18 @@ companies:
 - name: HPE
   ats: workday
   url: https://hpe.wd5.myworkdayjobs.com/Jobsathpe
+- name: ICEYE
+  ats: ashby
+  slug: iceye
+  learned_from: indeed_world
 - name: incident.io
   ats: ashby
   slug: incident
   jobs_at_discovery: 34
+- name: Infios
+  ats: workday
+  url: https://infios.wd502.myworkdayjobs.com/infios
+  learned_from: indeed
 - name: Infisical
   ats: ashby
   slug: infisical
@@ -394,6 +482,10 @@ companies:
 - name: JFrog
   ats: greenhouse
   slug: jfrog
+- name: JumpCloud
+  ats: lever
+  slug: jumpcloud
+  learned_from: linkedin
 - name: Kentik
   ats: greenhouse
   slug: kentik
@@ -419,6 +511,10 @@ companies:
   ats: ashby
   slug: langchain
   jobs_at_discovery: 102
+- name: LARIAN STUDIOS
+  ats: lever
+  slug: larian
+  learned_from: indeed_world
 - name: LaunchDarkly
   ats: greenhouse
   slug: launchdarkly
@@ -431,12 +527,28 @@ companies:
   ats: smartrecruiters
   slug: lendingkart
   jobs_at_discovery: 1
+- name: Levi Strauss
+  ats: workday
+  url: https://levistraussandco.wd5.myworkdayjobs.com/External
+  learned_from: indeed
 - name: Logz.io
   ats: lever
   slug: logz
 - name: Lowe's
   ats: workday
   url: https://lowes.wd5.myworkdayjobs.com/LWS_External_CS
+- name: LPL Financial
+  ats: workday
+  url: https://lplfinancial.wd1.myworkdayjobs.com/India_Ext
+  learned_from: indeed
+- name: LSEG (London Stock Exchange Group)
+  ats: workday
+  url: https://lseg.wd3.myworkdayjobs.com/Careers
+  learned_from: indeed
+- name: Marvell Technology
+  ats: workday
+  url: https://marvell.wd1.myworkdayjobs.com/MarvellCareers
+  learned_from: indeed
 - name: Mastercard
   ats: workday
   url: https://mastercard.wd1.myworkdayjobs.com/CorporateCareers
@@ -446,6 +558,10 @@ companies:
 - name: Meesho
   ats: lever
   slug: meesho
+- name: Metaforms
+  ats: ashby
+  slug: metaforms
+  learned_from: indeed
 - name: Micron
   ats: workday
   url: https://micron.wd1.myworkdayjobs.com/External
@@ -482,14 +598,26 @@ companies:
 - name: Motorola Solutions
   ats: workday
   url: https://motorolasolutions.wd5.myworkdayjobs.com/Careers
+- name: Movado
+  ats: workday
+  url: https://movadogroup.wd1.myworkdayjobs.com/Careers
+  learned_from: indeed
 - name: N26
   ats: greenhouse
   slug: n26
   jobs_at_discovery: 35
+- name: n8n
+  ats: ashby
+  slug: n8n
+  learned_from: indeed_world
 - name: Navi
   ats: ashby
   slug: navi
   jobs_at_discovery: 4
+- name: NCS
+  ats: smartrecruiters
+  slug: NCS3
+  learned_from: indeed_world
 - name: Neon
   ats: lever
   slug: neon
@@ -530,6 +658,10 @@ companies:
 - name: NVIDIA
   ats: workday
   url: https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite
+- name: Objective
+  ats: lever
+  slug: objective
+  learned_from: indeed_world
 - name: Observe.AI
   ats: greenhouse
   slug: observeai
@@ -540,6 +672,10 @@ companies:
 - name: Okta
   ats: greenhouse
   slug: okta
+- name: Opella.
+  ats: workday
+  url: https://opella.wd103.myworkdayjobs.com/OpellaCareers
+  learned_from: indeed
 - name: Orca Security
   ats: greenhouse
   slug: orcasecurity
@@ -603,14 +739,30 @@ companies:
 - name: PostHog
   ats: ashby
   slug: posthog
+- name: prosus
+  ats: ashby
+  slug: prosus
+  learned_from: indeed_world
 - name: Protex AI
   ats: ashby
   slug: protex%20ai
   learned_from: indeed_world
+- name: PTC
+  ats: workday
+  url: https://ptc.wd1.myworkdayjobs.com/PTC
+  learned_from: indeed
 - name: Qonto
   ats: lever
   slug: qonto
   jobs_at_discovery: 53
+- name: Qualys
+  ats: workday
+  url: https://qualys.wd5.myworkdayjobs.com/Careers
+  learned_from: indeed
+- name: Rackspace Technology
+  ats: workday
+  url: https://rackspace.wd1.myworkdayjobs.com/External
+  learned_from: indeed
 - name: Railway
   ats: ashby
   slug: railway
@@ -634,6 +786,10 @@ companies:
 - name: Redis
   ats: ashby
   slug: redis
+- name: REFRACTAL
+  ats: ashby
+  slug: refractal
+  learned_from: indeed_world
 - name: Remote
   ats: greenhouse
   slug: remote
@@ -642,12 +798,28 @@ companies:
   ats: ashby
   slug: render
   jobs_at_discovery: 38
+- name: Robco
+  ats: ashby
+  slug: robco
+  learned_from: indeed_world
 - name: Robinhood
   ats: greenhouse
   slug: robinhood
+- name: Rockwell Automation
+  ats: workday
+  url: https://rockwellautomation.wd1.myworkdayjobs.com/External_Rockwell_Automation
+  learned_from: indeed
 - name: Rubrik
   ats: greenhouse
   slug: rubrik
+- name: RX
+  ats: workday
+  url: https://relx.wd3.myworkdayjobs.com/ReedExhibitions
+  learned_from: indeed_world
+- name: S&P Global
+  ats: workday
+  url: https://spgi.wd5.myworkdayjobs.com/SPGI_Careers
+  learned_from: indeed
 - name: Salesforce
   ats: workday
   url: https://salesforce.wd12.myworkdayjobs.com/External_Career_Site
@@ -664,9 +836,17 @@ companies:
 - name: Sentry
   ats: ashby
   slug: sentry
+- name: Septeo
+  ats: smartrecruiters
+  slug: Septeo
+  learned_from: indeed_world
 - name: ServiceNow
   ats: smartrecruiters
   slug: servicenow
+- name: SIA
+  ats: smartrecruiters
+  slug: Sia
+  learned_from: indeed
 - name: Siena AI
   ats: ashby
   slug: siena
@@ -685,6 +865,10 @@ companies:
 - name: Slice
   ats: greenhouse
   slug: slice
+- name: Smallest
+  ats: ashby
+  slug: smallest
+  learned_from: indeed
 - name: Snyk
   ats: ashby
   slug: snyk
@@ -772,6 +956,10 @@ companies:
   ats: lever
   slug: toptal
   jobs_at_discovery: 32
+- name: Trimble
+  ats: workday
+  url: https://trimble.wd1.myworkdayjobs.com/TrimbleCareers
+  learned_from: indeed_world
 - name: Truecaller
   ats: greenhouse
   slug: truecaller
@@ -794,6 +982,10 @@ companies:
 - name: Unacademy
   ats: smartrecruiters
   slug: unacademy
+- name: Unisys
+  ats: workday
+  url: https://unisys.wd5.myworkdayjobs.com/External
+  learned_from: indeed
 - name: Upbound
   ats: greenhouse
   slug: upbound
@@ -805,6 +997,10 @@ companies:
   ats: ashby
   slug: vantage
   jobs_at_discovery: 5
+- name: Varrlyn
+  ats: smartrecruiters
+  slug: Varrlyn
+  learned_from: indeed_world
 - name: Vercel
   ats: greenhouse
   slug: vercel
