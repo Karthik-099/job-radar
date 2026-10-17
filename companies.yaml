@@ -114,6 +114,14 @@ companies:
   ats: lever
   slug: blablacar
   jobs_at_discovery: 9
+- name: Blackstone
+  ats: workday
+  url: https://blackstone.wd1.myworkdayjobs.com/Blackstone_Careers
+  learned_from: indeed_world
+- name: Bosch
+  ats: smartrecruiters
+  slug: BoschGroup
+  learned_from: indeed
 - name: Bounce
   ats: ashby
   slug: bounce
@@ -147,6 +155,10 @@ companies:
   ats: ashby
   slug: camunda
   jobs_at_discovery: 40
+- name: Candescent (Digital First Holdings LLC)
+  ats: workday
+  url: https://candescent.wd501.myworkdayjobs.com/Hiring
+  learned_from: indeed
 - name: Canonical
   ats: greenhouse
   slug: canonical
@@ -482,6 +494,10 @@ companies:
 - name: JFrog
   ats: greenhouse
   slug: jfrog
+- name: JLL
+  ats: workday
+  url: https://jll.wd1.myworkdayjobs.com/jllcareers
+  learned_from: indeed
 - name: JumpCloud
   ats: lever
   slug: jumpcloud
