@@ -43,6 +43,10 @@ companies:
   slug: accord
   yc: Winter 2020
   jobs_at_discovery: 5
+- name: Adaptyv
+  ats: ashby
+  slug: adaptyv
+  learned_from: indeed_world
 - name: Adobe
   ats: workday
   url: https://adobe.wd5.myworkdayjobs.com/external_experienced
@@ -53,6 +57,10 @@ companies:
   ats: greenhouse
   slug: affirm
   jobs_at_discovery: 214
+- name: AFRY
+  ats: smartrecruiters
+  slug: AFRY
+  learned_from: indeed_world
 - name: Agave
   ats: ashby
   slug: agave
@@ -272,6 +280,10 @@ companies:
   ats: greenhouse
   slug: axiom
   jobs_at_discovery: 17
+- name: Babel
+  ats: workday
+  url: https://babelgroup.wd103.myworkdayjobs.com/es
+  learned_from: indeed_world
 - name: Back Market
   ats: ashby
   slug: backmarket
@@ -1138,6 +1150,10 @@ companies:
 - name: HighRadius
   ats: greenhouse
   slug: highradius
+- name: Hire Hangar
+  ats: ashby
+  slug: hirehangar
+  learned_from: indeed_world
 - name: Hitachi
   ats: workday
   url: https://hitachi.wd1.myworkdayjobs.com/hitachi
@@ -1287,6 +1303,10 @@ companies:
   ats: greenhouse
   slug: justworks
   jobs_at_discovery: 100
+- name: Kaelo
+  ats: smartrecruiters
+  slug: Kaelo
+  learned_from: indeed_world
 - name: Kalshi
   ats: ashby
   slug: kalshi
@@ -1465,6 +1485,10 @@ companies:
 - name: Mastercard
   ats: workday
   url: https://mastercard.wd1.myworkdayjobs.com/CorporateCareers
+- name: Materialise
+  ats: workday
+  url: https://materialise.wd103.myworkdayjobs.com/Materialise_Jobs
+  learned_from: indeed_world
 - name: Mattermost
   ats: greenhouse
   slug: mattermost
@@ -2326,6 +2350,10 @@ companies:
   ats: lever
   slug: swile
   jobs_at_discovery: 30
+- name: Swisscom AG
+  ats: workday
+  url: https://swisscom.wd103.myworkdayjobs.com/SwisscomExternalCareers
+  learned_from: indeed_world
 - name: Synthesia
   ats: ashby
   slug: synthesia
