@@ -345,6 +345,10 @@ companies:
 - name: Equinix
   ats: workday
   url: https://equinix.wd1.myworkdayjobs.com/External
+- name: Experian
+  ats: smartrecruiters
+  slug: Experian
+  learned_from: indeed_world
 - name: Fampay
   ats: lever
   slug: fampay
@@ -707,6 +711,10 @@ companies:
 - name: PagerDuty
   ats: greenhouse
   slug: pagerduty
+- name: Palo IT
+  ats: ashby
+  slug: palo-it
+  learned_from: indeed_world
 - name: PayPal
   ats: workday
   url: https://paypal.wd1.myworkdayjobs.com/jobs
