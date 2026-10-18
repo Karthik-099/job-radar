@@ -24,4 +24,16 @@ const key = await deriveKey("another passphrase", crypto.getRandomValues(new Uin
 const box = await encryptWithKey(key, { token: "x", overrides: { a: 1 } });
 assert.deepEqual(await decryptWithKey(key, box), { token: "x", overrides: { a: 1 } });
 
-console.log("js crypto tests: 4 passed");
+// 5. v2 (gzipped JSON) decrypts, as Python writes it.
+{
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const k = await deriveKey("pass phrase v2", salt, 1000);
+  const gz = new Uint8Array(await new Response(new Blob([JSON.stringify({ jobs: [1, 2, 3], s: "é" })]).stream()
+    .pipeThrough(new CompressionStream("gzip"))).arrayBuffer());
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, k, gz));
+  const { b64e } = globalThis.JRCrypto;
+  const blob = { v: 2, salt: b64e(salt), iv: b64e(iv), iters: 1000, ct: b64e(ct) };
+  assert.deepEqual(await decryptBlob(blob, "pass phrase v2"), { jobs: [1, 2, 3], s: "é" });
+}
+
+console.log("js crypto tests: 5 passed");

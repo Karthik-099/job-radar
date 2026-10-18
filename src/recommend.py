@@ -14,9 +14,9 @@ from datetime import datetime, timezone
 
 from .config import Preferences
 from .match import keyword_fit
-from .models import Job
+from .models import APPLIED_STATES, Job, role_key
 
-DIRECT_SOURCES = {"greenhouse", "lever", "ashby", "smartrecruiters", "workday"}
+DIRECT_SOURCES = {"greenhouse", "lever", "ashby", "smartrecruiters", "workday", "amazon", "microsoft"}
 
 
 def _location_part(job: Job, prefs: Preferences) -> tuple[float, str]:
@@ -134,11 +134,18 @@ def rank(job: Job, prefs: Preferences) -> Job:
     return job
 
 
+def applied_roles(jobs: list[Job]) -> set[str]:
+    """Role keys you already applied to: the same role found again (other city/board) is not a new job."""
+    return {role_key(j.company, j.title) for j in jobs if j.status in APPLIED_STATES}
+
+
 def apply_next(jobs: list[Job], n: int = 15) -> list[Job]:
     """Best open jobs you haven't acted on, at most 3 per company so one employer can't flood the list."""
     per_company: dict[str, int] = {}
     picks: list[Job] = []
-    for job in sorted((j for j in jobs if j.status == "new"), key=lambda j: j.apply_priority or 0, reverse=True):
+    done = applied_roles(jobs)
+    todo = (j for j in jobs if j.status == "new" and role_key(j.company, j.title) not in done)
+    for job in sorted(todo, key=lambda j: j.apply_priority or 0, reverse=True):
         key = job.company.lower()
         if per_company.get(key, 0) >= 3:
             continue

@@ -43,5 +43,13 @@ def test_default_iterations_and_shared_vector():
     assert decrypt_json(vec["blob"], vec["password"]) == vec["plaintext"]
     # Deterministic salt/iv reproduce the exact ciphertext.
     again = encrypt_json(vec["plaintext"], vec["password"], salt=base64.b64decode(vec["blob"]["salt"]),
-                         iv=base64.b64decode(vec["blob"]["iv"]))
+                         iv=base64.b64decode(vec["blob"]["iv"]), version=1)
     assert again == vec["blob"]
+
+
+def test_v2_is_gzipped_and_round_trips():
+    payload = {"jobs": [{"title": "DevOps Engineer", "desc": "kubernetes " * 200}]}
+    v1 = encrypt_json(payload, "a long enough passphrase", version=1)
+    v2 = encrypt_json(payload, "a long enough passphrase")
+    assert v2["v"] == 2 and len(v2["ct"]) < len(v1["ct"]) / 5
+    assert decrypt_json(v2, "a long enough passphrase") == payload

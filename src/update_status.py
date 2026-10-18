@@ -47,6 +47,15 @@ def apply_changes(store: JobStore, changes: list[dict[str, Any]]) -> dict[str, i
         note = str(ch.get("note") or "")[:500]
         if note:
             entry["note"] = note
+        # The dashboard re-sends every change until it sees it here (a queued run can be cancelled by GitHub),
+        # so repeats are normal: skip ones already applied, and never let an older change undo a newer one.
+        latest = max((h.get("at", "") for h in job.history if h.get("status")), default="")
+        last_note = next((h.get("note", "") for h in reversed(job.history) if h.get("note")), "")
+        if latest and entry["at"] < latest:
+            stats["stale"] = stats.get("stale", 0) + 1
+            continue
+        if job.status == status and note == last_note:
+            continue
         if job.status != status or note:
             job.status = status
             job.history.append(entry)

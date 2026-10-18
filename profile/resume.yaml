@@ -1,0 +1,145 @@
+# Your resume as data: the tailored PDF (dashboard > job > Tailored resume) is printed from this file in the
+# same layout as your own PDF. Tailoring only REORDERS what is here and adds a keyword to the skills lines
+# when this file already proves it (see src/tailor.py EVIDENCE). It never invents skills, tools or numbers.
+#
+# **double stars** = bold in the PDF. Keep it in sync with profile/resume.md (used for AI scoring).
+# Contact details live only here (private repo + encrypted dashboard); they are never sent to any AI.
+
+name: Karthik
+contact:
+  email: karthikkpoojar@gmail.com
+  phone: "+91-9901774722"
+  location: Bangalore, India
+  links:
+    - {label: GitHub, url: "https://github.com/Karthik-099"}
+    - {label: LinkedIn, url: "https://www.linkedin.com/in/karthik-9b4211252/"}
+    - {label: Portfolio, url: "https://karthik-portfolioo.netlify.app/"}
+  tagline: Open to Remote & Onsite
+
+# Used by the referral message.
+intro:
+  first_name: Karthik
+  city: Bangalore, India
+  title: DevOps Engineer
+  company: InCruiter
+
+# The profile paragraph. `default` is your PDF's wording; the others are picked when the job title is of that
+# family (SRE, platform, cloud, MLOps, DevSecOps) so the summary uses the job's own words. Every variant only
+# restates what the resume already shows. Edit freely.
+profile:
+  default: >-
+    DevOps Engineer with hands-on experience building observability, incident response, and automation systems for
+    cloud-native infrastructure on AWS, Azure, and Kubernetes. Background running GPU infrastructure (NVIDIA H200,
+    AMD MI300X) with Slurm scheduling and fine-tuning open-weight AI models (Nemotron Nano 8B, Magpie TTS).
+    IEEE Access (Q1) published author on scaling ML workflows with cloud and DevOps technologies.
+  sre: >-
+    DevOps Engineer focused on site reliability: production readiness, observability, incident response and RCA for
+    cloud-native infrastructure on AWS, Azure, and Kubernetes. Background running GPU infrastructure (NVIDIA H200,
+    AMD MI300X) with Slurm at 98% availability. IEEE Access (Q1) published author on scaling ML workflows with cloud
+    and DevOps technologies.
+  platform: >-
+    DevOps Engineer building Kubernetes platform foundations: GitOps with Argo CD, Terraform infrastructure as code,
+    observability, and cost governance on AWS, Azure, and Kubernetes. Background running GPU infrastructure (NVIDIA
+    H200, AMD MI300X) with Slurm scheduling. IEEE Access (Q1) published author on scaling ML workflows with cloud and
+    DevOps technologies.
+  cloud: >-
+    DevOps Engineer with hands-on cloud engineering on AWS and Azure: Kubernetes (EKS, AKS), Terraform, observability,
+    cost optimization, and SOC 2 / ISO 27001 compliance. Background running GPU infrastructure (NVIDIA H200, AMD MI300X)
+    with Slurm scheduling. IEEE Access (Q1) published author on scaling ML workflows with cloud and DevOps technologies.
+  mlops: >-
+    DevOps Engineer running ML infrastructure: GPU clusters (NVIDIA H200, AMD MI300X) with Slurm, LLM fine-tuning and
+    inference (Nemotron Nano 8B, Magpie TTS) with Langfuse observability, on AWS, Azure, and Kubernetes. IEEE Access
+    (Q1) published author on scaling ML workflows with cloud and DevOps technologies.
+  devsecops: >-
+    DevOps Engineer with hands-on DevSecOps: security gates in CI/CD (SonarQube, Trivy), SOC 2 and ISO 27001 compliance,
+    observability, and incident response for cloud-native infrastructure on AWS, Azure, and Kubernetes. IEEE Access
+    (Q1) published author on scaling ML workflows with cloud and DevOps technologies.
+
+skills:
+  - label: Cloud & Kubernetes
+    items: ["AWS (EKS, SNS, CloudWatch, S3)", "Azure (AKS, VNet, Blob Storage)", GCP (GKE), Docker, Podman, Kubernetes]
+  - label: IaC & CI/CD
+    items: [Terraform, Ansible, GitOps, Argo CD, Helm, GitHub Actions, Jenkins]
+  - label: Observability & Security
+    items: [Prometheus, Grafana, OpenTelemetry, Datadog, Loki, Tempo, Mimir, OpenObserve, SonarQube, Trivy]
+  - label: Systems, Data & AI/ML
+    items: [Python, Bash, Git, Linux, TCP/IP, DNS, SSL/TLS, SSH, PostgreSQL, MongoDB, Redis, ClickHouse, NVIDIA H200,
+            AMD Instinct MI300X, Slurm, LLM Fine-Tuning & Inference, Langfuse]
+
+experience:
+  - title: DevOps Engineer
+    company: InCruiter
+    location: Bangalore
+    dates: Feb 2026 – Present
+    subtitle: AI-powered recruitment platform
+    bullets:
+      - Deployed and fine-tuned NVIDIA Nemotron Nano 8B (LLM) and Magpie TTS on AWS EC2 GPU instances, using Langfuse for model observability.
+      - Production readiness owner for **6 company products** on AKS using Datadog; reduced MTTD by **40%** through dashboard and alert triage, generating RCA for outages across latency, error rate, and pod health.
+      - Architected a hub-and-spoke observability stack (Grafana Alloy, Tempo, Loki, Mimir/Prometheus) with Azure Blob Storage telemetry; achieved a **35% collection efficiency gain**.
+      - Automated Kubernetes cost governance for non-production environments via Bash/YAML scheduling, cutting non-prod compute cost by **60%** with zero manual intervention.
+      - Led a Kubernetes cluster migration across Azure subscriptions, cutting infrastructure cost by **50%** through spot-instance selection and workload right-sizing with CAST AI and Kubecost.
+      - Owned SOC 2 and ISO 27001 compliance posture; remediated IAM, log retention, and encryption gaps across Azure and AWS with **zero audit findings**.
+      - Engineered session resilience for a high-concurrency interview platform via Redis-backed liveness checks and Argo CD canary deployments; optimized production MongoDB queries and migrated database region, cutting cross-region transfer costs by **15%**.
+  - title: System Administrator Intern
+    company: Robert BOSCH Centre (RBCCPS), IISc Bangalore
+    location: ""
+    dates: Aug 2025 – Jan 2026
+    subtitle: HPC Infrastructure
+    bullets:
+      - Owned reliability of a production bare-metal GPU cluster (**NVIDIA H200** and AMD Instinct MI300X, 8 nodes) for LLM, robotics, and RL workloads using **Slurm**; maintained **98% availability** with zero data loss.
+      - Built GPU monitoring (Prometheus/Grafana) for VRAM, queue depth, and thermals, cutting queue wait times by **35%** and improving training throughput by **40%**.
+      - Automated Linux onboarding and Slurm provisioning (Bash) for **70 researchers**, cutting onboarding time **60%** and support escalations **50%**.
+  - title: Research Intern
+    company: Confluence of Computing Lab, BITS Pilani, Goa
+    location: ""
+    dates: May 2025 – Jul 2025
+    subtitle: ""
+    bullets:
+      - Built an oral cancer detection pipeline using LIME and Grad-CAM for model interpretability; automated medical imaging and ML pipelines with MLflow and DVC, delivering structured JSON/PostgreSQL datasets and improving label quality by **18%**.
+
+# link: the project's GitHub repo. Empty = links to your GitHub profile instead.
+projects:
+  - name: Self-Healing DevSecOps Pipeline – Automated Rollback System
+    year: "2026"
+    link: ""
+    text: Event-driven microservice on AWS EKS with Splunk-based anomaly detection triggering automated rollback on failed deployments; security gates on every commit.
+  - name: Event-Driven Microservices on AWS EKS
+    year: "2026"
+    link: ""
+    text: Services deployed on AWS EKS via Terraform and CI/CD with full observability stack, achieving **99% reliability** under load.
+  - name: GitOps-Based Production Kubernetes Platform
+    year: "2025"
+    link: ""
+    text: Argo CD GitOps pipeline with canary traffic shifting, automated rollback, and Prometheus/Grafana monitoring for **high availability**.
+  - name: Scalable API Health Monitoring on AWS EKS
+    year: "2025"
+    link: ""
+    text: Containerized monitoring system on multi-AZ EKS with Terraform-managed auto-scaling, tracking **10,000 endpoints** at **99.9% uptime**.
+
+awards:
+  - "**IEEE Access (Q1) Author** – peer-reviewed publication on scaling ML workflows with cloud and DevOps technologies (2025)"
+  - "**1st Place, Fusion Techathon 3.0** (National Hackathon) – AI-driven Disaster Management System, ranked 1st among 200 teams."
+  - Demonstrated MLOps-based Real-Time Parking Space Recognition at Infosys Tech Event 2024, Bangalore.
+  - AWS Cloud Practitioner Essentials | Ansible Automation (DO007) | Red Hat OpenShift Foundations
+
+education:
+  - school: Alva’s Institute of Engineering and Technology, Mangalore
+    dates: Sep 2022 – May 2026
+    degree: "B.E. in Artificial Intelligence and Machine Learning, CGPA: 8.0/10"
+
+# One-line proof points for the referral message; the one whose tags best match the job is used.
+highlights:
+  - text: reduced MTTD by 40% as production readiness owner for 6 products on AKS
+    tags: [sre, reliability, incident, observability, monitoring, datadog, kubernetes, aks, azure]
+  - text: built a hub-and-spoke observability stack with Grafana, Loki, Tempo and Mimir
+    tags: [observability, monitoring, grafana, prometheus, loki, opentelemetry, logging, tracing]
+  - text: cut Kubernetes infrastructure cost by 50% through spot instances and right-sizing
+    tags: [cost, finops, kubernetes, azure, cloud, aks, platform]
+  - text: ran a production NVIDIA H200 and AMD MI300X GPU cluster with Slurm at 98% availability
+    tags: [gpu, hpc, slurm, mlops, ml, ai, linux, nvidia]
+  - text: run Argo CD GitOps with canary deployments and automated rollback
+    tags: [gitops, argocd, ci/cd, cicd, deployment, platform, kubernetes, helm]
+  - text: owned SOC 2 and ISO 27001 compliance across Azure and AWS with zero audit findings
+    tags: [security, devsecops, compliance, iam, soc2, audit]
+  - text: deployed and fine-tuned LLMs (Nemotron Nano 8B) on AWS GPU instances with Langfuse
+    tags: [llm, mlops, ai, inference, aws, ec2, gpu]

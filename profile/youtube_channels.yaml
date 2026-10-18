@@ -1,0 +1,29 @@
+# Channels for the dashboard's "Learn" tab. Their public RSS feeds are read about twice a day (no key, no login,
+# no YouTube account involved). Add a channel: open its page, View source, search "externalId", paste the UC... id.
+channels:
+  - {name: TechWorld with Nana, id: UCdngmbVKX1Tgre699-XLlUA}
+  - {name: KodeKloud, id: UCSWj8mqQCcrcBlXPi4ThRDQ}
+  - {name: CNCF, id: UCvqbFHwN-nwalWPjPUKpvTA}
+  - {name: Fireship, id: UCsBjURrPoezykLs9EqgamOA}
+  - {name: Kunal Kushwaha, id: UCBGOUQHNNtNGcGzVq5rIXjw}
+  - {name: Abhishek Veeramalla, id: UCnnQ3ybuyFdzvgv2Ky5jnAA}
+  - {name: DevOps & AI Toolkit, id: UCfz8x0lVzJpb_dgWm9kPVrw}
+  - {name: Google Cloud Tech, id: UCJS9pqu9BzkAMNTmzNMNhvg}
+  - {name: AWS Events, id: UCdoadna9HFHsxXWhafhNvKw}
+  - {name: HashiCorp, id: UC-AdvAxaagE9W2f0webyNUQ}
+  - {name: Grafana, id: UCYCwgQAMm9sTJv0rgwQLCxw}
+  - {name: That DevOps Guy, id: UCFe9-V_rN9nLqVNiI8Yof3w}
+  - {name: ByteByteGo, id: UCZgt6AzoyjslHTC9dz0UoTw}
+  - {name: Hussein Nasser, id: UC_ML5xP23TOWKUcc-oAE_Eg}
+  - {name: IBM Technology, id: UCKWaEZ-_VweaEx1j62do_vQ}
+  - {name: Andrej Karpathy, id: UCXUPKJO5MZQN11PqgIvyuvQ}
+  - {name: Two Minute Papers, id: UCbfYPyITQ-7l4upoX8nvctg}
+  - {name: AI Explained, id: UCNJ1Ymd5yFuUPtn21xtRbbw}
+  - {name: Rawkode Academy, id: UCrber_mFvp_FEF7D9u8PDEA}
+  - {name: Piyush Sachdeva, id: UCVMIYM0T_KBpX6FLLXLNlOA}
+  - {name: TrainWithShubham, id: UClboKaFwE4JHnga2hVmOasQ}
+  - {name: NetworkChuck, id: UC9x0AN7BWHpCDHSm9NiJFJQ}
+  - {name: Microsoft Azure, id: UC0m-80FnNY2Qb7obvTL_2fA}
+  - {name: Datadog, id: UCPO2QgTCReBAThZca6MB9jg}
+  - {name: GitHub, id: UC7c3Kb6jYCRj4JOHHZTxKsQ}
+  - {name: freeCodeCamp, id: UC8butISFwT-Wl7EV0hUK0BQ}

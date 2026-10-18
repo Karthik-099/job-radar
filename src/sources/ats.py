@@ -255,7 +255,11 @@ def _fetch_ats(ats: str, ctx: FetchContext) -> list[Job]:
         if ctx.time_left() <= 0:
             return []
         try:
-            return FETCHERS[ats](c, ctx)
+            found = FETCHERS[ats](c, ctx)
+            if c.get("yc"):  # Y Combinator company (batch name), shown as a badge on the dashboard
+                for job in found:
+                    job.tags.append("yc")
+            return found
         except Exception as exc:  # noqa: BLE001 - one broken board must not sink the rest
             errors.append(f"{c.get('name')}: {type(exc).__name__}")
             return []

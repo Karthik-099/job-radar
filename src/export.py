@@ -15,13 +15,16 @@ from typing import Any
 
 from .config import PROFILE_DIR, ROOT
 from .crypto import encrypt_json
-from .models import Job
+from .models import Job, posting_ref, role_key
 from .recommend import apply_next
+from .tailor import jd_terms, load_base, plan, public_base
 from .tracking import follow_ups, last_status_change
 
 DASHBOARD_SRC = ROOT / "dashboard"
 DIST = ROOT / "dist"
-PUBLIC_FILES = {"index.html", "app.js", "crypto.js", "app.css", "manifest.webmanifest", "sw.js", "icon.svg", "data/jobs.enc.json"}
+FONTS = {f"fonts/lato-{w}.woff2" for w in ("400", "700", "400-italic", "700-italic")}
+PUBLIC_FILES = {"index.html", "app.js", "crypto.js", "app.css", "manifest.webmanifest", "sw.js", "icon.svg",
+                "autofill.user.js", "data/jobs.enc.json", *FONTS}
 MAX_JOBS = 900
 SNIPPET = 900
 
@@ -46,8 +49,10 @@ def select_jobs(jobs: list[Job]) -> list[Job]:
     return acted + open_good[: max(0, MAX_JOBS - len(acted))]
 
 
-def compact(job: Job) -> dict[str, Any]:
+def compact(job: Job, base: dict[str, Any] | None = None) -> dict[str, Any]:
     s = job.scoring or {}
+    terms = job.jd_terms or jd_terms(f"{job.title}\n{job.description}")
+    tailored = plan(job.title, terms, base) if base and job.status not in ("ignored", "rejected") else {}
     return {
         "id": job.id, "title": job.title, "company": job.company, "location": job.location,
         "region": job.region, "country": job.country, "remote": job.remote,
@@ -55,8 +60,10 @@ def compact(job: Job) -> dict[str, Any]:
         "posted": job.posted_at, "expires": job.expires_at, "seen": job.first_seen,
         "status": job.status, "history": job.history[-12:],
         "score": job.score, "prio": job.apply_priority, "reasons": job.reasons, "flags": job.flags,
-        "target": "target_company" in job.tags, "years": job.min_years, "salary": job.salary,
+        "target": "target_company" in job.tags, "yc": "yc" in job.tags, "years": job.min_years, "salary": job.salary,
         "visa": job.visa_sponsorship, "desc": (job.description or "")[:SNIPPET],
+        "rk": role_key(job.company, job.title), "ref": job.ref or posting_ref(job.url, job.description),
+        "tl": tailored,
         "ai": {k: s.get(k) for k in ("method", "provider", "level_fit", "matched_skills", "missing_skills",
                                       "tailoring_tips", "referral_message_draft", "interview_topics", "red_flags")},
     }
@@ -113,13 +120,19 @@ def build_payload(jobs: list[Job], meta: dict[str, Any], now: datetime | None = 
     chosen = select_jobs(jobs)
     picks = apply_next(chosen, n=20)
     due = follow_ups(jobs)
+    base = load_base()
+    gmail = meta.get("gmail") or {}
     return {
         "v": 1,
         "generated_at": now.isoformat(timespec="seconds"),
         "last_run": {k: v for k, v in (meta.get("last_run") or {}).items() if not isinstance(v, (list, dict))},
         "schedule": {"every_hours": 3, "minute_utc": 17},  # mirrors the cron in .github/workflows/scan.yml
         "runs": (meta.get("runs") or [])[-56:],
-        "jobs": [compact(j) for j in chosen],
+        "jobs": [compact(j, base) for j in chosen],
+        "resume": public_base(base),
+        "videos": (meta.get("videos") or [])[:36], "videos_at": meta.get("videos_at"),
+        "gmail": {"last_sync": gmail.get("last_sync"), "stats": gmail.get("last_stats") or {},
+                  "review": (gmail.get("review") or [])[-12:]},
         "apply_next": [j.id for j in picks],
         "follow_ups": [{"id": j.id, "since": (last_status_change(j) or now).isoformat(timespec="seconds")} for j in due],
         "analytics": analytics(jobs, meta.get("daily") or {}, now),
@@ -141,7 +154,7 @@ def assert_publishable(dist: Path = DIST) -> None:
     blob = json.loads((dist / "data/jobs.enc.json").read_text(encoding="utf-8"))
     if set(blob) != {"v", "salt", "iv", "iters", "ct"}:
         raise RuntimeError("jobs.enc.json is not in the encrypted format")
-    for name in files:
+    for name in files - FONTS:
         text = (dist / name).read_text(encoding="utf-8", errors="ignore")
         if re.search(r"[A-Za-z0-9._%+-]+@gmail\.com|\+91[- ]?\d{10}", text):
             raise RuntimeError(f"{name} contains contact details")
@@ -155,6 +168,7 @@ def export(jobs: list[Job], meta: dict[str, Any], passphrase: str, dist: Path = 
     if dist.exists():
         shutil.rmtree(dist)
     (dist / "data").mkdir(parents=True)
+    (dist / "fonts").mkdir()
     for name in PUBLIC_FILES - {"data/jobs.enc.json"}:
         shutil.copy2(DASHBOARD_SRC / name, dist / name)
     out = dist / "data" / "jobs.enc.json"

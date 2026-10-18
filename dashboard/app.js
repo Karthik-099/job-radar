@@ -9,11 +9,14 @@
   const STATUSES = ["new", "applied", "shortlisted", "interview", "offer", "rejected", "ignored"];
   const LABEL = { new: "New", applied: "Applied", shortlisted: "Shortlisted", interview: "Interview",
     offer: "Offer", rejected: "Rejected", ignored: "Hidden" };
+  // "You already applied" (any outcome): such a role is never shown again as a new job, under any city or board.
+  const APPLIED = new Set(["applied", "shortlisted", "interview", "offer", "rejected"]);
   const STAGE_VAR = { new: "--st-new", applied: "--st-applied", shortlisted: "--st-shortlisted", interview: "--st-interview",
     offer: "--st-offer", rejected: "--st-rejected", ignored: "--st-new" };
   const REGION = { india: "India", remote: "Remote", abroad: "Abroad", unknown: "Unclear" };
   const LOCK_AFTER_MS = 15 * 60 * 1000;
-  const SYNC_DEBOUNCE_MS = 90 * 1000;
+  const SYNC_DEBOUNCE_MS = 60 * 1000;
+  const RESEND_MS = 10 * 60 * 1000; // a change GitHub hasn't applied yet is sent again after this
   const LS = { local: "jr.local.v1", salt: "jr.salt.v1", theme: "jr.theme" };
   const DAY = 86400000;
 
@@ -22,7 +25,7 @@
     local: { overrides: {}, token: "", repo: "", goal: 5, lastSync: null, lastSyncError: "" },
     view: "today", tableLimit: 100, sort: { key: "prio", dir: -1 }, showIgnored: false,
     filters: { q: "", status: "open", region: "", posted: "", minScore: "", source: "", hideClosed: true, target: false },
-    lastActive: Date.now(), syncTimer: null, failed: 0,
+    lastActive: Date.now(), syncTimer: null, failed: 0, appliedRk: new Set(),
   };
 
   // ------------------------------------------------------------------ tiny DOM helpers (textContent only)
@@ -102,14 +105,24 @@
     render();
     toast(`${LABEL[status]}: ${job.title}`);
   }
+  // A local change stays here until the published data shows it (or something newer), then it is dropped.
   function pruneSyncedOverrides() {
     for (const [id, o] of Object.entries(S.local.overrides)) {
       const job = S.byId.get(id);
-      if (!job) continue;
-      if ((job.history || []).some((h) => h.status === o.status && h.at >= o.at.slice(0, 19))) delete S.local.overrides[id];
+      if (!job) { if (Date.now() - (parse(o.at) || 0) > 3 * DAY) delete S.local.overrides[id]; continue; }
+      const stamp = o.at.slice(0, 19);
+      const h = job.history || [];
+      const applied = h.some((x) => x.status === o.status && x.at.slice(0, 19) >= stamp);
+      const newer = lastServerChange(job).slice(0, 19) > stamp;
+      // Already in that state on the server (e.g. you changed it and back before it synced): nothing left to send.
+      const lastNote = (h.filter((x) => x.note).slice(-1)[0] || {}).note || "";
+      const same = job.status === o.status && (o.note || "") === lastNote;
+      if (applied || newer || same) delete S.local.overrides[id];
     }
   }
-  const pendingChanges = () => Object.entries(S.local.overrides).filter(([, o]) => !o.sent);
+  const unconfirmed = () => Object.entries(S.local.overrides);
+  // Due to send: never sent, or sent a while ago and still not in the published data (the run was dropped).
+  const pendingChanges = () => unconfirmed().filter(([, o]) => !o.sent || Date.now() - (o.sentAt || 0) > RESEND_MS);
 
   // Applications per local day: server history plus unsynced local changes.
   function appliedDays() {
@@ -125,6 +138,21 @@
       }
     }
     return days;
+  }
+  // Funnel from what this browser knows (server history + unsynced marks), so every tile agrees with "Applied today".
+  function funnel() {
+    const ever = (j, st) => statusOf(j) === st || (j.history || []).some((h) => h.status === st);
+    const appliedJobs = S.jobs.filter((j) => APPLIED.has(statusOf(j)) || ever(j, "applied"));
+    const f = { tracked: S.jobs.length, applied: appliedJobs.length, responded: 0, shortlisted: 0, interviews: 0, offers: 0, rejected: 0 };
+    for (const j of appliedJobs) {
+      const st = statusOf(j);
+      if (["shortlisted", "interview", "offer", "rejected"].includes(st)) f.responded += 1;
+      if (["shortlisted", "interview", "offer"].includes(st) || ever(j, "shortlisted")) f.shortlisted += 1;
+      if (["interview", "offer"].includes(st) || ever(j, "interview")) f.interviews += 1;
+      if (st === "offer") f.offers += 1;
+      if (st === "rejected") f.rejected += 1;
+    }
+    return f;
   }
   function streak(days) {
     let n = 0;
@@ -179,6 +207,8 @@
     S.byId = new Map(S.jobs.map((j) => [j.id, j]));
     pruneSyncedOverrides();
     if (!S.local.repo) S.local.repo = guessRepo();
+    if (S.localKey) saveLocal();
+    if (pendingChanges().length) scheduleSync(); // e.g. marks a cancelled run dropped: send them again
   }
   async function refresh() {
     try {
@@ -259,10 +289,13 @@
   function flushSync() { if (S.local.token && pendingChanges().length) sync(true); }
   async function sync(keepalive) {
     clearTimeout(S.syncTimer);
-    const pending = pendingChanges();
-    if (!pending.length || !S.local.token) return renderSyncPill();
+    if (!pendingChanges().length || !S.local.token) return renderSyncPill();
     if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(S.local.repo)) { S.local.lastSyncError = "Set the repository in Settings"; return renderSyncPill(); }
-    const changes = pending.slice(0, 150).map(([id, o]) => ({ id, status: o.status, at: o.at, note: o.note || undefined }));
+    // Send every unconfirmed change, not only new ones: GitHub cancels a queued run when a newer one arrives,
+    // so the newest dispatch must carry everything. The server ignores repeats and stale changes.
+    const changes = unconfirmed().sort((a, b) => (a[1].at < b[1].at ? 1 : -1)).slice(0, 150)
+      .map(([id, o]) => ({ id, status: o.status, at: o.at, note: o.note || undefined }));
+    while (changes.length > 1 && JSON.stringify(changes).length > 60000) changes.pop(); // GitHub input limit ~65 KB
     try {
       const resp = await fetch(`https://api.github.com/repos/${S.local.repo}/actions/workflows/update-status.yml/dispatches`, {
         method: "POST", keepalive,
@@ -270,7 +303,8 @@
         body: JSON.stringify({ ref: "prod", inputs: { changes: JSON.stringify(changes) } }),
       });
       if (resp.status !== 204) throw new Error(resp.status === 401 || resp.status === 403 ? "Token rejected" : `GitHub said ${resp.status}`);
-      for (const c of changes) if (S.local.overrides[c.id]) S.local.overrides[c.id].sent = true;
+      const now = Date.now();
+      for (const c of changes) if (S.local.overrides[c.id]) Object.assign(S.local.overrides[c.id], { sent: true, sentAt: now });
       S.local.lastSync = new Date().toISOString();
       S.local.lastSyncError = "";
       if (!keepalive) toast("Saved to GitHub. Other devices show it in about 2-3 minutes (press Refresh there).");
@@ -282,11 +316,13 @@
   }
   function renderSyncPill() {
     const pill = $("#sync-pill");
-    const n = pendingChanges().length;
+    const n = unconfirmed().length;
+    const due = pendingChanges().length;
     pill.className = "pill";
-    if (!S.local.token) { pill.textContent = n ? `${n} saved on this device` : "Saved on this device"; return; }
+    if (!S.local.token) { pill.textContent = n ? `${n} saved on this device only` : "Saved on this device"; if (n) pill.classList.add("pending"); return; }
     if (S.local.lastSyncError) { pill.textContent = `Sync: ${S.local.lastSyncError}`; pill.classList.add("pending"); return; }
-    if (n) { pill.textContent = `${n} change${n > 1 ? "s" : ""} to sync`; pill.classList.add("pending"); return; }
+    if (due) { pill.textContent = `${due} change${due > 1 ? "s" : ""} to sync`; pill.classList.add("pending"); return; }
+    if (n) { pill.textContent = `${n} saving to GitHub…`; pill.classList.add("busy"); pill.title = "Sent; appears in the data after the next rebuild (2-3 min). Re-sent automatically if it doesn't."; return; }
     pill.textContent = "Synced";
     pill.classList.add("ok");
   }
@@ -303,14 +339,20 @@
     document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === S.view)));
     const gen = S.data.generated_at;
     $("#updated").textContent = `Updated ${agoLabel(gen) || "-"} · ${fmtInt(S.jobs.length)} jobs`;
+    S.appliedRk = new Set(S.jobs.filter((j) => APPLIED.has(statusOf(j)) && j.rk).map((j) => j.rk));
     renderSyncPill();
     const view = $("#view");
     view.replaceChildren();
-    ({ today: renderToday, board: renderBoard, jobs: renderTable, insights: renderInsights, settings: renderSettings })[S.view](view);
+    // Animate only when the tab changes, never on re-renders after a click (that would flicker).
+    view.classList.remove("enter");
+    if (S.renderedView !== S.view) { void view.offsetWidth; view.classList.add("enter"); S.renderedView = S.view; }
+    ({ today: renderToday, board: renderBoard, jobs: renderTable, learn: renderLearn, insights: renderInsights, settings: renderSettings })[S.view](view);
   }
 
   // ------------------------------------------------------------------ shared job bits
-  const isOpen = (j) => !["ignored", "rejected", "offer"].includes(statusOf(j)) && !(j.flags || []).includes("closed");
+  // Same role (company + title, any city/board) as one you already applied to.
+  const sameRoleApplied = (j) => statusOf(j) === "new" && !!j.rk && S.appliedRk.has(j.rk);
+  const isOpen = (j) => !["ignored", "rejected", "offer"].includes(statusOf(j)) && !(j.flags || []).includes("closed") && !sameRoleApplied(j);
   function scoreBadge(j) {
     const s = j.score;
     const cls = s == null ? "lo" : s >= 7.5 ? "hi" : s >= 5 ? "mid" : "lo";
@@ -321,6 +363,10 @@
     const out = [];
     const f = j.flags || [];
     if (j.target) out.push(el("span", { class: "chip target" }, "Target company"));
+    if (j.yc) out.push(el("span", { class: "chip yc", title: "Y Combinator company" }, "YC"));
+    if (sameRoleApplied(j)) out.push(el("span", { class: "chip have", title: "You applied to this same role (another city or job board)" }, "Already applied (same role)"));
+    const viaGmail = (j.history || []).filter((h) => h.status).slice(-1)[0];
+    if (viaGmail && viaGmail.via === "gmail" && viaGmail.status === j.status) out.push(el("span", { class: "chip mail", title: viaGmail.note || "" }, "✉ Updated from Gmail"));
     if (f.includes("closed")) out.push(el("span", { class: "chip flag" }, "Closed"));
     if (f.includes("reposted")) out.push(el("span", { class: "chip warn", title: "Re-posted several times: may be an evergreen or ghost listing" }, "Re-posted often"));
     if (f.includes("no_visa_info")) out.push(el("span", { class: "chip warn" }, "Visa not mentioned"));
@@ -434,7 +480,8 @@
     const closing = open.filter((j) => { const t = parse(j.expires); return t && t > Date.now() && t - Date.now() < 5 * DAY; })
       .sort((a, b) => parse(a.expires) - parse(b.expires));
     const follow = (S.data.follow_ups || []).map((f) => S.byId.get(f.id)).filter((j) => j && statusOf(j) === "applied");
-    const a = S.data.analytics?.funnel || {};
+    const a = funnel();
+    const review = (S.data.gmail?.review || []).filter((r) => Date.now() - (parse(r.at) || 0) < 14 * DAY);
 
     root.append(scannerPanel(),
       el("div", { class: "tiles" },
@@ -446,7 +493,13 @@
       section("Apply next", "best fit × location × freshness, max 3 per company", cardsOrEmpty(picks.slice(0, 12), "Nothing waiting. New jobs arrive every 3 hours.")),
       section("Fresh: posted in the last 24 hours", "newest first", cardsOrEmpty(fresh.slice(0, 24), "No new postings in the last 24 hours yet.")),
       closing.length ? section("Closing soon", "apply before the deadline", cardsOrEmpty(closing.slice(0, 12), "")) : null,
-      follow.length ? section("Follow up", "applied a week ago, no update: ping the recruiter or a referrer", cardsOrEmpty(follow.slice(0, 12), "")) : null);
+      follow.length ? section("Follow up", "applied a week ago, no update: ping the recruiter or a referrer", cardsOrEmpty(follow.slice(0, 12), "")) : null,
+      review.length ? section("Check by hand", "a company you applied to emailed you, but it wasn't clear which job: nothing was changed",
+        el("div", { class: "review-list" }, review.slice().reverse().map((r) => el("div", { class: "review" },
+          el("div", {}, el("strong", {}, r.company), el("span", { class: `chip stage st-${r.outcome}` }, el("i", { class: "dot" }), LABEL[r.outcome] || r.outcome), el("span", { class: "sub" }, agoLabel(r.at))),
+          el("div", { class: "subject" }, r.subject), el("div", { class: "sub" }, r.why),
+          el("div", { class: "card-actions" }, (r.jobs || []).map((id) => S.byId.get(id)).filter(Boolean)
+            .map((j) => el("button", { class: "btn small", type: "button", onclick: () => openDrawer(j) }, `${j.title} ↗`))))))) : null);
   }
 
   // ------------------------------------------------------------------ Board (kanban)
@@ -454,7 +507,7 @@
     const cols = STATUSES.filter((s) => s !== "ignored" || S.showIgnored);
     const groups = Object.fromEntries(cols.map((s) => [s, []]));
     for (const j of S.jobs) { const s = statusOf(j); if (groups[s]) groups[s].push(j); }
-    groups.new = groups.new.filter((j) => !(j.flags || []).includes("closed")).sort((a, b) => (b.prio || 0) - (a.prio || 0)).slice(0, 60);
+    groups.new = groups.new.filter((j) => !(j.flags || []).includes("closed") && !sameRoleApplied(j)).sort((a, b) => (b.prio || 0) - (a.prio || 0)).slice(0, 60);
     const toggle = el("label", {}, el("input", { type: "checkbox", checked: S.showIgnored, onchange: (e) => { S.showIgnored = e.target.checked; render(); } }), " Show hidden");
     const board = el("div", { class: "board" }, cols.map((s) => {
       const col = el("div", { class: `col st-${s}`, dataset: { status: s }, "aria-label": `${LABEL[s]} column` },
@@ -507,6 +560,7 @@
       if (f.source && j.source !== f.source) return false;
       if (f.hideClosed && (j.flags || []).includes("closed")) return false;
       if (f.target && !j.target) return false;
+      if (f.yc && !j.yc) return false;
       if (q && !`${j.title} ${j.company} ${j.location}`.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -518,13 +572,15 @@
       el("select", { "aria-label": label, onchange: (e) => { f[key] = e.target.value; S.tableLimit = 100; render(); } },
         options.map(([v, t]) => el("option", { value: v, selected: f[key] === v }, t))));
     const search = el("input", { type: "search", placeholder: "Search title, company, city", value: f.q, "aria-label": "Search jobs" });
-    search.addEventListener("input", () => { f.q = search.value; S.tableLimit = 100; drawRows(); });
+    let typing = null;
+    search.addEventListener("input", () => { clearTimeout(typing); typing = setTimeout(() => { f.q = search.value; S.tableLimit = 100; drawRows(); }, 120); });
     const filters = el("div", { class: "filters" }, search,
       sel("status", "Status", [["open", "Not applied yet"], ["", "Any status"], ...STATUSES.map((s) => [s, LABEL[s]])]),
       sel("region", "Region", [["", "All regions"], ["india", "India"], ["remote", "Remote"], ["abroad", "Abroad"]]),
       sel("posted", "Posted", [["", "Any time"], ["24h", "Last 24h"], ["3d", "Last 3 days"], ["7d", "Last 7 days"], ["30d", "Last 30 days"]]),
       sel("minScore", "Minimum fit", [["", "Any fit"], ["5", "Fit 5+"], ["6", "Fit 6+"], ["7", "Fit 7+"], ["8", "Fit 8+"]]),
       sel("source", "Source", [["", "All sources"], ...sources.map((s) => [s, s])]),
+      el("label", {}, el("input", { type: "checkbox", checked: f.yc, onchange: (e) => { f.yc = e.target.checked; render(); } }), "YC only"),
       el("label", {}, el("input", { type: "checkbox", checked: f.hideClosed, onchange: (e) => { f.hideClosed = e.target.checked; render(); } }), "Hide closed"),
       el("label", {}, el("input", { type: "checkbox", checked: f.target, onchange: (e) => { f.target = e.target.checked; render(); } }), "Target companies"));
     const thead = el("thead", {}, el("tr", {}, COLUMNS.map(([key, label, , , cls]) => {
@@ -555,6 +611,119 @@
     root.append(filters, count, el("div", { class: "table-wrap" }, el("table", {}, thead, tbody)), more);
   }
 
+  // ------------------------------------------------------------------ referral message (your format, max 5 lines)
+  const GENERIC_SKILLS = new Set(["Containerization", "Container Orchestration", "Microservices", "Machine Learning",
+    "Infrastructure as Code", "Continuous Integration", "Continuous Delivery", "Cost Optimization", "Capacity Planning", "Monitoring", "Automation", "Dashboards", "Compliance", "Encryption", "Alerting", "Linux",
+    "Git", "YAML", "Bash", "DNS", "SSH", "TCP/IP", "SSL/TLS", "Troubleshooting", "Networking", "SQL", "NoSQL", "IaC", "CI/CD Pipelines"]);
+  function topSkills(j, n = 3) {
+    const have = (j.tl?.have || []).filter((x) => !GENERIC_SKILLS.has(x));
+    const ai = (j.ai?.matched_skills || []).map((x) => x.replace(/\b\w/g, (c) => c.toUpperCase()));
+    const out = [...new Set([...have, ...ai, "Kubernetes", "Terraform", "AWS"])].slice(0, n);
+    return out.length > 1 ? `${out.slice(0, -1).join(", ")} and ${out[out.length - 1]}` : out[0];
+  }
+  function referralMessage(j) {
+    const r = S.data.resume || {}, me = r.intro || {};
+    const hl = (r.highlights || [])[j.tl?.hl ?? 0]?.text;
+    const role = j.ref ? `the ${j.title} role at ${j.company} (Job ID: ${j.ref})` : `the ${j.title} role at ${j.company}`;
+    return [
+      "Hello [Name],",
+      `I am ${me.first_name || "Karthik"} from ${me.city || "Bangalore, India"}, currently working as a ${me.title || "DevOps Engineer"} at ${me.company || "InCruiter"}.`,
+      `I came across ${role} and would be grateful if you could refer me${j.ref ? "." : `: ${j.url}`}`,
+      `I have hands-on experience with ${topSkills(j)}${hl ? `, and I ${hl}` : ""}.`,
+      "I have attached my resume for your reference. Thank you for your time.",
+    ].join("\n");
+  }
+  // LinkedIn connection notes are capped at 300 characters.
+  function referralShort(j) {
+    const me = S.data.resume?.intro || {};
+    const id = j.ref ? ` (Job ID: ${j.ref})` : "";
+    let msg = `Hi [Name], I'm ${me.first_name || "Karthik"}, a ${me.title || "DevOps Engineer"} at ${me.company || "InCruiter"} in Bangalore. I'm applying for the ${j.title} role at ${j.company}${id} and would really appreciate a referral. Happy to share my resume. Thank you.`;
+    if (msg.length > 300) msg = msg.replace(` the ${j.title} role`, " this role");
+    return msg.slice(0, 300);
+  }
+  async function copy(text, what) {
+    try { await navigator.clipboard.writeText(text); toast(`${what} copied`); } catch (_) { toast("Copy failed: select the text instead"); }
+  }
+
+  // ------------------------------------------------------------------ tailored resume (printed to PDF in your layout)
+  // **bold** markers -> <strong>, built with text nodes only (resume text is data, never HTML).
+  function rich(text) {
+    return String(text || "").split(/(\*\*[^*]+\*\*)/).filter(Boolean)
+      .map((part) => (part.startsWith("**") ? el("strong", {}, part.slice(2, -2)) : document.createTextNode(part)));
+  }
+  const ordered = (items, order) => (order && order.length === items.length ? order.map((i) => items[i]) : items);
+  function resumeNode(j) {
+    const r = S.data.resume || {};
+    const t = (j && j.tl) || {};
+    const c = r.contact || {};
+    const bits = [c.email, c.phone, c.location].filter(Boolean).map((x) => document.createTextNode(x));
+    for (const l of c.links || []) bits.push(el("a", { href: l.url }, l.label));
+    const contact = el("div", { class: "r-contact" }, bits.flatMap((b, i) => (i ? [document.createTextNode(" | "), b] : [b])));
+    const sec = (title, ...kids) => el("section", {}, el("h2", {}, title), ...kids);
+    const profile = (r.profile || {})[t.fam] || (r.profile || {}).default || "";
+    const skills = (r.skills || []).map((line, i) => {
+      const items = [...ordered(line.items || [], (t.skills || [])[i]), ...((t.add || {})[i] || [])];
+      return el("p", { class: "r-skill" }, el("strong", {}, `${line.label}: `), items.join(", "));
+    });
+    const exp = (r.experience || []).map((x, i) => el("div", { class: "r-role" },
+      el("div", { class: "r-row" }, el("strong", {}, [x.title, x.company, x.location].filter(Boolean).join(", ")), el("strong", {}, x.dates)),
+      x.subtitle ? el("div", { class: "r-sub" }, x.subtitle) : null,
+      el("ul", {}, ordered(x.bullets || [], (t.exp || [])[i]).map((b) => el("li", {}, rich(b))))));
+    const gh = (c.links || []).find((l) => /github/i.test(l.label))?.url;
+    const projects = el("ul", {}, ordered(r.projects || [], t.proj).map((pr) => el("li", {},
+      el("strong", {}, `${pr.name} (${pr.year})`), " ", pr.link || gh ? el("a", { href: pr.link || gh }, "[GitHub]") : null, ": ", rich(pr.text))));
+    const edu = (r.education || []).map((e) => el("div", { class: "r-role" },
+      el("div", { class: "r-row" }, el("strong", {}, e.school), el("strong", {}, e.dates)), el("div", {}, e.degree)));
+    return el("article", { class: "resume" },
+      el("h1", {}, r.name || ""), contact, c.tagline ? el("div", { class: "r-tag" }, c.tagline) : null,
+      sec("Profile", el("p", {}, profile)), sec("Skills", ...skills), sec("Work Experience", ...exp),
+      sec("Projects", projects), sec("Awards & Certifications", el("ul", {}, (r.awards || []).map((a) => el("li", {}, rich(a))))),
+      sec("Education", ...edu));
+  }
+  // Fit on one A4 page: shrink the font in small steps until it fits (measured off-screen at print width).
+  // Starts at your PDF's size (about 10pt) and steps down only if needed; never below ~8pt.
+  function fitOnePage(node) {
+    const pagePx = ((297 - 2 * 9) * 96) / 25.4 - 4;
+    let size = 13.4;
+    node.style.fontSize = `${size}px`;
+    while (node.scrollHeight > pagePx && size > 10.6) { size -= 0.2; node.style.fontSize = `${size.toFixed(1)}px`; }
+  }
+  async function printResume(j) {
+    const r = S.data.resume;
+    if (!r || !r.name) { toast("No resume data yet: it appears after the next scan."); return; }
+    const root = $("#print-root");
+    const node = resumeNode(j);
+    root.replaceChildren(node);
+    root.classList.add("measuring");
+    try { await Promise.all(["400", "700", "italic 400"].map((w) => document.fonts.load(`${w} 13px "Lato JR"`))); } catch (_) { /* fallback font */ }
+    fitOnePage(node);
+    root.classList.remove("measuring");
+    const prevTitle = document.title;
+    const company = j ? `_${j.company.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "")}` : "";
+    document.title = `${(r.name || "Resume").replace(/\s+/g, "_")}_Resume${company}`; // the PDF's file name
+    const done = () => { document.title = prevTitle; root.replaceChildren(); removeEventListener("afterprint", done); };
+    addEventListener("afterprint", done);
+    setTimeout(() => window.print(), 50);
+  }
+  function tailorPanel(j) {
+    const t = j.tl || {};
+    if (!S.data.resume?.name) return el("p", { class: "reasons" }, "Tailored resume appears after the next scan.");
+    const meter = (label, v, cls) => {
+      const bar = el("div", { class: `meter ${cls}` }, el("div"));
+      bar.firstChild.style.width = `${v ?? 0}%`;
+      return el("div", { class: "meter-row" }, el("span", {}, label), bar, el("strong", {}, v == null ? "–" : `${v}%`));
+    };
+    const fam = { default: "your standard profile", sre: "SRE wording", platform: "platform wording", cloud: "cloud wording", mlops: "MLOps wording", devsecops: "DevSecOps wording" }[t.fam] || "your standard profile";
+    return el("div", { class: "tailor" },
+      t.before != null ? el("div", { class: "meters" }, meter("Your resume", t.before, "before"), meter("Tailored", t.after, "after")) :
+        el("p", { class: "reasons" }, "This posting lists few keywords, so the resume is reordered only."),
+      el("p", { class: "reasons" }, `Keyword match with this job (what online ATS checkers measure). Bullets most relevant to this job come first, profile uses ${fam}. Same layout, one page, nothing invented.`),
+      t.added?.length ? [el("div", { class: "sub" }, "Added to skills (your resume already proves these):"), el("div", { class: "chips" }, t.added.map((x) => el("span", { class: "chip have" }, `+ ${x}`)))] : null,
+      t.missing?.length ? [el("div", { class: "sub" }, "Asked for but not on your resume (not added):"), el("div", { class: "chips" }, t.missing.map((x) => el("span", { class: "chip miss" }, x)))] : null,
+      el("div", { class: "status-row" }, el("button", { class: "btn primary", type: "button", onclick: () => printResume(j) }, "⬇ Download tailored resume (PDF)")),
+      el("p", { class: "reasons" }, "In the print window choose \"Save as PDF\", paper A4, margins Default, and turn off \"Headers and footers\"."));
+  }
+
   // ------------------------------------------------------------------ drawer (job detail + apply kit)
   function openDrawer(j) {
     const rootEl = $("#drawer-root");
@@ -574,9 +743,8 @@
       saveLocal(); scheduleSync(); toast("Note saved");
     };
     note.addEventListener("change", saveNote);
-    const copyBtn = el("button", { class: "btn small", type: "button", onclick: async () => {
-      try { await navigator.clipboard.writeText(ai.referral_message_draft || ""); toast("Referral message copied"); } catch (_) { toast("Copy failed: select the text instead"); }
-    } }, "Copy message");
+    const message = referralMessage(j);
+    const short = referralShort(j);
     const drawer = el("aside", { class: "drawer", role: "dialog", "aria-modal": "true", "aria-label": `${j.title} at ${j.company}` },
       el("button", { class: "btn small close", type: "button", onclick: close, "aria-label": "Close" }, "✕"),
       el("h2", {}, j.title),
@@ -590,8 +758,13 @@
       ai.matched_skills?.length ? [el("h3", {}, "You match"), el("div", { class: "chips" }, ai.matched_skills.map((s) => el("span", { class: "chip have" }, s)))] : null,
       ai.missing_skills?.length ? [el("h3", {}, "Gaps to address"), el("div", { class: "chips" }, ai.missing_skills.map((s) => el("span", { class: "chip miss" }, s)))] : null,
       ai.red_flags?.length ? [el("h3", {}, "Watch out"), list(ai.red_flags)] : null,
-      ai.tailoring_tips?.length ? [el("h3", {}, "Tailor your resume"), list(ai.tailoring_tips, true)] : null,
-      ai.referral_message_draft ? [el("h3", {}, "Referral message"), el("div", { class: "referral" }, ai.referral_message_draft), el("div", { class: "status-row" }, copyBtn, extLink("Find a referrer ↗", people, "btn small"))] : null,
+      el("h3", {}, "Tailored resume"), tailorPanel(j),
+      ai.tailoring_tips?.length ? [el("h3", {}, "Tips to mention in interviews"), list(ai.tailoring_tips, true)] : null,
+      el("h3", {}, "Referral message"), el("div", { class: "referral" }, message),
+      el("div", { class: "status-row" }, el("button", { class: "btn small primary", type: "button", onclick: () => copy(message, "Referral message") }, "Copy message"),
+        el("button", { class: "btn small", type: "button", title: short, onclick: () => copy(short, "Short note (fits LinkedIn's 300 characters)") }, "Copy short note"),
+        extLink("Find a referrer ↗", people, "btn small")),
+      el("p", { class: "reasons" }, "Replace [Name], attach the PDF above, and send it yourself. Nothing is ever sent or automated on LinkedIn."),
       ai.interview_topics?.length ? [el("h3", {}, "Interview prep"), list(ai.interview_topics, true)] : null,
       ai.method !== "llm" ? el("p", { class: "reasons" }, "AI apply kit appears after this job is scored by the AI (usually within a few runs).") : null,
       el("h3", {}, "Notes"), note,
@@ -739,13 +912,13 @@
   function renderInsights(root) {
     const an = S.data.analytics || {};
     const w = an.week || {};
-    const fu = an.funnel || {};
+    const fu = funnel();
     const delta = (w.new || 0) - (w.prev_new || 0);
     root.append(el("div", { class: "tiles" },
-      tile("New matches this week", fmtInt(w.new), `${delta >= 0 ? "+" : ""}${fmtInt(delta)} vs last week`),
+      tile("New matches this week", fmtInt(w.new), w.prev_new ? `${delta >= 0 ? "+" : ""}${fmtInt(delta)} vs last week` : "first week of data: no comparison yet"),
       tile("Strong fits this week", fmtInt(w.good), "fit 6+ of 10"),
       tile("Applications", fmtInt(fu.applied), "all time"),
-      tile("Response rate", fu.applied ? `${Math.round((100 * (fu.responded || 0)) / fu.applied)}%` : "–", "shortlisted, interview, offer or rejection"),
+      tile("Response rate", fu.applied ? `${Math.round((100 * (fu.responded || 0)) / fu.applied)}%` : "–", `${fmtInt(fu.responded)} replied (incl. ${fmtInt(fu.rejected)} rejections)`),
       tile("Interviews", fmtInt(fu.interviews), fu.applied ? `${Math.round((100 * (fu.interviews || 0)) / fu.applied)}% of applications` : ""),
       tile("Offers", fmtInt(fu.offers), "")));
 
@@ -775,7 +948,7 @@
       hbars("Your strongest selling points", "Share of this week's 6+ fit jobs that ask for skills you have",
         (an.strengths || []).map((s) => ({ label: s.skill, value: s.pct })), (i) => `${i.value}%`),
       momentumTable(an.momentum || []),
-      hbars("Application funnel", "All time", [
+      hbars("Application funnel", "All time, including marks still syncing", [
         { label: "Tracked", value: fu.tracked || 0 }, { label: "Applied", value: fu.applied || 0 },
         { label: "Shortlisted", value: fu.shortlisted || 0 }, { label: "Interviews", value: fu.interviews || 0 }, { label: "Offers", value: fu.offers || 0 },
       ], (i) => fmtInt(i.value)),
@@ -791,6 +964,34 @@
         el("td", {}, r.company), el("td", { class: "num" }, fmtInt(r.this_week)), el("td", { class: "num" }, fmtInt(r.last_week)),
         el("td", {}, r.this_week > r.last_week ? "↑ hiring more" : r.this_week < r.last_week ? "↓ slower" : "steady")))))));
     return box;
+  }
+
+  // ------------------------------------------------------------------ Learn (recent videos)
+  function renderLearn(root) {
+    const vids = S.data.videos || [];
+    const topics = [...new Set(vids.map((v) => v.topic))];
+    if (!S.learnTopic || (S.learnTopic !== "all" && !topics.includes(S.learnTopic))) S.learnTopic = "all";
+    const gaps = (S.data.analytics?.skill_gap || []).slice(0, 5).map((g) => g.skill);
+    const shown = vids.filter((v) => S.learnTopic === "all" || v.topic === S.learnTopic);
+    const views = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e3 ? `${Math.round(n / 1e3)}K` : String(n || 0));
+    const pill = (key, text) => el("button", { type: "button", class: "seg", "aria-pressed": String(S.learnTopic === key),
+      onclick: () => { S.learnTopic = key; render(); } }, text);
+    root.append(
+      el("div", { class: "learn-head" },
+        el("div", {}, el("h2", {}, "Learn: what's new in your field"),
+          el("p", { class: "sub" }, `Recent videos from ${new Set(vids.map((v) => v.channel)).size || "top"} DevOps, cloud and AI channels, ranked by your stack and skill gaps`,
+            S.data.videos_at ? ` · updated ${agoLabel(S.data.videos_at)}` : "")),
+        gaps.length ? el("div", { class: "chips" }, el("span", { class: "sub" }, "Your gaps this week:"), gaps.map((g) => el("span", { class: "chip miss" }, g))) : null),
+      el("div", { class: "segs", role: "group", "aria-label": "Topic" }, pill("all", `All (${vids.length})`),
+        topics.map((t) => pill(t, `${t} (${vids.filter((v) => v.topic === t).length})`))),
+      shown.length ? el("div", { class: "videos" }, shown.map((v) => {
+        const img = el("img", { src: `https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/mqdefault.jpg`, alt: "", loading: "lazy", width: "320", height: "180" });
+        return el("a", { class: "video", href: `https://www.youtube.com/watch?v=${encodeURIComponent(v.id)}`, target: "_blank", rel: "noopener noreferrer" },
+          el("div", { class: "thumb" }, img, v.gap ? el("span", { class: "gap-badge" }, `fills gap: ${v.gap}`) : null),
+          el("div", { class: "v-body" }, el("div", { class: "v-title" }, v.title),
+            el("div", { class: "v-meta" }, el("span", {}, v.channel), el("span", {}, `${views(v.views)} views`), el("span", {}, agoLabel(v.published))),
+            el("span", { class: "chip" }, v.topic)));
+      })) : el("div", { class: "empty" }, "Videos appear after the next scan (refreshed about twice a day)."));
   }
 
   // ------------------------------------------------------------------ Settings
@@ -821,6 +1022,8 @@
       const a = el("a", { download: "job-radar-statuses.json" }); a.href = URL.createObjectURL(blob); a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     };
+    const gm = S.data.gmail || {};
+    const scriptUrl = new URL("autofill.user.js", location.href).href;
     root.append(el("div", { class: "settings" },
       el("div", { class: "box" }, el("h3", {}, "Daily goal"), el("p", {}, "Applications per day. Drives the Today progress bar, streak and the goal line in Insights."),
         goal, el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: saveSettings }, "Save"))),
@@ -833,6 +1036,17 @@
           el("button", { class: "btn", type: "button", onclick: () => sync(false), disabled: !S.local.token }, `Sync now (${pendingChanges().length})`),
           S.local.token ? el("button", { class: "btn", type: "button", onclick: async () => { S.local.token = ""; await saveLocal(); render(); } }, "Remove token") : null),
         status),
+      el("div", { class: "box" }, el("h3", {}, "Gmail status sync (read-only)"),
+        el("p", {}, gm.last_sync
+          ? `Last checked ${agoLabel(gm.last_sync)}: read ${gm.stats?.read ?? 0} hiring emails, updated ${gm.stats?.updated ?? 0} jobs, skipped ${gm.stats?.skipped ?? 0}.`
+          : "Not connected yet. See README, \"Gmail status sync\"."),
+        el("p", {}, "Only jobs you already marked Applied / Shortlisted / Interview can change, and only when the email clearly matches that job. The token is read-only: it cannot delete, move, label or send anything.")),
+      el("div", { class: "box" }, el("h3", {}, "Resume"),
+        el("p", {}, "Every job has a tailored version in its details. This prints your standard resume in the same layout (edit profile/resume.yaml to change it)."),
+        el("div", { class: "row" }, el("button", { class: "btn", type: "button", onclick: () => printResume(null) }, "⬇ Download standard resume (PDF)"))),
+      el("div", { class: "box" }, el("h3", {}, "Autofill for Greenhouse, Lever and Ashby"),
+        el("p", {}, "Install Tampermonkey in your browser, then open the link below and click Install. On an application form, click \"⚡ Fill my details\". It never submits, never uploads, and never runs on LinkedIn or job boards."),
+        el("div", { class: "row" }, extLink("Install autofill script ↗", scriptUrl, "btn primary"))),
       el("div", { class: "box" }, el("h3", {}, "Privacy"),
         el("p", {}, "Your passphrase never leaves this browser and is forgotten when you lock, close the tab, or after 15 minutes idle. The token above is saved here encrypted with your passphrase. \"Export my statuses\" downloads your list as a file. \"Clear this device\" removes the token and unsynced marks from this browser only."),
         el("div", { class: "row" }, el("button", { class: "btn", type: "button", onclick: exportMine }, "Export my statuses"),

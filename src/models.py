@@ -9,6 +9,7 @@ from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 STATUSES = ("new", "shortlisted", "applied", "interview", "offer", "rejected", "ignored")
+APPLIED_STATES = ("applied", "shortlisted", "interview", "offer", "rejected")  # you already applied
 
 # Query params that only track clicks and never identify a posting.
 _TRACKING_PARAMS = re.compile(r"^(utm_.*|ref|refid|src|source|trk|trackingid|gh_src|lever-source|from)$", re.I)
@@ -52,6 +53,52 @@ def normalize_url(url: str) -> str:
     return urlunsplit((parts.scheme.lower() or "https", parts.netloc.lower(), path, urlencode(sorted(query)), ""))
 
 
+# Trailing title segments that only say where/how the job is, never which role it is.
+_TITLE_NOISE = re.compile(
+    r"^(remote|hybrid|on-?site|onsite|wfh|work from home|full[- ]?time|part[- ]?time|contract|permanent|"
+    r"india|apac|emea|global|worldwide|anywhere|bangalore|bengaluru|pune|hyderabad|chennai|mumbai|delhi|ncr|"
+    r"gurgaon|gurugram|noida|kolkata|ahmedabad|kochi|req\w*|job id.*|r?-?\d[\w-]*)$", re.I)
+
+
+def role_title(title: str) -> str:
+    """'DevOps Engineer (SRE) - Bengaluru | Remote' -> 'devops engineer'. Level markers (I, II) are kept."""
+    value = re.sub(r"\([^)]*\)|\[[^\]]*\]", " ", title or "")
+    parts = [p.strip() for p in re.split(r"\s+[-–|/]\s+|,\s+", value) if p.strip()]
+    while len(parts) > 1 and _TITLE_NOISE.match(parts[-1]):
+        parts.pop()
+    return _norm_text(" ".join(parts))
+
+
+def role_key(company: str, title: str) -> str:
+    """Same role at the same company, whatever city, board or posting it appears under."""
+    return hashlib.sha1(f"{normalize_company(company)}|{role_title(title)}".encode("utf-8")).hexdigest()[:12]
+
+
+# Requisition ids companies use internally (what a referrer types into their referral portal).
+_REQ_IN_TEXT = re.compile(
+    r"\b(?:job|req(?:uisition)?|position|reference|vacancy|opening)\s*(?:id|no\.?|number|code|#)\s*[:#.]?\s*"
+    r"([A-Z]{0,6}[-_]?\d[\w-]{2,18})", re.I)
+_REQ_IN_URL = (
+    re.compile(r"greenhouse\.io/.*/jobs/(\d{5,})"),
+    re.compile(r"[?&]gh_jid=(\d{5,})"),
+    re.compile(r"myworkdayjobs\.com/.*_([A-Za-z]{0,6}-?\d{3,}[\w-]*?)(?:-\d)?(?:[/?#]|$)"),
+    re.compile(r"smartrecruiters\.com/[^/]+/(\d{9,})"),
+)
+
+
+def posting_ref(url: str, description: str = "") -> str:
+    """The employer's own job/requisition id when the posting states one, else ''. Board ids (Indeed jk,
+    Naukri, LinkedIn) are deliberately ignored: a referrer can't look those up."""
+    m = _REQ_IN_TEXT.search((description or "")[:6000])
+    if m and re.search(r"\d", m.group(1)):
+        return m.group(1).strip("-_.")
+    for rx in _REQ_IN_URL:
+        m = rx.search(url or "")
+        if m:
+            return m.group(1)
+    return ""
+
+
 def dedupe_key(company: str, title: str, location: str) -> str:
     raw = "|".join((normalize_company(company), _norm_text(title), normalize_location(location)))
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()
@@ -86,6 +133,8 @@ class Job:
     flags: list[str] = field(default_factory=list)  # warnings: local_language, non_english, ...
     scoring: dict[str, Any] = field(default_factory=dict)
     history: list[dict[str, Any]] = field(default_factory=list)
+    jd_terms: list[str] = field(default_factory=list)  # ATS keywords found in the full JD (see tailor.py)
+    ref: str = ""  # the employer's job/requisition id, when the posting states one
 
     def __post_init__(self) -> None:
         self.title = (self.title or "").strip()

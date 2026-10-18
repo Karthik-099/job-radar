@@ -1,4 +1,5 @@
 # Company career feeds. Generated/merged by `python -m src.discover`; safe to edit by hand.
+# yc: <batch> marks a Y Combinator company (badge + filter on the dashboard).
 # ats: greenhouse | lever | ashby | smartrecruiters (slug)  or  workday (url). enabled: false to pause.
 companies:
 - name: 1Password
@@ -9,6 +10,11 @@ companies:
   ats: lever
   slug: 360learning
   learned_from: indeed_world
+- name: Abacum
+  ats: ashby
+  slug: abacum
+  yc: Winter 2021
+  jobs_at_discovery: 16
 - name: ABB
   ats: workday
   url: https://abb.wd3.myworkdayjobs.com/External_Career_Page
@@ -17,6 +23,14 @@ companies:
   ats: smartrecruiters
   slug: AbbVie
   learned_from: indeed_world
+- name: Abnormal Security
+  ats: greenhouse
+  slug: abnormalsecurity
+  jobs_at_discovery: 86
+- name: Abridge
+  ats: ashby
+  slug: abridge
+  jobs_at_discovery: 43
 - name: Accelya Group
   ats: workday
   url: https://accelya.wd103.myworkdayjobs.com/Careers
@@ -24,12 +38,31 @@ companies:
 - name: Accenture
   ats: workday
   url: https://accenture.wd103.myworkdayjobs.com/AccentureCareers
+- name: Accord
+  ats: ashby
+  slug: accord
+  yc: Winter 2020
+  jobs_at_discovery: 5
 - name: Adobe
   ats: workday
   url: https://adobe.wd5.myworkdayjobs.com/external_experienced
 - name: Adyen
   ats: greenhouse
   slug: adyen
+- name: Affirm
+  ats: greenhouse
+  slug: affirm
+  jobs_at_discovery: 214
+- name: Agave
+  ats: ashby
+  slug: agave
+  yc: Winter 2022
+  jobs_at_discovery: 10
+- name: Agency
+  ats: greenhouse
+  slug: agency
+  yc: Winter 2022
+  jobs_at_discovery: 833
 - name: Agoda
   ats: greenhouse
   slug: agoda
@@ -37,6 +70,16 @@ companies:
   ats: lever
   slug: thinkahead
   learned_from: indeed
+- name: AIOS
+  ats: ashby
+  slug: aios
+  yc: Winter 2020
+  jobs_at_discovery: 18
+- name: AiPrise
+  ats: ashby
+  slug: aiprise
+  yc: Summer 2022
+  jobs_at_discovery: 18
 - name: Airbnb
   ats: greenhouse
   slug: airbnb
@@ -44,10 +87,18 @@ companies:
   ats: workday
   url: https://ag.wd3.myworkdayjobs.com/Airbus
   learned_from: indeed
+- name: Airbyte
+  ats: ashby
+  slug: airbyte
+  jobs_at_discovery: 13
 - name: Aircall
   ats: lever
   slug: aircall
   jobs_at_discovery: 77
+- name: Airtable
+  ats: greenhouse
+  slug: airtable
+  jobs_at_discovery: 4
 - name: Airwallex
   ats: ashby
   slug: airwallex
@@ -59,6 +110,20 @@ companies:
   ats: ashby
   slug: alan
   jobs_at_discovery: 125
+- name: Albedo
+  ats: greenhouse
+  slug: albedo
+  yc: Winter 2021
+  jobs_at_discovery: 5
+- name: Alchemy
+  ats: ashby
+  slug: alchemy
+  jobs_at_discovery: 22
+- name: Aleph
+  ats: lever
+  slug: aleph
+  yc: Summer 2021
+  jobs_at_discovery: 104
 - name: Aleph Alpha
   ats: ashby
   slug: alephalpha
@@ -71,6 +136,16 @@ companies:
   ats: smartrecruiters
   slug: allegro
   jobs_at_discovery: 1
+- name: Alpaca
+  ats: greenhouse
+  slug: alpaca
+  yc: Winter 2019
+  jobs_at_discovery: 69
+- name: Amplitude
+  ats: ashby
+  slug: amplitude
+  yc: Winter 2012
+  jobs_at_discovery: 39
 - name: ANALOG
   ats: ashby
   slug: analog
@@ -82,15 +157,117 @@ companies:
   ats: ashby
   slug: andela
   jobs_at_discovery: 16
+- name: Anima
+  ats: ashby
+  slug: anima
+  yc: Winter 2021
+  jobs_at_discovery: 8
+- name: Anthropic
+  ats: greenhouse
+  slug: anthropic
+  jobs_at_discovery: 655
 - name: Anyscale
   ats: ashby
   slug: anyscale
+- name: AON3D
+  ats: greenhouse
+  slug: aon3d
+  yc: Winter 2017
+  jobs_at_discovery: 3
+- name: Apollo GraphQL
+  ats: ashby
+  slug: apollo-graphql
+  jobs_at_discovery: 8
+- name: Apollo.io
+  ats: greenhouse
+  slug: apolloio
+  yc: Winter 2016
+  jobs_at_discovery: 56
+- name: Aptos Labs
+  ats: greenhouse
+  slug: aptoslabs
+  jobs_at_discovery: 7
+- name: Arista Networks
+  ats: smartrecruiters
+  slug: aristanetworks
+  jobs_at_discovery: 248
+- name: Arize AI
+  ats: greenhouse
+  slug: arizeai
+  jobs_at_discovery: 25
+- name: Arketa
+  ats: ashby
+  slug: arketa
+  yc: Summer 2020
+  jobs_at_discovery: 8
+- name: Armory
+  ats: ashby
+  slug: armory
+  jobs_at_discovery: 2
+- name: ARQ
+  ats: ashby
+  slug: arq
+  yc: Summer 2021
+  jobs_at_discovery: 30
+- name: Artisan
+  ats: ashby
+  slug: artisan
+  yc: Winter 2024
+  jobs_at_discovery: 4
+- name: Asana
+  ats: greenhouse
+  slug: asana
+  jobs_at_discovery: 103
+- name: Ashby
+  ats: ashby
+  slug: ashby
+  yc: Winter 2019
+  jobs_at_discovery: 63
+- name: AssemblyAI
+  ats: greenhouse
+  slug: assemblyai
+  yc: Summer 2017
+  jobs_at_discovery: 14
+- name: Astronomer
+  ats: ashby
+  slug: astronomer
+  jobs_at_discovery: 19
 - name: Atlan
   ats: ashby
   slug: atlan
+- name: Atlas
+  ats: ashby
+  slug: atlas
+  yc: Summer 2021
+  jobs_at_discovery: 6
+- name: AtoB
+  ats: ashby
+  slug: atob
+  yc: Summer 2020
+  jobs_at_discovery: 9
+- name: Atomic
+  ats: ashby
+  slug: atomic
+  yc: Summer 2020
+  jobs_at_discovery: 10
+- name: Aurelian
+  ats: ashby
+  slug: aurelian
+  yc: Summer 2022
+  jobs_at_discovery: 8
+- name: authzed
+  ats: ashby
+  slug: authzed
+  yc: Winter 2021
+  jobs_at_discovery: 5
 - name: Autodesk
   ats: workday
   url: https://autodesk.wd1.myworkdayjobs.com/Ext
+- name: Avoca
+  ats: ashby
+  slug: avoca
+  yc: Winter 2023
+  jobs_at_discovery: 27
 - name: Axiom
   ats: greenhouse
   slug: axiom
@@ -99,13 +276,50 @@ companies:
   ats: ashby
   slug: backmarket
   jobs_at_discovery: 30
+- name: Backblaze
+  ats: greenhouse
+  slug: backblaze
+  jobs_at_discovery: 31
 - name: Baker Hughes
   ats: workday
   url: https://bakerhughes.wd5.myworkdayjobs.com/BakerHughes
+- name: Baseten
+  ats: ashby
+  slug: baseten
+  jobs_at_discovery: 104
+- name: Belvo
+  ats: ashby
+  slug: belvo
+  yc: Winter 2020
+  jobs_at_discovery: 3
+- name: Benepass
+  ats: ashby
+  slug: benepass
+  yc: Winter 2020
+  jobs_at_discovery: 4
+- name: Bill.com
+  ats: greenhouse
+  slug: billcom
+  jobs_at_discovery: 45
+- name: BillionToOne
+  ats: ashby
+  slug: billiontoone
+  yc: Summer 2017
+  jobs_at_discovery: 83
+- name: BioRender
+  ats: lever
+  slug: biorender
+  yc: Winter 2018
+  jobs_at_discovery: 1
 - name: Bird
   ats: greenhouse
   slug: bird
   jobs_at_discovery: 33
+- name: Bitmovin
+  ats: greenhouse
+  slug: bitmovin
+  yc: Summer 2015
+  jobs_at_discovery: 11
 - name: Bitwarden
   ats: greenhouse
   slug: bitwarden
@@ -114,10 +328,32 @@ companies:
   ats: lever
   slug: blablacar
   jobs_at_discovery: 9
+- name: Blacksmith
+  ats: ashby
+  slug: blacksmith
+  jobs_at_discovery: 20
 - name: Blackstone
   ats: workday
   url: https://blackstone.wd1.myworkdayjobs.com/Blackstone_Careers
   learned_from: indeed_world
+- name: Blee
+  ats: ashby
+  slug: blee
+  yc: Summer 2022
+  jobs_at_discovery: 5
+- name: Blissway
+  ats: ashby
+  slug: blissway
+  yc: Summer 2020
+  jobs_at_discovery: 12
+- name: Block
+  ats: greenhouse
+  slug: block
+  jobs_at_discovery: 221
+- name: Bluestone
+  ats: smartrecruiters
+  slug: bluestone
+  jobs_at_discovery: 147
 - name: Bosch
   ats: smartrecruiters
   slug: BoschGroup
@@ -148,13 +384,37 @@ companies:
   ats: greenhouse
   slug: buildkite
   jobs_at_discovery: 8
+- name: Bunkerhill Health
+  ats: ashby
+  slug: bunkerhillhealth
+  yc: Winter 2019
+  jobs_at_discovery: 6
+- name: Bunny.net
+  ats: ashby
+  slug: bunny
+  jobs_at_discovery: 1
 - name: Cadence
   ats: workday
   url: https://cadence.wd1.myworkdayjobs.com/External_Careers
+- name: Cambio
+  ats: ashby
+  slug: cambio
+  yc: Summer 2022
+  jobs_at_discovery: 7
+- name: Campfire
+  ats: ashby
+  slug: campfire
+  yc: Summer 2023
+  jobs_at_discovery: 51
 - name: Camunda
   ats: ashby
   slug: camunda
   jobs_at_discovery: 40
+- name: Canary Technologies
+  ats: lever
+  slug: canarytechnologies
+  yc: Summer 2018
+  jobs_at_discovery: 34
 - name: Candescent (Digital First Holdings LLC)
   ats: workday
   url: https://candescent.wd501.myworkdayjobs.com/Hiring
@@ -165,6 +425,21 @@ companies:
 - name: Canva
   ats: smartrecruiters
   slug: canva
+- name: CaptivateIQ
+  ats: lever
+  slug: captivateiq
+  yc: Winter 2018
+  jobs_at_discovery: 23
+- name: CarbonChain
+  ats: greenhouse
+  slug: carbonchain
+  yc: Summer 2020
+  jobs_at_discovery: 1
+- name: Cardboard
+  ats: ashby
+  slug: cardboard
+  yc: Winter 2026
+  jobs_at_discovery: 7
 - name: Careem
   ats: greenhouse
   slug: careem
@@ -173,6 +448,20 @@ companies:
   ats: smartrecruiters
   slug: cars24
   jobs_at_discovery: 1
+- name: Carta
+  ats: greenhouse
+  slug: carta
+  jobs_at_discovery: 75
+- name: Casca
+  ats: ashby
+  slug: casca
+  yc: Summer 2023
+  jobs_at_discovery: 7
+- name: Castle
+  ats: ashby
+  slug: castle
+  yc: Winter 2016
+  jobs_at_discovery: 2
 - name: CDK Global
   ats: workday
   url: https://cdk.wd1.myworkdayjobs.com/CDK
@@ -190,29 +479,90 @@ companies:
 - name: Chainguard
   ats: greenhouse
   slug: chainguard
+- name: Character.AI
+  ats: ashby
+  slug: character
+  jobs_at_discovery: 13
 - name: Checkly
   ats: ashby
   slug: checkly
   jobs_at_discovery: 3
+- name: Checkr
+  ats: greenhouse
+  slug: checkr
+  yc: Summer 2014
+  jobs_at_discovery: 43
+- name: Chevron
+  ats: workday
+  url: https://chevron.wd5.myworkdayjobs.com/jobs
+- name: Chime
+  ats: greenhouse
+  slug: chime
+  jobs_at_discovery: 72
+- name: Ciena
+  ats: workday
+  url: https://ciena.wd5.myworkdayjobs.com/Careers
+- name: Cinder
+  ats: ashby
+  slug: cinder
+  yc: Winter 2022
+  jobs_at_discovery: 9
 - name: CircleCI
   ats: greenhouse
   slug: circleci
+- name: CircuitHub
+  ats: ashby
+  slug: circuithub
+  yc: Winter 2012
+  jobs_at_discovery: 8
 - name: Cisco
   ats: workday
   url: https://cisco.wd5.myworkdayjobs.com/Cisco_Careers
 - name: Citi
   ats: workday
   url: https://citi.wd5.myworkdayjobs.com/2
+- name: ClaimSorted
+  ats: ashby
+  slug: claimsorted
+  yc: Summer 2024
+  jobs_at_discovery: 14
+- name: ClassDojo
+  ats: ashby
+  slug: classdojo
+  yc: Summer 2012
+  jobs_at_discovery: 10
+- name: Clearly AI
+  ats: ashby
+  slug: clearly-ai
+  yc: Summer 2024
+  jobs_at_discovery: 2
 - name: Cleo
   ats: greenhouse
   slug: cleo
   jobs_at_discovery: 5
+- name: Clerk
+  ats: ashby
+  slug: clerk
+  jobs_at_discovery: 2
 - name: ClickHouse
   ats: ashby
   slug: clickhouse
+- name: ClickUp
+  ats: ashby
+  slug: clickup
+  jobs_at_discovery: 51
+- name: Clipboard
+  ats: ashby
+  slug: clipboard
+  yc: Winter 2017
+  jobs_at_discovery: 39
 - name: Cloudflare
   ats: greenhouse
   slug: cloudflare
+- name: Cloudinary
+  ats: lever
+  slug: cloudinary
+  jobs_at_discovery: 11
 - name: CloudZero
   ats: ashby
   slug: cloudzero
@@ -224,16 +574,47 @@ companies:
   ats: ashby
   slug: coder
   jobs_at_discovery: 25
+- name: Cognition
+  ats: ashby
+  slug: cognition
+  jobs_at_discovery: 103
 - name: Cohere
   ats: ashby
   slug: cohere
 - name: Coinbase
   ats: greenhouse
   slug: coinbase
+- name: Commvault
+  ats: greenhouse
+  slug: commvault
+  jobs_at_discovery: 49
 - name: Como
   ats: ashby
   slug: como
   learned_from: indeed_world
+- name: Complir
+  ats: ashby
+  slug: complir
+  yc: Spring 2026
+  jobs_at_discovery: 3
+- name: Composio
+  ats: ashby
+  slug: composio
+  jobs_at_discovery: 30
+- name: Concourse
+  ats: ashby
+  slug: concourse
+  yc: Winter 2023
+  jobs_at_discovery: 7
+- name: Confido
+  ats: ashby
+  slug: confido
+  yc: Summer 2021
+  jobs_at_discovery: 37
+- name: Consensys
+  ats: greenhouse
+  slug: consensys
+  jobs_at_discovery: 9
 - name: Contentful
   ats: greenhouse
   slug: contentful
@@ -241,6 +622,15 @@ companies:
   ats: lever
   slug: contentsquare
   jobs_at_discovery: 21
+- name: Continental
+  ats: smartrecruiters
+  slug: continental
+  jobs_at_discovery: 574
+- name: Conveo
+  ats: ashby
+  slug: conveo
+  yc: Summer 2024
+  jobs_at_discovery: 12
 - name: CoreWeave
   ats: greenhouse
   slug: coreweave
@@ -248,6 +638,15 @@ companies:
   ats: greenhouse
   slug: cortex
   jobs_at_discovery: 5
+- name: Cosine
+  ats: ashby
+  slug: cosine
+  yc: Winter 2023
+  jobs_at_discovery: 8
+- name: Coursera
+  ats: greenhouse
+  slug: coursera
+  jobs_at_discovery: 20
 - name: CRED
   ats: lever
   slug: cred
@@ -258,20 +657,52 @@ companies:
 - name: CrowdStrike
   ats: workday
   url: https://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers
+- name: Crusoe
+  ats: ashby
+  slug: crusoe
+  jobs_at_discovery: 350
 - name: Culture Amp
   ats: greenhouse
   slug: cultureamp
   jobs_at_discovery: 31
+- name: Curri
+  ats: ashby
+  slug: curri
+  yc: Summer 2019
+  jobs_at_discovery: 23
+- name: Cursor
+  ats: ashby
+  slug: cursor
+  jobs_at_discovery: 133
 - name: Databricks
   ats: greenhouse
   slug: databricks
 - name: Datadog
   ats: greenhouse
   slug: datadog
+- name: Datafold
+  ats: ashby
+  slug: datafold
+  yc: Summer 2020
+  jobs_at_discovery: 5
 - name: DBS Bank
   ats: workday
   url: https://dbs.wd3.myworkdayjobs.com/DBS_Careers
   learned_from: indeed_world
+- name: Decagon
+  ats: ashby
+  slug: decagon
+  jobs_at_discovery: 143
+- name: Decoda Health
+  ats: ashby
+  slug: decodahealth
+  yc: Summer 2023
+  jobs_at_discovery: 2
+- name: Deepgram
+  ats: ashby
+  slug: deepgram
+  yc: Winter 2016
+  jobs_at_discovery: 88
 - name: DeepL
   ats: ashby
   slug: deepl
@@ -295,6 +726,10 @@ companies:
   ats: ashby
   slug: depot
   jobs_at_discovery: 1
+- name: Descope
+  ats: greenhouse
+  slug: descope
+  jobs_at_discovery: 4
 - name: Deutsche Bank
   ats: workday
   url: https://db.wd3.myworkdayjobs.com/DBWebsite
@@ -310,6 +745,10 @@ companies:
 - name: Discord
   ats: greenhouse
   slug: discord
+- name: Ditto Insurance
+  ats: ashby
+  slug: ditto
+  jobs_at_discovery: 6
 - name: Docker
   ats: ashby
   slug: docker
@@ -321,34 +760,117 @@ companies:
   ats: greenhouse
   slug: doctolib
   jobs_at_discovery: 149
+- name: doola
+  ats: lever
+  slug: doola
+  yc: Summer 2020
+  jobs_at_discovery: 7
 - name: Doppler
   ats: ashby
   slug: doppler
   jobs_at_discovery: 1
+- name: Dots
+  ats: greenhouse
+  slug: dots
+  yc: Summer 2021
+  jobs_at_discovery: 1
+- name: Double
+  ats: ashby
+  slug: double
+  yc: Summer 2021
+  jobs_at_discovery: 5
 - name: DOW
   ats: workday
   url: https://dow.wd1.myworkdayjobs.com/ExternalCareers
   learned_from: indeed
+- name: Drata
+  ats: ashby
+  slug: drata
+  jobs_at_discovery: 30
 - name: Drees & Sommer Digital Services
   ats: smartrecruiters
   slug: DreesSommerSE
   learned_from: indeed_world
+- name: Dremio
+  ats: greenhouse
+  slug: dremio
+  jobs_at_discovery: 8
 - name: Dropbox
   ats: greenhouse
   slug: dropbox
 - name: Druva
   ats: greenhouse
   slug: druva
+- name: Duffel
+  ats: ashby
+  slug: duffel
+  yc: Summer 2018
+  jobs_at_discovery: 11
+- name: Duolingo
+  ats: greenhouse
+  slug: duolingo
+  jobs_at_discovery: 63
+- name: Eight Sleep
+  ats: ashby
+  slug: eightsleep
+  yc: Summer 2015
+  jobs_at_discovery: 40
 - name: Elastic
   ats: greenhouse
   slug: elastic
+- name: ElevenLabs
+  ats: ashby
+  slug: elevenlabs
+  jobs_at_discovery: 156
+- name: Ello
+  ats: ashby
+  slug: ello
+  yc: Winter 2020
+  jobs_at_discovery: 4
+- name: Encord
+  ats: ashby
+  slug: encord
+  yc: Winter 2021
+  jobs_at_discovery: 39
+- name: Endava
+  ats: smartrecruiters
+  slug: endava
+  jobs_at_discovery: 114
+- name: Enode
+  ats: ashby
+  slug: enode
+  yc: Winter 2021
+  jobs_at_discovery: 5
+- name: Epsilon3
+  ats: lever
+  slug: epsilon3
+  yc: Summer 2021
+  jobs_at_discovery: 4
 - name: Equinix
   ats: workday
   url: https://equinix.wd1.myworkdayjobs.com/External
+- name: Escape
+  ats: ashby
+  slug: escape
+  yc: Winter 2023
+  jobs_at_discovery: 6
+- name: Eventual
+  ats: ashby
+  slug: eventual
+  yc: Winter 2022
+  jobs_at_discovery: 4
 - name: Experian
   ats: smartrecruiters
   slug: Experian
   learned_from: indeed_world
+- name: F5
+  ats: workday
+  url: https://ffive.wd5.myworkdayjobs.com/f5jobs
+- name: Faire
+  ats: greenhouse
+  slug: faire
+  yc: Winter 2017
+  jobs_at_discovery: 79
 - name: Fampay
   ats: lever
   slug: fampay
@@ -366,33 +888,130 @@ companies:
 - name: Fidelity
   ats: workday
   url: https://fmr.wd1.myworkdayjobs.com/FidelityCareers
+- name: Fieldguide
+  ats: ashby
+  slug: fieldguide
+  yc: Summer 2020
+  jobs_at_discovery: 51
 - name: Figma
   ats: greenhouse
   slug: figma
+- name: Finch
+  ats: lever
+  slug: finch
+  yc: Summer 2020
+  jobs_at_discovery: 12
+- name: Finni Health
+  ats: ashby
+  slug: finni-health
+  yc: Winter 2023
+  jobs_at_discovery: 142
+- name: Fireblocks
+  ats: greenhouse
+  slug: fireblocks
+  jobs_at_discovery: 26
+- name: Fireworks AI
+  ats: ashby
+  slug: fireworks
+  jobs_at_discovery: 88
+- name: Fivetran
+  ats: greenhouse
+  slug: fivetran
+  jobs_at_discovery: 180
+- name: Fleek
+  ats: ashby
+  slug: fleek
+  yc: Winter 2022
+  jobs_at_discovery: 10
+- name: Flexport
+  ats: greenhouse
+  slug: flexport
+  yc: Winter 2014
+  jobs_at_discovery: 210
+- name: FlutterFlow
+  ats: ashby
+  slug: flutterflow
+  yc: Winter 2021
+  jobs_at_discovery: 3
 - name: Fly.io
   ats: lever
   slug: fly
   jobs_at_discovery: 1
+- name: Formance
+  ats: ashby
+  slug: formance
+  yc: Summer 2021
+  jobs_at_discovery: 4
 - name: Freshfields
   ats: workday
   url: https://freshfields.wd3.myworkdayjobs.com/FBD_101
   learned_from: indeed_world
+- name: Freshpaint
+  ats: ashby
+  slug: freshpaint
+  yc: Summer 2019
+  jobs_at_discovery: 4
 - name: Freshworks
   ats: smartrecruiters
   slug: freshworks
+- name: Gainsight
+  ats: ashby
+  slug: gainsight
+  jobs_at_discovery: 17
+- name: Garage
+  ats: ashby
+  slug: garage
+  yc: Winter 2024
+  jobs_at_discovery: 14
+- name: Gartner
+  ats: workday
+  url: https://gartner.wd5.myworkdayjobs.com/EXT
 - name: GE HealthCare
   ats: workday
   url: https://gehc.wd5.myworkdayjobs.com/GEHC_ExternalSite
+- name: Gecko Robotics
+  ats: ashby
+  slug: gecko-robotics
+  yc: Winter 2016
+  jobs_at_discovery: 21
+- name: Gemini
+  ats: greenhouse
+  slug: gemini
+  jobs_at_discovery: 31
 - name: GetYourGuide
   ats: greenhouse
   slug: getyourguide
   jobs_at_discovery: 70
+- name: Gigs
+  ats: ashby
+  slug: gigs
+  yc: Winter 2021
+  jobs_at_discovery: 52
+- name: Ginkgo Bioworks
+  ats: greenhouse
+  slug: ginkgobioworks
+  yc: Summer 2014
+  jobs_at_discovery: 20
 - name: GitLab
   ats: greenhouse
   slug: gitlab
+- name: GiveCampus
+  ats: greenhouse
+  slug: givecampus
+  yc: Summer 2015
+  jobs_at_discovery: 8
 - name: Glance
   ats: greenhouse
   slug: glance
+- name: Glean
+  ats: smartrecruiters
+  slug: glean
+  jobs_at_discovery: 1
+- name: Glimpse
+  ats: ashby
+  slug: glimpse
+  yc: Summer 2020
+  jobs_at_discovery: 8
 - name: Global Payments
   ats: workday
   url: https://tsys.wd1.myworkdayjobs.com/TSYS
@@ -401,6 +1020,11 @@ companies:
   ats: ashby
   slug: glomo
   learned_from: indeed
+- name: GOAT Group
+  ats: greenhouse
+  slug: goatgroup
+  yc: Winter 2011
+  jobs_at_discovery: 12
 - name: GoCardless
   ats: greenhouse
   slug: gocardless
@@ -413,19 +1037,65 @@ companies:
   ats: workday
   url: https://goldbeck.wd103.myworkdayjobs.com/goldbeck-jobs
   learned_from: indeed_world
+- name: GoLinks
+  ats: ashby
+  slug: golinks
+  yc: Winter 2019
+  jobs_at_discovery: 6
+- name: Gong
+  ats: smartrecruiters
+  slug: gong
+  jobs_at_discovery: 7
+- name: GovDash
+  ats: ashby
+  slug: govdash
+  yc: Winter 2022
+  jobs_at_discovery: 3
 - name: Grab
   ats: smartrecruiters
   slug: grab
 - name: Grafana Labs
   ats: greenhouse
   slug: grafanalabs
+- name: Great Question
+  ats: ashby
+  slug: greatquestion
+  yc: Winter 2021
+  jobs_at_discovery: 4
+- name: Gridware
+  ats: lever
+  slug: gridware
+  yc: Winter 2021
+  jobs_at_discovery: 19
 - name: Groww
   ats: greenhouse
   slug: groww
+- name: Gusto
+  ats: greenhouse
+  slug: gusto
+  jobs_at_discovery: 103
 - name: H COMPANY
   ats: ashby
   slug: hcompany
   learned_from: indeed_world
+- name: HackerRank
+  ats: greenhouse
+  slug: hackerrank
+  jobs_at_discovery: 31
+- name: Handoff
+  ats: lever
+  slug: handoff
+  yc: Winter 2020
+  jobs_at_discovery: 10
+- name: Happl
+  ats: ashby
+  slug: happl
+  yc: Winter 2022
+  jobs_at_discovery: 4
+- name: Harvey
+  ats: ashby
+  slug: harvey
+  jobs_at_discovery: 345
 - name: Hastings Direct
   ats: workday
   url: https://hastingsdirect.wd3.myworkdayjobs.com/external_careers
@@ -446,16 +1116,33 @@ companies:
   ats: greenhouse
   slug: helsing
   jobs_at_discovery: 156
+- name: Hevo
+  ats: lever
+  slug: hevo
+  jobs_at_discovery: 1
 - name: Hevo Data
   ats: lever
   slug: hevodata
 - name: HighRadius
   ats: greenhouse
   slug: highradius
+- name: Hitachi
+  ats: workday
+  url: https://hitachi.wd1.myworkdayjobs.com/hitachi
 - name: Hitachi Solutions North America
   ats: smartrecruiters
   slug: HitachiSolutions
   learned_from: indeed
+- name: Hive
+  ats: lever
+  slug: hive
+  yc: Summer 2014
+  jobs_at_discovery: 74
+- name: HockeyStack
+  ats: ashby
+  slug: hockeystack
+  yc: Summer 2023
+  jobs_at_discovery: 3
 - name: Honeycomb
   ats: greenhouse
   slug: honeycomb
@@ -463,9 +1150,36 @@ companies:
   ats: smartrecruiters
   slug: hootsuite
   jobs_at_discovery: 8
+- name: HP
+  ats: workday
+  url: https://hp.wd5.myworkdayjobs.com/ExternalCareerSite
 - name: HPE
   ats: workday
   url: https://hpe.wd5.myworkdayjobs.com/Jobsathpe
+- name: HUD
+  ats: ashby
+  slug: hud
+  yc: Winter 2025
+  jobs_at_discovery: 30
+- name: Humaans
+  ats: ashby
+  slug: humaans
+  yc: Winter 2021
+  jobs_at_discovery: 12
+- name: Human Interest
+  ats: greenhouse
+  slug: humaninterest
+  yc: Summer 2015
+  jobs_at_discovery: 67
+- name: Hyperbound
+  ats: ashby
+  slug: hyperbound
+  yc: Summer 2023
+  jobs_at_discovery: 8
+- name: Hyperproof
+  ats: greenhouse
+  slug: hyperproof
+  jobs_at_discovery: 4
 - name: ICEYE
   ats: ashby
   slug: iceye
@@ -482,12 +1196,31 @@ companies:
   ats: ashby
   slug: infisical
   jobs_at_discovery: 7
+- name: InfluxData
+  ats: ashby
+  slug: influxdata
+  yc: Winter 2013
+  jobs_at_discovery: 5
+- name: Inkeep
+  ats: ashby
+  slug: inkeep
+  yc: Winter 2023
+  jobs_at_discovery: 3
 - name: InMobi
   ats: greenhouse
   slug: inmobi
+- name: Inngest
+  ats: ashby
+  slug: inngest
+  jobs_at_discovery: 1
 - name: Instacart
   ats: greenhouse
   slug: instacart
+- name: Instawork
+  ats: greenhouse
+  slug: instawork
+  yc: Summer 2015
+  jobs_at_discovery: 54
 - name: Intel
   ats: workday
   url: https://intel.wd1.myworkdayjobs.com/External
@@ -495,6 +1228,19 @@ companies:
   ats: greenhouse
   slug: intercom
   jobs_at_discovery: 106
+- name: InterviewBit
+  ats: smartrecruiters
+  slug: interviewbit
+  jobs_at_discovery: 1
+- name: Invert
+  ats: ashby
+  slug: invert
+  yc: Winter 2022
+  jobs_at_discovery: 6
+- name: Ixigo
+  ats: smartrecruiters
+  slug: ixigo
+  jobs_at_discovery: 10
 - name: JetBrains
   ats: greenhouse
   slug: jetbrains
@@ -502,25 +1248,68 @@ companies:
 - name: JFrog
   ats: greenhouse
   slug: jfrog
+- name: Jiga
+  ats: ashby
+  slug: jiga
+  yc: Winter 2021
+  jobs_at_discovery: 10
 - name: JLL
   ats: workday
   url: https://jll.wd1.myworkdayjobs.com/jllcareers
   learned_from: indeed
+- name: Juicebox
+  ats: ashby
+  slug: juicebox
+  yc: Summer 2022
+  jobs_at_discovery: 31
 - name: JumpCloud
   ats: lever
   slug: jumpcloud
   learned_from: linkedin
+- name: Junction
+  ats: ashby
+  slug: junction
+  yc: Winter 2020
+  jobs_at_discovery: 9
+- name: Justworks
+  ats: greenhouse
+  slug: justworks
+  jobs_at_discovery: 100
+- name: Kalshi
+  ats: ashby
+  slug: kalshi
+  yc: Winter 2019
+  jobs_at_discovery: 49
 - name: Kentik
   ats: greenhouse
   slug: kentik
   jobs_at_discovery: 4
+- name: Kivo Health
+  ats: ashby
+  slug: kivo-health
+  yc: Winter 2023
+  jobs_at_discovery: 5
 - name: Kiwi.com
   ats: ashby
   slug: kiwi-com
   jobs_at_discovery: 2
+- name: Kodex
+  ats: ashby
+  slug: kodex
+  yc: Summer 2021
+  jobs_at_discovery: 8
+- name: Kombo
+  ats: ashby
+  slug: kombo
+  yc: Summer 2022
+  jobs_at_discovery: 15
 - name: Kong
   ats: ashby
   slug: kong
+- name: Kore.ai
+  ats: smartrecruiters
+  slug: koreai
+  jobs_at_discovery: 1
 - name: KPN
   ats: smartrecruiters
   slug: KPN
@@ -528,6 +1317,11 @@ companies:
 - name: Kyndryl
   ats: workday
   url: https://kyndryl.wd5.myworkdayjobs.com/KyndrylProfessionalCareers
+- name: Lago
+  ats: ashby
+  slug: lago
+  yc: Summer 2021
+  jobs_at_discovery: 1
 - name: Lambda
   ats: ashby
   slug: lambda
@@ -535,10 +1329,25 @@ companies:
   ats: ashby
   slug: langchain
   jobs_at_discovery: 102
+- name: Langdock
+  ats: ashby
+  slug: langdock
+  yc: Summer 2023
+  jobs_at_discovery: 13
 - name: LARIAN STUDIOS
   ats: lever
   slug: larian
   learned_from: indeed_world
+- name: Latent
+  ats: ashby
+  slug: latent
+  yc: Winter 2023
+  jobs_at_discovery: 25
+- name: Lattice
+  ats: greenhouse
+  slug: lattice
+  yc: Winter 2016
+  jobs_at_discovery: 9
 - name: LaunchDarkly
   ats: greenhouse
   slug: launchdarkly
@@ -547,6 +1356,21 @@ companies:
   ats: ashby
   slug: ledger
   jobs_at_discovery: 12
+- name: Legalist
+  ats: greenhouse
+  slug: legalist
+  yc: Summer 2016
+  jobs_at_discovery: 4
+- name: Legion Health
+  ats: ashby
+  slug: legionhealth
+  yc: Summer 2021
+  jobs_at_discovery: 158
+- name: Legora
+  ats: ashby
+  slug: legora
+  yc: Winter 2024
+  jobs_at_discovery: 305
 - name: Lendingkart
   ats: smartrecruiters
   slug: lendingkart
@@ -555,6 +1379,30 @@ companies:
   ats: workday
   url: https://levistraussandco.wd5.myworkdayjobs.com/External
   learned_from: indeed
+- name: Lightdash
+  ats: ashby
+  slug: lightdash
+  yc: Summer 2020
+  jobs_at_discovery: 2
+- name: LiveFlow
+  ats: ashby
+  slug: liveflow
+  yc: Winter 2021
+  jobs_at_discovery: 4
+- name: Living Carbon
+  ats: lever
+  slug: livingcarbon
+  yc: Winter 2020
+  jobs_at_discovery: 1
+- name: Lob
+  ats: greenhouse
+  slug: lob
+  yc: Summer 2013
+  jobs_at_discovery: 8
+- name: LogicMonitor
+  ats: greenhouse
+  slug: logicmonitor
+  jobs_at_discovery: 51
 - name: Logz.io
   ats: lever
   slug: logz
@@ -569,29 +1417,97 @@ companies:
   ats: workday
   url: https://lseg.wd3.myworkdayjobs.com/Careers
   learned_from: indeed
+- name: Lucis
+  ats: ashby
+  slug: lucis
+  yc: Spring 2025
+  jobs_at_discovery: 13
+- name: Luminai
+  ats: ashby
+  slug: luminai
+  yc: Summer 2020
+  jobs_at_discovery: 18
+- name: Mach9
+  ats: ashby
+  slug: mach9
+  yc: Summer 2021
+  jobs_at_discovery: 18
+- name: Magic Patterns
+  ats: ashby
+  slug: magicpatterns
+  yc: Winter 2023
+  jobs_at_discovery: 7
 - name: Marvell Technology
   ats: workday
   url: https://marvell.wd1.myworkdayjobs.com/MarvellCareers
   learned_from: indeed
+- name: Mashgin
+  ats: lever
+  slug: mashgin
+  yc: Winter 2015
+  jobs_at_discovery: 13
 - name: Mastercard
   ats: workday
   url: https://mastercard.wd1.myworkdayjobs.com/CorporateCareers
 - name: Mattermost
   ats: greenhouse
   slug: mattermost
+- name: May Mobility
+  ats: greenhouse
+  slug: maymobility
+  yc: Summer 2017
+  jobs_at_discovery: 39
+- name: Mednet
+  ats: ashby
+  slug: mednet
+  yc: Winter 2017
+  jobs_at_discovery: 5
 - name: Meesho
   ats: lever
   slug: meesho
+- name: Mem0
+  ats: ashby
+  slug: mem0
+  yc: Summer 2024
+  jobs_at_discovery: 1
+- name: Mercury
+  ats: greenhouse
+  slug: mercury
+  jobs_at_discovery: 77
+- name: Meru Health
+  ats: greenhouse
+  slug: meruhealth
+  yc: Summer 2018
+  jobs_at_discovery: 1
 - name: Metaforms
   ats: ashby
   slug: metaforms
   learned_from: indeed
+- name: Metriport
+  ats: ashby
+  slug: metriport
+  yc: Summer 2022
+  jobs_at_discovery: 17
 - name: Micron
   ats: workday
   url: https://micron.wd1.myworkdayjobs.com/External
+- name: Middesk
+  ats: ashby
+  slug: middesk
+  yc: Winter 2019
+  jobs_at_discovery: 15
 - name: Mindtickle
   ats: lever
   slug: mindtickle
+- name: MinIO
+  ats: greenhouse
+  slug: minio
+  jobs_at_discovery: 23
+- name: Mintlify
+  ats: ashby
+  slug: mintlify
+  yc: Winter 2022
+  jobs_at_discovery: 15
 - name: Mirakl
   ats: greenhouse
   slug: mirakl
@@ -605,6 +1521,16 @@ companies:
 - name: Modal
   ats: ashby
   slug: modal
+- name: Modern Health
+  ats: greenhouse
+  slug: modernhealth
+  yc: Winter 2018
+  jobs_at_discovery: 8
+- name: Modern Treasury
+  ats: ashby
+  slug: moderntreasury
+  yc: Summer 2018
+  jobs_at_discovery: 9
 - name: Mollie
   ats: ashby
   slug: mollie
@@ -626,6 +1552,16 @@ companies:
   ats: workday
   url: https://movadogroup.wd1.myworkdayjobs.com/Careers
   learned_from: indeed
+- name: Mutiny
+  ats: ashby
+  slug: mutiny
+  yc: Summer 2018
+  jobs_at_discovery: 9
+- name: Mytos
+  ats: lever
+  slug: mytos
+  yc: Summer 2018
+  jobs_at_discovery: 13
 - name: N26
   ats: greenhouse
   slug: n26
@@ -634,6 +1570,20 @@ companies:
   ats: ashby
   slug: n8n
   learned_from: indeed_world
+- name: Nabis
+  ats: greenhouse
+  slug: nabis
+  yc: Winter 2019
+  jobs_at_discovery: 22
+- name: Namespace
+  ats: ashby
+  slug: namespace
+  jobs_at_discovery: 14
+- name: Nash
+  ats: ashby
+  slug: nash
+  yc: Summer 2021
+  jobs_at_discovery: 22
 - name: Navi
   ats: ashby
   slug: navi
@@ -642,10 +1592,22 @@ companies:
   ats: smartrecruiters
   slug: NCS3
   learned_from: indeed_world
+- name: Nebius
+  ats: greenhouse
+  slug: nebius
+  jobs_at_discovery: 376
+- name: Neo4j
+  ats: greenhouse
+  slug: neo4j
+  jobs_at_discovery: 65
 - name: Neon
   ats: lever
   slug: neon
   jobs_at_discovery: 9
+- name: Neptune.ai
+  ats: ashby
+  slug: neptune
+  jobs_at_discovery: 3
 - name: Netlify
   ats: greenhouse
   slug: netlify
@@ -660,25 +1622,55 @@ companies:
 - name: New Relic
   ats: greenhouse
   slug: newrelic
-- name: Ninja Van
-  ats: lever
-  slug: ninjavan
-  jobs_at_discovery: 142
+- name: New Story
+  ats: ashby
+  slug: new-story
+  yc: Summer 2015
+  jobs_at_discovery: 2
 - name: Ninjavan
   ats: lever
   slug: ninjavan
   jobs_at_discovery: 142
+- name: Nira Energy
+  ats: greenhouse
+  slug: niraenergy
+  yc: Winter 2022
+  jobs_at_discovery: 4
 - name: Nium
   ats: lever
   slug: nium
   jobs_at_discovery: 19
+- name: NoBroker
+  ats: smartrecruiters
+  slug: nobroker
+  jobs_at_discovery: 1
 - name: Nord Security
   ats: ashby
   slug: nord-security
   jobs_at_discovery: 136
+- name: Notabene
+  ats: ashby
+  slug: notabene
+  yc: Summer 2020
+  jobs_at_discovery: 4
 - name: Notion
   ats: ashby
   slug: notion
+- name: Nova Credit
+  ats: greenhouse
+  slug: novacredit
+  yc: Summer 2016
+  jobs_at_discovery: 8
+- name: Novig
+  ats: ashby
+  slug: novig
+  yc: Summer 2022
+  jobs_at_discovery: 14
+- name: Numeral
+  ats: ashby
+  slug: numeral
+  yc: Winter 2023
+  jobs_at_discovery: 23
 - name: NVIDIA
   ats: workday
   url: https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite
@@ -693,28 +1685,96 @@ companies:
   ats: greenhouse
   slug: octopusdeploy
   jobs_at_discovery: 4
+- name: Odeko
+  ats: greenhouse
+  slug: odeko
+  yc: Summer 2019
+  jobs_at_discovery: 19
+- name: Odys Aviation
+  ats: ashby
+  slug: odys-aviation
+  yc: Summer 2021
+  jobs_at_discovery: 14
+- name: Offstream
+  ats: ashby
+  slug: offstream
+  yc: Summer 2024
+  jobs_at_discovery: 1
 - name: Okta
   ats: greenhouse
   slug: okta
+- name: OneChronos
+  ats: ashby
+  slug: onechronos
+  yc: Summer 2016
+  jobs_at_discovery: 1
+- name: Oneleet
+  ats: ashby
+  slug: oneleet
+  yc: Summer 2022
+  jobs_at_discovery: 8
+- name: OneSchema
+  ats: ashby
+  slug: oneschema
+  yc: Summer 2021
+  jobs_at_discovery: 2
 - name: Opella.
   ats: workday
   url: https://opella.wd103.myworkdayjobs.com/OpellaCareers
   learned_from: indeed
+- name: OpenAI
+  ats: ashby
+  slug: openai
+  jobs_at_discovery: 813
+- name: Ophelia
+  ats: greenhouse
+  slug: ophelia
+  yc: Winter 2020
+  jobs_at_discovery: 15
 - name: Orca Security
   ats: greenhouse
   slug: orcasecurity
   jobs_at_discovery: 10
+- name: Overview
+  ats: ashby
+  slug: overview
+  yc: Winter 2019
+  jobs_at_discovery: 54
+- name: Oyster HR
+  ats: ashby
+  slug: oyster
+  jobs_at_discovery: 22
 - name: Paddle
   ats: ashby
   slug: paddle
   jobs_at_discovery: 15
+- name: Padlet
+  ats: ashby
+  slug: padlet
+  yc: Winter 2013
+  jobs_at_discovery: 17
 - name: PagerDuty
   ats: greenhouse
   slug: pagerduty
+- name: Pair Team
+  ats: greenhouse
+  slug: pairteam
+  yc: Summer 2019
+  jobs_at_discovery: 5
 - name: Palo IT
   ats: ashby
   slug: palo-it
   learned_from: indeed_world
+- name: Paragon
+  ats: ashby
+  slug: paragon
+  yc: Winter 2020
+  jobs_at_discovery: 1
+- name: Parallel Bio
+  ats: ashby
+  slug: parallel-bio
+  yc: Summer 2021
+  jobs_at_discovery: 10
 - name: PayPal
   ats: workday
   url: https://paypal.wd1.myworkdayjobs.com/jobs
@@ -725,19 +1785,44 @@ companies:
 - name: Paytm
   ats: lever
   slug: paytm
+- name: Pelago
+  ats: greenhouse
+  slug: pelago
+  yc: Winter 2018
+  jobs_at_discovery: 14
+- name: People.ai
+  ats: lever
+  slug: people-ai
+  yc: Summer 2016
+  jobs_at_discovery: 8
 - name: Percona
   ats: ashby
   slug: percona
+- name: PermitFlow
+  ats: ashby
+  slug: permitflow
+  yc: Winter 2022
+  jobs_at_discovery: 43
 - name: Perplexity
   ats: ashby
   slug: perplexity
 - name: Philips
   ats: workday
   url: https://philips.wd3.myworkdayjobs.com/jobs-and-careers
+- name: Phonely
+  ats: ashby
+  slug: phonely
+  yc: Summer 2024
+  jobs_at_discovery: 19
 - name: Picnic
   ats: smartrecruiters
   slug: picnic
   jobs_at_discovery: 2
+- name: PicnicAI
+  ats: greenhouse
+  slug: picnicai
+  yc: Summer 2014
+  jobs_at_discovery: 1
 - name: Pine Labs
   ats: greenhouse
   slug: pine
@@ -753,6 +1838,11 @@ companies:
   ats: lever
   slug: pipedrive
   jobs_at_discovery: 8
+- name: Pirros
+  ats: ashby
+  slug: pirros
+  yc: Winter 2023
+  jobs_at_discovery: 2
 - name: Plaid
   ats: ashby
   slug: plaid
@@ -768,9 +1858,63 @@ companies:
   ats: lever
   slug: pocketfm
   jobs_at_discovery: 10
+- name: Popl
+  ats: ashby
+  slug: popl
+  yc: Winter 2021
+  jobs_at_discovery: 5
+- name: Porter
+  ats: lever
+  slug: porter
+  jobs_at_discovery: 23
+- name: Posh
+  ats: ashby
+  slug: posh
+  yc: Winter 2022
+  jobs_at_discovery: 11
+- name: PostEra
+  ats: lever
+  slug: postera
+  yc: Winter 2020
+  jobs_at_discovery: 2
 - name: PostHog
   ats: ashby
   slug: posthog
+- name: Postscript
+  ats: greenhouse
+  slug: postscript
+  yc: Winter 2019
+  jobs_at_discovery: 3
+- name: Prelim
+  ats: ashby
+  slug: prelim
+  yc: Summer 2017
+  jobs_at_discovery: 8
+- name: Prodigal
+  ats: greenhouse
+  slug: prodigal
+  yc: Summer 2018
+  jobs_at_discovery: 14
+- name: Prolific
+  ats: greenhouse
+  slug: prolific
+  yc: Summer 2019
+  jobs_at_discovery: 33
+- name: Promise
+  ats: ashby
+  slug: promise
+  yc: Winter 2018
+  jobs_at_discovery: 11
+- name: Prospa
+  ats: greenhouse
+  slug: prospa
+  yc: Winter 2021
+  jobs_at_discovery: 8
+- name: Prosper
+  ats: lever
+  slug: prosper
+  yc: Summer 2023
+  jobs_at_discovery: 14
 - name: prosus
   ats: ashby
   slug: prosus
@@ -783,6 +1927,15 @@ companies:
   ats: workday
   url: https://ptc.wd1.myworkdayjobs.com/PTC
   learned_from: indeed
+- name: Pure Storage
+  ats: greenhouse
+  slug: purestorage
+  jobs_at_discovery: 370
+- name: Pylon
+  ats: ashby
+  slug: pylon
+  yc: Winter 2023
+  jobs_at_discovery: 18
 - name: Qonto
   ats: lever
   slug: qonto
@@ -791,10 +1944,30 @@ companies:
   ats: workday
   url: https://qualys.wd5.myworkdayjobs.com/Careers
   learned_from: indeed
+- name: Quicknode
+  ats: ashby
+  slug: quicknode
+  yc: Winter 2021
+  jobs_at_discovery: 2
+- name: Quindar
+  ats: ashby
+  slug: quindar
+  yc: Summer 2022
+  jobs_at_discovery: 21
+- name: Qventus
+  ats: greenhouse
+  slug: qventus
+  yc: Winter 2015
+  jobs_at_discovery: 17
 - name: Rackspace Technology
   ats: workday
   url: https://rackspace.wd1.myworkdayjobs.com/External
   learned_from: indeed
+- name: RADAR
+  ats: ashby
+  slug: radar
+  yc: Winter 2013
+  jobs_at_discovery: 18
 - name: Railway
   ats: ashby
   slug: railway
@@ -803,12 +1976,47 @@ companies:
   ats: greenhouse
   slug: raisin
   jobs_at_discovery: 39
+- name: Rally
+  ats: ashby
+  slug: rallyuxr
+  yc: Winter 2022
+  jobs_at_discovery: 1
 - name: Ramp
   ats: ashby
   slug: ramp
+- name: Raven
+  ats: greenhouse
+  slug: raven
+  yc: Summer 2022
+  jobs_at_discovery: 1
 - name: Razorpay
   ats: greenhouse
   slug: razorpaysoftwareprivatelimited
+- name: Reach
+  ats: ashby
+  slug: reach
+  yc: Summer 2015
+  jobs_at_discovery: 6
+- name: Reacher
+  ats: ashby
+  slug: reacher
+  yc: Summer 2025
+  jobs_at_discovery: 8
+- name: Ready
+  ats: ashby
+  slug: ready
+  yc: Summer 2020
+  jobs_at_discovery: 7
+- name: Reality Defender
+  ats: ashby
+  slug: realitydefender
+  yc: Winter 2022
+  jobs_at_discovery: 3
+- name: Recidiviz
+  ats: greenhouse
+  slug: recidiviz
+  yc: Summer 2019
+  jobs_at_discovery: 6
 - name: Red Hat
   ats: workday
   url: https://redhat.wd5.myworkdayjobs.com/jobs
@@ -830,6 +2038,29 @@ companies:
   ats: ashby
   slug: render
   jobs_at_discovery: 38
+- name: Replit
+  ats: ashby
+  slug: replit
+  jobs_at_discovery: 65
+- name: Rescale
+  ats: ashby
+  slug: rescale
+  yc: Winter 2012
+  jobs_at_discovery: 17
+- name: Resend
+  ats: ashby
+  slug: resend
+  jobs_at_discovery: 14
+- name: Retell AI
+  ats: ashby
+  slug: retell-ai
+  yc: Winter 2024
+  jobs_at_discovery: 27
+- name: RevenueCat
+  ats: ashby
+  slug: revenuecat
+  yc: Summer 2018
+  jobs_at_discovery: 17
 - name: Robco
   ats: ashby
   slug: robco
@@ -837,13 +2068,36 @@ companies:
 - name: Robinhood
   ats: greenhouse
   slug: robinhood
+- name: Roboflow
+  ats: ashby
+  slug: roboflow
+  yc: Summer 2020
+  jobs_at_discovery: 36
 - name: Rockwell Automation
   ats: workday
   url: https://rockwellautomation.wd1.myworkdayjobs.com/External_Rockwell_Automation
   learned_from: indeed
+- name: Rollstack
+  ats: ashby
+  slug: rollstack
+  yc: Winter 2023
+  jobs_at_discovery: 2
 - name: Rubrik
   ats: greenhouse
   slug: rubrik
+- name: RunPod
+  ats: ashby
+  slug: runpod
+  jobs_at_discovery: 28
+- name: Runway
+  ats: ashby
+  slug: runway
+  jobs_at_discovery: 3
+- name: Rutter
+  ats: ashby
+  slug: rutter
+  yc: Summer 2019
+  jobs_at_discovery: 1
 - name: RX
   ats: workday
   url: https://relx.wd3.myworkdayjobs.com/ReedExhibitions
@@ -855,16 +2109,37 @@ companies:
 - name: Salesforce
   ats: workday
   url: https://salesforce.wd12.myworkdayjobs.com/External_Career_Site
-- name: Sarvam
+- name: Salient
   ats: ashby
-  slug: sarvam
-  jobs_at_discovery: 42
+  slug: salient
+  yc: Winter 2023
+  jobs_at_discovery: 15
+- name: Samsung
+  ats: workday
+  url: https://sec.wd3.myworkdayjobs.com/Samsung_Careers
 - name: Sarvam AI
   ats: ashby
   slug: sarvam
 - name: Scale AI
   ats: greenhouse
   slug: scaleai
+- name: Scaleway
+  ats: lever
+  slug: scaleway
+  jobs_at_discovery: 26
+- name: Secureframe
+  ats: lever
+  slug: secureframe
+  jobs_at_discovery: 15
+- name: Semgrep
+  ats: ashby
+  slug: semgrep
+  jobs_at_discovery: 12
+- name: Sendbird
+  ats: greenhouse
+  slug: sendbird
+  yc: Winter 2016
+  jobs_at_discovery: 5
 - name: Sentry
   ats: ashby
   slug: sentry
@@ -872,9 +2147,24 @@ companies:
   ats: smartrecruiters
   slug: Septeo
   learned_from: indeed_world
+- name: Serif Health
+  ats: ashby
+  slug: serifhealth
+  yc: Winter 2022
+  jobs_at_discovery: 2
 - name: ServiceNow
   ats: smartrecruiters
   slug: servicenow
+- name: Shepherd
+  ats: ashby
+  slug: shepherd
+  yc: Winter 2021
+  jobs_at_discovery: 18
+- name: Short Story
+  ats: ashby
+  slug: shortstory
+  yc: Summer 2019
+  jobs_at_discovery: 18
 - name: SIA
   ats: smartrecruiters
   slug: Sia
@@ -883,6 +2173,10 @@ companies:
   ats: ashby
   slug: siena
   learned_from: indeed_world
+- name: Sierra
+  ats: ashby
+  slug: sierra
+  jobs_at_discovery: 186
 - name: Sigmoid
   ats: greenhouse
   slug: sigmoid
@@ -894,6 +2188,10 @@ companies:
 - name: SigNoz
   ats: ashby
   slug: signoz
+- name: SingleStore
+  ats: greenhouse
+  slug: singlestore
+  jobs_at_discovery: 44
 - name: Slice
   ats: greenhouse
   slug: slice
@@ -901,25 +2199,92 @@ companies:
   ats: ashby
   slug: smallest
   learned_from: indeed
+- name: Smartsheet
+  ats: greenhouse
+  slug: smartsheet
+  jobs_at_discovery: 94
+- name: SnapMagic
+  ats: ashby
+  slug: snapmagic
+  yc: Summer 2015
+  jobs_at_discovery: 7
+- name: Snappr
+  ats: lever
+  slug: snappr
+  yc: Winter 2017
+  jobs_at_discovery: 16
 - name: Snyk
   ats: ashby
   slug: snyk
+- name: Socket
+  ats: ashby
+  slug: socket
+  jobs_at_discovery: 28
+- name: SoFi
+  ats: greenhouse
+  slug: sofi
+  jobs_at_discovery: 49
+- name: SolarWinds
+  ats: greenhouse
+  slug: solarwinds
+  jobs_at_discovery: 76
 - name: Solo.io
   ats: greenhouse
   slug: soloioinc
+- name: Solve Intelligence
+  ats: ashby
+  slug: solveintelligence
+  yc: Summer 2023
+  jobs_at_discovery: 17
+- name: Sonatype
+  ats: lever
+  slug: sonatype
+  jobs_at_discovery: 15
+- name: Spade
+  ats: ashby
+  slug: spade
+  yc: Winter 2022
+  jobs_at_discovery: 13
+- name: Speak
+  ats: ashby
+  slug: speak
+  yc: Winter 2017
+  jobs_at_discovery: 34
 - name: Spotify
   ats: lever
   slug: spotify
+- name: SpruceID
+  ats: ashby
+  slug: spruceid
+  yc: Winter 2021
+  jobs_at_discovery: 5
 - name: Stability AI
   ats: greenhouse
   slug: stabilityai
   jobs_at_discovery: 6
+- name: Stable
+  ats: ashby
+  slug: stable
+  yc: Winter 2020
+  jobs_at_discovery: 7
+- name: Starburst
+  ats: greenhouse
+  slug: starburst
+  jobs_at_discovery: 31
 - name: State Street
   ats: workday
   url: https://statestreet.wd1.myworkdayjobs.com/Global
+- name: StreamNative
+  ats: greenhouse
+  slug: streamnative
+  jobs_at_discovery: 1
 - name: Stripe
   ats: greenhouse
   slug: stripe
+- name: Sumo Logic
+  ats: greenhouse
+  slug: sumologic
+  jobs_at_discovery: 11
 - name: SumUp
   ats: greenhouse
   slug: sumup
@@ -927,9 +2292,16 @@ companies:
 - name: Supabase
   ats: ashby
   slug: supabase
-- name: Swiggy
-  ats: smartrecruiters
-  slug: swiggy
+- name: Svix
+  ats: ashby
+  slug: svix
+  yc: Winter 2021
+  jobs_at_discovery: 2
+- name: Swayable
+  ats: greenhouse
+  slug: swayable
+  yc: Winter 2018
+  jobs_at_discovery: 17
 - name: Swiggy Instamart
   ats: smartrecruiters
   slug: swiggy
@@ -946,25 +2318,64 @@ companies:
   ats: lever
   slug: sysdig
   jobs_at_discovery: 33
+- name: Tailor
+  ats: ashby
+  slug: tailor
+  yc: Summer 2022
+  jobs_at_discovery: 54
 - name: Tailscale
   ats: greenhouse
   slug: tailscale
+- name: Taktile
+  ats: ashby
+  slug: taktile
+  yc: Summer 2020
+  jobs_at_discovery: 33
 - name: Tamara
   ats: greenhouse
   slug: tamara
   jobs_at_discovery: 40
+- name: Tank Payments
+  ats: ashby
+  slug: tank-payments
+  yc: Summer 2022
+  jobs_at_discovery: 2
 - name: Target
   ats: workday
   url: https://target.wd5.myworkdayjobs.com/targetcareers
+- name: Tavus
+  ats: ashby
+  slug: tavus
+  yc: Summer 2021
+  jobs_at_discovery: 19
 - name: Tekion
   ats: ashby
   slug: tekion
+- name: Tempo
+  ats: ashby
+  slug: tempo
+  yc: Winter 2015
+  jobs_at_discovery: 9
 - name: Temporal
   ats: ashby
   slug: temporal
+- name: Tennr
+  ats: ashby
+  slug: tennr
+  yc: Winter 2023
+  jobs_at_discovery: 27
+- name: Thera
+  ats: ashby
+  slug: thera
+  yc: Summer 2022
+  jobs_at_discovery: 6
 - name: Thomson Reuters
   ats: workday
   url: https://thomsonreuters.wd5.myworkdayjobs.com/External_Career_Site
+- name: Thoropass
+  ats: greenhouse
+  slug: thoropass
+  jobs_at_discovery: 4
 - name: Thought Machine
   ats: ashby
   slug: thought-machine
@@ -973,6 +2384,11 @@ companies:
   ats: greenhouse
   slug: thoughtworks
   jobs_at_discovery: 43
+- name: Thunkable
+  ats: lever
+  slug: thunkable
+  yc: Winter 2016
+  jobs_at_discovery: 2
 - name: Tide
   ats: greenhouse
   slug: tide
@@ -981,25 +2397,75 @@ companies:
   ats: greenhouse
   slug: tigera
   jobs_at_discovery: 7
+- name: Titan
+  ats: ashby
+  slug: titan
+  yc: Summer 2018
+  jobs_at_discovery: 11
+- name: Toast
+  ats: greenhouse
+  slug: toast
+  jobs_at_discovery: 317
 - name: Together AI
   ats: greenhouse
   slug: togetherai
+- name: Topline Pro
+  ats: ashby
+  slug: topline-pro
+  yc: Winter 2021
+  jobs_at_discovery: 12
 - name: Toptal
   ats: lever
   slug: toptal
   jobs_at_discovery: 32
+- name: Tovala
+  ats: lever
+  slug: tovala
+  yc: Winter 2016
+  jobs_at_discovery: 11
+- name: Trigger.dev
+  ats: ashby
+  slug: triggerdev
+  jobs_at_discovery: 6
 - name: Trimble
   ats: workday
   url: https://trimble.wd1.myworkdayjobs.com/TrimbleCareers
   learned_from: indeed_world
+- name: Triomics
+  ats: ashby
+  slug: triomics
+  yc: Winter 2021
+  jobs_at_discovery: 14
+- name: TripActions
+  ats: greenhouse
+  slug: tripactions
+  jobs_at_discovery: 216
+- name: TRM Labs
+  ats: ashby
+  slug: trm-labs
+  yc: Summer 2019
+  jobs_at_discovery: 112
 - name: Truecaller
   ats: greenhouse
   slug: truecaller
   jobs_at_discovery: 31
+- name: TrueFoundry
+  ats: greenhouse
+  slug: truefoundry
+  jobs_at_discovery: 23
 - name: Turing
   ats: greenhouse
   slug: turing
   jobs_at_discovery: 29
+- name: Turtlemint
+  ats: smartrecruiters
+  slug: turtlemint
+  jobs_at_discovery: 1
+- name: Twenty
+  ats: ashby
+  slug: twenty
+  yc: Summer 2023
+  jobs_at_discovery: 44
 - name: Twilio
   ats: greenhouse
   slug: twilio
@@ -1011,6 +2477,10 @@ companies:
   ats: smartrecruiters
   slug: uber
   jobs_at_discovery: 1
+- name: Udemy
+  ats: greenhouse
+  slug: udemy
+  jobs_at_discovery: 8
 - name: Unacademy
   ats: smartrecruiters
   slug: unacademy
@@ -1021,32 +2491,111 @@ companies:
 - name: Upbound
   ats: greenhouse
   slug: upbound
+- name: UpCodes
+  ats: ashby
+  slug: upcodes
+  yc: Summer 2017
+  jobs_at_discovery: 5
+- name: Upstox
+  ats: smartrecruiters
+  slug: upstox
+  jobs_at_discovery: 1
 - name: Valarian Technologies
   ats: lever
   slug: valarian
   learned_from: indeed_world
+- name: Vanta
+  ats: ashby
+  slug: vanta
+  jobs_at_discovery: 85
 - name: Vantage
   ats: ashby
   slug: vantage
   jobs_at_discovery: 5
+- name: Vapi
+  ats: ashby
+  slug: vapi
+  yc: Winter 2021
+  jobs_at_discovery: 23
 - name: Varrlyn
   ats: smartrecruiters
   slug: Varrlyn
   learned_from: indeed_world
+- name: Vast.ai
+  ats: ashby
+  slug: vastai
+  jobs_at_discovery: 17
+- name: Vector
+  ats: ashby
+  slug: vector
+  yc: Winter 2023
+  jobs_at_discovery: 6
+- name: Veracode
+  ats: greenhouse
+  slug: veracode
+  jobs_at_discovery: 14
 - name: Vercel
   ats: greenhouse
   slug: vercel
+- name: VergeSense
+  ats: lever
+  slug: vergesense
+  yc: Summer 2017
+  jobs_at_discovery: 2
 - name: Veriff
   ats: greenhouse
   slug: veriff
   jobs_at_discovery: 10
+- name: Veritus
+  ats: ashby
+  slug: veritus
+  yc: Summer 2025
+  jobs_at_discovery: 4
+- name: Verse Medical
+  ats: ashby
+  slug: versemedical
+  yc: Summer 2018
+  jobs_at_discovery: 36
 - name: Version 1
   ats: smartrecruiters
   slug: Version1
   learned_from: indeed_world
+- name: Verto
+  ats: ashby
+  slug: verto
+  yc: Winter 2019
+  jobs_at_discovery: 1
+- name: Vetcove
+  ats: ashby
+  slug: vetcove
+  yc: Summer 2016
+  jobs_at_discovery: 28
 - name: Visa
   ats: workday
   url: https://visa.wd5.myworkdayjobs.com/Visa
+- name: voize
+  ats: ashby
+  slug: voize
+  yc: Winter 2022
+  jobs_at_discovery: 43
+- name: Vooma
+  ats: ashby
+  slug: vooma
+  yc: Winter 2023
+  jobs_at_discovery: 11
+- name: Vori
+  ats: ashby
+  slug: vori
+  yc: Winter 2020
+  jobs_at_discovery: 11
+- name: Vultr
+  ats: ashby
+  slug: vultr
+  jobs_at_discovery: 58
+- name: Wasabi
+  ats: greenhouse
+  slug: wasabi
+  jobs_at_discovery: 13
 - name: Wealthsimple
   ats: ashby
   slug: wealthsimple
@@ -1055,6 +2604,11 @@ companies:
   ats: ashby
   slug: weaviate
   jobs_at_discovery: 3
+- name: Webflow
+  ats: ashby
+  slug: webflow
+  yc: Summer 2013
+  jobs_at_discovery: 20
 - name: Wells Fargo
   ats: workday
   url: https://wf.wd1.myworkdayjobs.com/WellsFargoJobs
@@ -1076,10 +2630,18 @@ companies:
   ats: ashby
   slug: workhuman
   jobs_at_discovery: 8
+- name: WorkOS
+  ats: ashby
+  slug: workos
+  jobs_at_discovery: 29
 - name: Woven by Toyota
   ats: lever
   slug: woven-by-toyota
   jobs_at_discovery: 147
+- name: Writer
+  ats: ashby
+  slug: writer
+  jobs_at_discovery: 47
 - name: Xendit
   ats: greenhouse
   slug: xendit
@@ -1088,20 +2650,62 @@ companies:
   ats: ashby
   slug: xero
   jobs_at_discovery: 106
+- name: Y Combinator
+  ats: ashby
+  slug: ycombinator
+  yc: Unspecified
+  jobs_at_discovery: 10
+- name: Yugabyte
+  ats: greenhouse
+  slug: yugabyte
+  jobs_at_discovery: 16
 - name: Zapier
   ats: ashby
   slug: zapier
   jobs_at_discovery: 11
+- name: Zeit AI
+  ats: ashby
+  slug: zeit-ai
+  yc: Summer 2024
+  jobs_at_discovery: 7
+- name: Zenoti
+  ats: greenhouse
+  slug: zenoti
+  jobs_at_discovery: 55
+- name: Zensors
+  ats: ashby
+  slug: zensors
+  yc: Summer 2021
+  jobs_at_discovery: 5
 - name: Zeta
   ats: lever
   slug: zeta
+- name: Ziina
+  ats: ashby
+  slug: ziina
+  yc: Winter 2021
+  jobs_at_discovery: 13
 - name: Zilliz
   ats: lever
   slug: zilliz
   jobs_at_discovery: 11
+- name: Zip
+  ats: ashby
+  slug: zip
+  yc: Summer 2020
+  jobs_at_discovery: 117
+- name: Zippi
+  ats: lever
+  slug: zippi
+  yc: Summer 2019
+  jobs_at_discovery: 4
 - name: Zoom
   ats: workday
   url: https://zoom.wd5.myworkdayjobs.com/Zoom
 - name: Zscaler
   ats: greenhouse
   slug: zscaler
+- name: Zuora
+  ats: greenhouse
+  slug: zuora
+  jobs_at_discovery: 28

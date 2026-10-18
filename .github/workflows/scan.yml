@@ -60,10 +60,14 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional, read-only Gmail (skipped quietly while these are not set)
+          GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+          GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+          GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
           MAX_LLM: ${{ inputs.max_llm || '40' }}
           BACKFILL: ${{ inputs.backfill && '--backfill' || '' }}
-        run: python -m src.main --export --notify --limit 0 --max-llm "$MAX_LLM" $BACKFILL
+        run: python -m src.main --export --notify --gmail --limit 0 --max-llm "$MAX_LLM" $BACKFILL
 
       - name: Record minutes and commit state
         if: always() && steps.budget.outputs.skip != 'true'

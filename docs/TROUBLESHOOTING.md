@@ -31,3 +31,14 @@ seconds and errors, rejections by reason, AI scoring counts, and run duration.
 .venv/bin/python -m src.budget check                             # minutes used this month
 bash scripts/scan_secrets.sh                                     # secret scan of tracked files
 ```
+
+## New features
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| "Applied today" higher than Insights / GitHub | Marks still syncing, or a sync run was cancelled by GitHub | Automatic now: every sync re-sends all unconfirmed marks; the pill shows "N saving to GitHub…" until the data includes them |
+| Log: `gmail sync skipped: ... invalid_grant` | Refresh token expired (app in Testing mode = 7 days) or revoked | `python -m src.gmail_auth`, then update the `GMAIL_REFRESH_TOKEN` secret |
+| Gmail didn't update a job | Job not marked applied, email unclear, or two applied jobs at that company | See **Today → Check by hand**; `python -m src.gmail_sync --dry-run` explains each skip |
+| Resume PDF has a date/URL at the top | Browser print headers on | Print dialog → More settings → untick **Headers and footers** |
+| Resume PDF is two pages | Much longer resume.yaml | Shorten a bullet; the dashboard shrinks text down to ~8pt before giving up |
+| Learn tab empty | Feeds not fetched yet (every ~12h) | Wait for the next scan |

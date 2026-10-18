@@ -480,3 +480,474 @@ Vantage
 CloudZero
 Spot by NetApp
 Zesty
+# --- Added 2026-10-18: more India product companies, GCCs, SaaS and infra startups
+Browserstack
+Innovaccer
+Amagi
+Chaos Genius
+Zenoti
+Druva
+Gainsight
+Zeotap
+Mobile Premier League
+MPL
+WinZO
+Dailyhunt
+VerSe Innovation
+Moglix
+OfBusiness
+Infra.Market
+Zetwerk
+Jumbotail
+CureFit
+Cult.fit
+Practo
+PharmEasy
+Tata 1mg
+HealthifyMe
+Pristyn Care
+Innovaccer
+Qure.ai
+Niramai
+SigTuple
+Wysa
+Leena AI
+Rephrase.ai
+Observe AI
+Vahan
+Skit.ai
+Murf AI
+Pixis
+Gan.ai
+Composio
+Lyzr
+Atomicwork
+Rocketlane
+Hevo
+Sprinklr
+Kore.ai
+Freshdesk
+Chargebee
+Xflow
+Juspay
+Razorpay
+M2P Fintech
+Decentro
+Perfios
+Jocata
+Yubi
+CredAvenue
+Kotak811
+Groww
+Upstox
+Angel One
+Dhan
+Sensibull
+Zerodha
+Fisdom
+ET Money
+Cred
+Paytm Money
+PolicyBazaar
+Digit Insurance
+Turtlemint
+InsuranceDekho
+Ditto Insurance
+CarDekho
+Droom
+Park+
+Bluestone
+CaratLane
+FirstCry
+Purplle
+Sugar Cosmetics
+Nykaa Fashion
+Myntra
+Flipkart
+Cleartrip
+MakeMyTrip
+Ixigo
+EaseMyTrip
+Zoomcar
+Housing.com
+NoBroker
+NestAway
+Livspace
+HomeLane
+Square Yards
+Info Edge
+Naukri
+Zomato Hyperpure
+Swiggy Genie
+BigBasket
+Country Delight
+DealShare
+Citymall
+Shadowfax
+Porter
+Loadshare
+Xpressbees
+Ecom Express
+Delhivery
+Shiprocket
+Vayana
+Tally Solutions
+Zoho Corporation
+Freshworks
+Chargebee
+Postman
+BrowserStack
+LambdaTest
+Testsigma
+Katalon
+HackerRank
+HackerEarth
+InterviewBit
+Coding Ninjas
+Unstop
+Masai School
+Vedantu
+Byju's
+Toppr
+Classplus
+Teachmint
+LEAD School
+Eruditus
+Emeritus
+Great Learning
+Simplilearn
+Coursera
+Udemy
+Duolingo
+Chegg
+Gong
+Zuora
+Okta
+Nutanix
+Commvault
+Cohesity
+Veeam
+NetApp
+Pure Storage
+Arista Networks
+Juniper Networks
+F5
+Palo Alto Networks
+Fortinet
+Check Point
+Zscaler
+Netskope
+Cloudflare
+Akamai
+Imperva
+Sumo Logic
+LogicMonitor
+SolarWinds
+Splunk
+Elastic
+Couchbase
+Yugabyte
+SingleStore
+Starburst
+Dremio
+Fivetran
+dbt Labs
+Airbyte
+Astronomer
+Confluent
+Redpanda
+StreamNative
+Aerospike
+ScyllaDB
+Neo4j
+MinIO
+Wasabi
+Backblaze
+Hetzner
+OVHcloud
+Scaleway
+Vultr
+Linode
+Equinix
+Rackspace
+Nutanix
+VMware
+Broadcom
+Citrix
+Red Hat
+SUSE
+Canonical
+GitLab
+JFrog
+Sonatype
+Checkmarx
+Veracode
+Tenable
+Rapid7
+Qualys
+SentinelOne
+Arctic Wolf
+Abnormal Security
+Snyk
+Semgrep
+Socket
+Wiz
+Lacework
+Orca Security
+Upwind
+Aqua Security
+Sysdig
+Tigera
+Kubeshop
+Okteto
+Garden
+Shipa
+Devtron
+Middleware
+Last9
+Kloudfuse
+Signoz
+Zipy
+Hyperproof
+Sprinto
+Drata
+Vanta
+Secureframe
+Thoropass
+Postmark
+SendGrid
+Mailchimp
+Atlassian
+Asana
+Monday.com
+ClickUp
+Airtable
+Smartsheet
+Zendesk
+HubSpot
+Freshworks
+Gusto
+Justworks
+Remote.com
+Oyster HR
+Multiplier
+Papaya Global
+Velocity Global
+Toast
+Square
+Block
+Affirm
+Chime
+SoFi
+Marqeta
+Mercury
+Ramp
+Brex
+Navan
+TripActions
+Expensify
+Bill.com
+Carta
+Gemini
+Kraken
+Chainalysis
+Fireblocks
+Alchemy
+Consensys
+Polygon
+Solana Labs
+Aptos Labs
+OpenAI
+Anthropic
+Character.AI
+Runway
+ElevenLabs
+Glean
+Writer
+Jasper
+Harvey
+Abridge
+Hebbia
+Sierra
+Decagon
+Cognition
+Replit
+Cursor
+Anysphere
+Codeium
+Windsurf
+Tabnine
+Vercel
+Netlify
+Cloudinary
+Imgix
+Fastly
+Bunny.net
+Render
+Koyeb
+Zeabur
+Encore
+Nhost
+Convex
+Turso
+Xata
+Upstash
+Momento
+Grafbase
+Inngest
+Trigger.dev
+Resend
+Clerk
+Stytch
+WorkOS
+Descope
+Auth0
+FusionAuth
+Ory
+Keycloak
+Tyk
+Apollo GraphQL
+Hasura
+Postman
+Kong
+Gravitee
+Traefik Labs
+NGINX
+HAProxy Technologies
+Buoyant
+Solo.io
+Tetrate
+Isovalent
+Kubermatic
+Platform9
+Rafay
+Spectro Cloud
+D2iQ
+Mirantis
+Portainer
+Weaveworks
+Akuity
+Codefresh
+Harness
+Armory
+OpsMx
+CloudBees
+Octopus Deploy
+Bitrise
+Codemagic
+Semaphore
+Travis CI
+Buildkite
+CircleCI
+Cirrus Labs
+Depot
+Namespace
+WarpBuild
+Blacksmith
+Ubicloud
+Oxide Computer
+Lambda Labs
+Crusoe
+Nebius
+Vast.ai
+RunPod
+Paperspace
+Baseten
+Fireworks AI
+Anyscale
+OctoAI
+Predibase
+Lamini
+Weights and Biases
+Comet
+Neptune.ai
+ClearML
+Arize AI
+WhyLabs
+Fiddler AI
+Galileo
+Langfuse
+Helicone
+Portkey
+TrueFoundry
+Simplismart
+Inferless
+Ola Electric
+Tata Elxsi
+Bosch Global Software Technologies
+Siemens Healthineers
+Philips
+GE HealthCare
+Honeywell
+Schneider Electric
+Mercedes-Benz Research and Development India
+Volvo Group
+Continental
+Visa
+American Express
+Goldman Sachs
+Morgan Stanley
+JPMorgan Chase
+Wells Fargo
+Barclays
+Deutsche Bank
+Societe Generale
+BNY
+State Street
+Fidelity
+Northern Trust
+Standard Chartered
+HSBC
+Lowe's
+Target
+Tesco
+Walmart
+Sysco
+McKinsey
+BCG
+Bain
+Deloitte
+EY
+KPMG
+PwC
+Accenture
+Capgemini
+Cognizant
+Infosys
+Wipro
+HCLTech
+Tech Mahindra
+LTIMindtree
+Persistent Systems
+Zensar
+Mphasis
+Hexaware
+Coforge
+Sonata Software
+Happiest Minds
+Nagarro
+Globant
+EPAM Systems
+Publicis Sapient
+GlobalLogic
+Thoughtworks
+Grid Dynamics
+Endava
+Ciklum
+SoftServe
+Luxoft
+Altimetrik
+Searce
+CloudKeeper
+Ankercloud
+Rapyder
+Minfy
+Cloud4C
+Sify Technologies
+Yotta Infrastructure
+CtrlS
+Netmagic
+Tata Communications
+Jio Platforms
+Airtel
+Vodafone Idea

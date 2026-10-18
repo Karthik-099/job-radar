@@ -220,6 +220,10 @@ sources:
   smartrecruiters: {enabled: true}
   workday: {enabled: true}
 
+  # Big cloud employers' own job APIs (public, no login). India roles only.
+  amazon: {enabled: true}      # Amazon + AWS (DevOps, SysDE, Cloud Support, SRE)
+  microsoft: {enabled: true}   # Microsoft (Azure SRE, DevOps, Support Engineer)
+
   # Free public boards (no key).
   remotive: {enabled: true}
   remoteok: {enabled: true}
@@ -241,3 +245,9 @@ sources:
     enabled: false
     search_terms: [devops engineer, site reliability engineer, platform engineer]
     locations: [Bangalore, India]
+
+# Gmail status sync (read-only). Needs GMAIL_* secrets; see README. use_ai: a free model double-checks each
+# match (it only sees emails from companies you applied to). Set enabled: false to switch it off.
+gmail:
+  enabled: true
+  use_ai: true

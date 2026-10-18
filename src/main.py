@@ -1,6 +1,7 @@
 """job-radar pipeline:
 fetch -> enrich -> dedupe -> filter -> rank -> learn companies -> ghost check -> LLM score -> re-rank
-      -> closed-job check (daily) -> save state -> encrypted dashboard export -> email digest
+      -> closed-job check (daily) -> Gmail replies (read-only) -> save state -> encrypted dashboard export
+      -> email digest
 
 Usage:
     python -m src.main --dry-run                 # everything except writing/publishing/notifying
@@ -23,8 +24,8 @@ from .dedupe import dedupe, drop_seen, merge_multi_city
 from .filters import JobFilter, enrich
 from .envsecrets import install_log_redaction, load_dotenv
 from .learn import learn_companies
-from .models import Job
-from .sources import ats, boards, jobspy_source  # noqa: F401  (importing registers the sources)
+from .models import Job, posting_ref
+from .sources import ats, bigtech, boards, jobspy_source  # noqa: F401  (importing registers the sources)
 from .sources.base import REGISTRY, FetchContext, run_sources
 from .export import export
 from .notify import notify
@@ -32,6 +33,7 @@ from .recommend import apply_next, rank
 from .scoring import score_jobs
 from .envsecrets import secret
 from .state import JobStore
+from .tailor import jd_terms
 from .tracking import check_closed, drop_same_role
 
 log = logging.getLogger("job_radar")
@@ -56,6 +58,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--export", action="store_true", help="write the encrypted dashboard to dist/ (needs DASHBOARD_PASSWORD)")
     p.add_argument("--notify", action="store_true", help="post the email digest (GitHub Actions only)")
     p.add_argument("--check-closed", action="store_true", help="force the closed-job check now")
+    p.add_argument("--gmail", action="store_true", help="update applied jobs from Gmail replies (read-only)")
     p.add_argument("-v", "--verbose", action="store_true")
     return p.parse_args(argv)
 
@@ -140,6 +143,9 @@ def run(args: argparse.Namespace) -> int:
     kept = jf.apply(fresh)
     kept, repeats = drop_same_role(kept, store.jobs, store.meta)  # same role already tracked: not new
     for job in kept:
+        # The full JD is only available now (state keeps a snippet): extract ATS keywords and the job id once.
+        job.jd_terms = jd_terms(f"{job.title}\n{job.description}")
+        job.ref = job.ref or posting_ref(job.url, job.description)
         rank(job, prefs)
     kept.sort(key=lambda j: j.apply_priority or 0, reverse=True)
     learned = learn_companies([j for j in unique if jf.title_ok(j.title)], dry_run=args.dry_run)
@@ -161,6 +167,11 @@ def run(args: argparse.Namespace) -> int:
     # 4. Daily: re-open saved links and flag closed postings.
     closed_stats = (check_closed(pool, store.meta, force=args.check_closed)
                     if not (args.dry_run or args.no_fetch) or args.check_closed else {})
+
+    # 5. Replies in Gmail move jobs you applied to (read-only; never touches jobs you didn't apply to).
+    gmail_stats: dict = {}
+    if args.gmail and not args.dry_run:
+        gmail_stats = _gmail(store, prefs)
 
     print_table(kept, args.limit)
     print_apply_next(apply_next(pool, n=15))
@@ -184,6 +195,7 @@ def run(args: argparse.Namespace) -> int:
         "sources_failed": ", ".join(r.name for r in results if r.error),
         "llm_scored": score_stats.get("llm", 0), "llm_cached": score_stats.get("cached", 0),
         "closed_found": closed_stats.get("closed", 0),
+        "gmail_updated": gmail_stats.get("updated", 0),
     }
     by_source: dict[str, int] = {}
     for j in kept:
@@ -201,7 +213,14 @@ def run(args: argparse.Namespace) -> int:
         write_summary(stats)
         return 0
 
-    # 5. Save state.
+    if names and not args.no_fetch:  # "Learn" tab: recent videos, refreshed about twice a day
+        from .videos import refresh
+        try:
+            refresh(store.meta, gaps=_skill_gaps(pool))
+        except Exception as exc:  # noqa: BLE001 - optional feature, never fails the scan
+            log.warning("videos skipped: %s", type(exc).__name__)
+
+    # 6. Save state.
     store.add(kept)
     for job in kept:  # same objects as in pool; add() keeps existing ones
         store.jobs[job.id] = job
@@ -214,7 +233,7 @@ def run(args: argparse.Namespace) -> int:
     (STATE_DIR / "last_run.json").write_text(json.dumps(stats, indent=1) + "\n", encoding="utf-8")
     log.info("saved %d jobs (pruned %d)", len(store.jobs), pruned)
 
-    # 6. Encrypted dashboard export + 7. email digest.
+    # 7. Encrypted dashboard export + 8. email digest.
     jobs_now = list(store.jobs.values())
     if args.export:
         password = secret("DASHBOARD_PASSWORD")
@@ -230,6 +249,29 @@ def run(args: argparse.Namespace) -> int:
     print(f"run duration: {round(time.monotonic() - started, 1)}s")
     write_summary(stats)
     return 0 if (not results or any(not r.error for r in results)) else 2
+
+
+def _skill_gaps(jobs: list[Job]) -> list[str]:
+    from collections import Counter
+    gaps = Counter(s.lower() for j in jobs if (j.score or 0) >= 6 for s in (j.scoring or {}).get("missing_skills") or [])
+    return [s for s, _ in gaps.most_common(8)]
+
+
+def _gmail(store: JobStore, prefs: Preferences) -> dict:
+    from .gmail_sync import GmailError, sync
+    cfg = prefs.raw.get("gmail") or {}
+    if not cfg.get("enabled", True) or not secret("GMAIL_REFRESH_TOKEN"):
+        return {}
+    try:
+        stats = sync(store, use_ai=bool(cfg.get("use_ai", True)))
+    except (GmailError, OSError, ValueError) as exc:  # never let Gmail trouble sink the scan
+        log.warning("gmail sync skipped: %s", exc)
+        return {}
+    for c in stats.get("changes", []):
+        log.info("gmail: %s @ %s: %s -> %s", c["title"], c["company"], c["from"], c["to"])
+    log.info("gmail: read %d, hiring %d, updated %d, skipped %d",
+             stats["read"], stats["hiring"], stats["updated"], stats["skipped"])
+    return stats
 
 
 def _record_run(meta: dict, stats: dict, fresh_count: int, already: int) -> None:

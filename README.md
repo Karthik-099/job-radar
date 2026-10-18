@@ -13,10 +13,15 @@ encrypted, password-protected dashboard. You apply by hand; nothing logs in anyw
 
 | Area | Details |
 |---|---|
-| Sources | Indeed, Naukri, LinkedIn (public pages); 230+ company career sites (Greenhouse, Lever, Ashby, SmartRecruiters, Workday) that grow automatically; remote boards (Remotive, RemoteOK, We Work Remotely, Himalayas, Jobicy, HN Who is Hiring); Arbeitnow (visa-sponsored, Europe); worldwide rotation over 71 Indeed country sites + LinkedIn |
+| Sources | Indeed, Naukri, LinkedIn (public guest pages only, never your account); 400+ company career sites (Greenhouse, Lever, Ashby, SmartRecruiters, Workday) incl. Y Combinator companies, that grow automatically; Amazon/AWS and Microsoft job APIs; remote boards (Remotive, RemoteOK, We Work Remotely, Himalayas, Jobicy, HN Who is Hiring); Arbeitnow (visa-sponsored, Europe); worldwide rotation over 71 Indeed country sites + LinkedIn |
 | Filters | target titles (~45 patterns), senior/lead/manager/level-3+ excluded, experience ≤ 3 years, ≤ 30 days old, expired postings removed, local-language-only jobs abroad removed, training "academies" removed |
 | Ranking | **Apply next**: resume fit × location (Bangalore > Pune/Hyderabad > India > remote > abroad with visa) × experience fit × freshness × company, with reasons; closing-soon boost |
-| AI apply kit | fit score, level fit, matched/missing skills, 3 resume bullets to emphasize, referral message, 5 interview topics, red flags |
+| AI apply kit | fit score, level fit, matched/missing skills, interview topics, red flags |
+| Tailored resume | per job, printed to PDF in your own layout (one A4 page, Lato): bullets and skills reordered for the job, JD keywords added only when your resume already proves them, ATS keyword match before/after |
+| Referral message | your 5-line format with the role and the employer's job ID filled in, plus a short note that fits LinkedIn's 300 characters; you send it yourself |
+| Gmail sync | read-only: replies (rejection, assessment, interview, offer) move jobs you already marked applied; unclear emails are listed for you, never guessed |
+| Autofill | Tampermonkey script for Greenhouse/Lever/Ashby forms: fills your details on click, optional AI draft for "Why us?"; never submits, never runs on LinkedIn |
+| Learn | recent videos from 26 DevOps/cloud/AI channels, ranked by your stack and skill gaps |
 | Lifecycle | closed-job checker (daily), ghost/repost warning, follow-up reminders after 7 days, daily goal + streak |
 | Analytics | new jobs per day by region, your applications vs goal, skill gaps, strengths, hiring momentum, funnel, sources |
 | Alerts | an email from GitHub when good new jobs arrive, plus a morning summary at ~8:47 AM IST |
@@ -87,14 +92,44 @@ Create another fine-grained token: name `job-radar-status`, only repository **jo
 **Actions: Read and write**, nothing else. Paste it in the dashboard → **Settings** → Sync. Without it,
 ticks are saved in that browser only (still fully usable).
 
+### 9. Optional: Gmail status sync (read-only, about 10 minutes, once)
+Jobs you marked **Applied** move to Rejected / Shortlisted / Interview / Offer when the company replies.
+The token can only *read*: Google refuses delete, move, label or send for it.
+
+1. console.cloud.google.com → top bar project picker → **New project** → name `job-radar` → **Create**, then select it.
+2. Search bar: **Gmail API** → **Enable**.
+3. Left menu **APIs & Services** → **OAuth consent screen** (or **Google Auth Platform**) → **Get started**:
+   app name `job-radar`, your Gmail as support email → Audience **External** → your Gmail as contact → **Create**.
+4. **Audience** → **Test users** → **Add users** → your Gmail → **Save**. Then on the same page click
+   **Publish app** → **Confirm** (otherwise Google expires the token every 7 days; you are the only user, and
+   the "unverified app" warning you'll see on sign-in is expected for a personal app).
+5. **Data access** → **Add or remove scopes** → tick `.../auth/gmail.readonly` only → **Update** → **Save**.
+6. **Clients** → **Create client** → type **Desktop app** → name `job-radar` → **Create** → copy the Client ID
+   and Client secret into your local `.env` as `GMAIL_CLIENT_ID=` and `GMAIL_CLIENT_SECRET=`.
+7. Terminal, in this folder: `.venv/bin/python -m src.gmail_auth` → browser opens → pick your Gmail →
+   "Google hasn't verified this app" → **Continue** → tick read access → **Continue**. It saves
+   `GMAIL_REFRESH_TOKEN` into `.env` (nothing is printed).
+8. Check before trusting it: `.venv/bin/python -m src.gmail_sync --dry-run` lists what it *would* change.
+   If Google refuses sign-in after step 4 ("access blocked"), set the app back to **Testing**: it works the same,
+   but the token expires every 7 days (the scan then skips Gmail and logs it; rerun step 7 and update the secret).
+9. Add 3 repo secrets (Settings → Secrets and variables → Actions → New repository secret), copying each value
+   from `.env`: `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, `GMAIL_REFRESH_TOKEN`. The next scan uses them.
+
+### 10. Optional: autofill for Greenhouse, Lever and Ashby
+Install the Tampermonkey extension → dashboard **Settings** → **Install autofill script** → **Install**.
+Tampermonkey icon → **Job Radar: my details** → fill your details once (stored only in your browser).
+On an application page click **⚡ Fill my details**, check everything, attach the tailored PDF, submit yourself.
+
 ## Daily use
 
 1. Open the email or the dashboard, enter your passphrase.
 2. **Today** shows Apply next, fresh jobs from the last 24 hours, closing-soon, and follow-ups.
 3. **Open job** → apply on the company site → **Mark applied**. It moves to the Applied column.
-4. Open **Details** for the AI apply kit: resume bullets, referral message (copy button), interview topics,
-   and **Find people** (a LinkedIn people search link for that company).
-5. **Insights** shows what to learn next and which companies are hiring most.
+4. Open **Details**: **Download tailored resume (PDF)** (print window → Save as PDF, A4, headers/footers off),
+   the referral message (replace `[Name]`, copy), interview topics, and **Find a referrer** (opens a normal
+   LinkedIn people search in your browser; nothing on LinkedIn is automated).
+5. Jobs you applied to, and the same role found again under another city or board, disappear from the lists.
+6. **Learn** has fresh videos for your stack and gaps; **Insights** shows your funnel and who is hiring most.
 
 ## Local commands
 
@@ -118,12 +153,15 @@ git config core.hooksPath .githooks                     # once: blocks committin
 | `--no-score` / `--no-fetch` | skip AI scoring / work from saved state only |
 | `--export` / `--notify` | build the encrypted dashboard / post the email digest (CI) |
 | `--check-closed` | run the closed-job check now |
+| `--gmail` | update applied jobs from Gmail replies (read-only) |
 
 ## Tuning
 
 Everything lives in [profile/preferences.yaml](profile/preferences.yaml): title patterns, exclusions,
 experience cap, city boosts, abroad countries, language rule, sources and their search terms, daily goal.
-Your resume for scoring is [profile/resume.md](profile/resume.md) (no contact details).
+Your resume for scoring is [profile/resume.md](profile/resume.md) (no contact details, sent to the AI). The PDF is
+printed from [profile/resume.yaml](profile/resume.yaml) (never sent to any AI): edit both when your resume changes.
+Learn channels: [profile/youtube_channels.yaml](profile/youtube_channels.yaml).
 
 ## Docs
 

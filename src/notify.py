@@ -20,7 +20,8 @@ import requests
 
 from .envsecrets import secret
 from .models import Job
-from .recommend import age_label, apply_next
+from .models import role_key
+from .recommend import age_label, applied_roles, apply_next
 from .tracking import follow_ups
 
 log = logging.getLogger(__name__)
@@ -53,7 +54,9 @@ def _line(job: Job) -> str:
 
 def digest_body(new_jobs: list[Job], all_jobs: list[Job], dashboard_url: str, summary: bool,
                 goal: int, applied_yesterday: int, stats: dict[str, Any]) -> str:
-    worth = sorted((j for j in new_jobs if (j.apply_priority or 0) >= WORTH_ALERT),
+    done = applied_roles(all_jobs)  # same role you already applied to (other city/board): not news
+    worth = sorted((j for j in new_jobs if (j.apply_priority or 0) >= WORTH_ALERT
+                    and role_key(j.company, j.title) not in done),
                    key=lambda j: j.apply_priority or 0, reverse=True)
     parts: list[str] = []
     if summary:

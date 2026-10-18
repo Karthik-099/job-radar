@@ -17,11 +17,14 @@
       { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
   }
 
+  // v1: plain JSON. v2: gzipped JSON (much smaller download), inflated with the browser's DecompressionStream.
   async function decryptBlob(blob, passphrase) {
-    if (!blob || blob.v !== 1) throw new Error("Unsupported data format");
+    if (!blob || (blob.v !== 1 && blob.v !== 2)) throw new Error("Unsupported data format");
     const key = await deriveKey(passphrase, b64d(blob.salt), blob.iters);
     const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64d(blob.iv) }, key, b64d(blob.ct));
-    return JSON.parse(dec.decode(pt));
+    if (blob.v === 1) return JSON.parse(dec.decode(pt));
+    const stream = new Blob([pt]).stream().pipeThrough(new DecompressionStream("gzip"));
+    return JSON.parse(await new Response(stream).text());
   }
 
   async function encryptWithKey(key, obj) {

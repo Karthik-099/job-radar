@@ -46,6 +46,12 @@ def secret(name: str) -> str | None:
     return value
 
 
+def register_secret(value: str) -> None:
+    """Mask a value obtained at runtime (e.g. a short-lived OAuth access token) in every log line."""
+    if value:
+        _KNOWN.add(value)
+
+
 def redact(text: str) -> str:
     for value in _KNOWN:
         if len(value) >= 8:
