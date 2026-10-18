@@ -1,31 +1,31 @@
 {
- "finished_at": "2026-10-18T11:08:54+00:00",
- "duration_seconds": 182.6,
- "raw": 4028,
- "unique": 1956,
- "fresh": 1755,
- "kept": 35,
- "kept_india": 12,
- "kept_remote": 1,
- "kept_abroad": 18,
+ "finished_at": "2026-10-18T11:12:38+00:00",
+ "duration_seconds": 182.8,
+ "raw": 4052,
+ "unique": 1987,
+ "fresh": 1754,
+ "kept": 2,
+ "kept_india": 1,
+ "kept_remote": 0,
+ "kept_abroad": 1,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
-   "jobs": 14,
-   "seconds": 71.4,
+   "jobs": 12,
+   "seconds": 69.8,
    "error": ""
   },
   {
    "name": "lever",
    "jobs": 7,
-   "seconds": 22.4,
+   "seconds": 22.0,
    "error": ""
   },
   {
    "name": "ashby",
    "jobs": 85,
-   "seconds": 101.6,
+   "seconds": 102.1,
    "error": ""
   },
   {
@@ -37,106 +37,106 @@
   {
    "name": "workday",
    "jobs": 15,
-   "seconds": 18.5,
+   "seconds": 18.1,
    "error": ""
   },
   {
    "name": "amazon",
-   "jobs": 3,
-   "seconds": 3.8,
+   "jobs": 0,
+   "seconds": 4.5,
    "error": ""
   },
   {
    "name": "microsoft",
    "jobs": 2,
-   "seconds": 12.8,
+   "seconds": 6.6,
    "error": ""
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 1.4,
+   "seconds": 1.2,
    "error": ""
   },
   {
    "name": "remoteok",
    "jobs": 2,
-   "seconds": 1.1,
+   "seconds": 1.3,
    "error": ""
   },
   {
    "name": "weworkremotely",
    "jobs": 3,
-   "seconds": 0.8,
+   "seconds": 0.7,
    "error": ""
   },
   {
    "name": "himalayas",
    "jobs": 33,
-   "seconds": 3.6,
+   "seconds": 2.1,
    "error": ""
   },
   {
    "name": "jobicy",
    "jobs": 4,
-   "seconds": 1.5,
+   "seconds": 1.8,
    "error": ""
   },
   {
    "name": "arbeitnow",
    "jobs": 12,
-   "seconds": 1.0,
+   "seconds": 1.3,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 5,
-   "seconds": 4.4,
+   "seconds": 3.8,
    "error": ""
   },
   {
    "name": "indeed",
    "jobs": 1513,
-   "seconds": 35.7,
+   "seconds": 34.8,
    "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 1187,
-   "seconds": 96.7,
+   "jobs": 1185,
+   "seconds": 97.3,
    "error": ""
   },
   {
    "name": "linkedin",
-   "jobs": 135,
-   "seconds": 26.0,
+   "jobs": 125,
+   "seconds": 26.4,
    "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 897,
-   "seconds": 35.5,
+   "jobs": 898,
+   "seconds": 33.4,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 42,
-   "seconds": 13.3,
+   "jobs": 82,
+   "seconds": 22.2,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 1178,
-  "title_excluded": 218,
-  "too_much_experience": 116,
-  "needs_local_language": 104,
-  "abroad_country_not_listed": 64,
+  "title_not_target": 1183,
+  "title_excluded": 232,
+  "too_much_experience": 117,
+  "needs_local_language": 109,
+  "abroad_country_not_listed": 71,
   "description_excluded": 14,
   "too_old": 9,
   "abroad_no_sponsorship": 4,
   "company_excluded": 2
  },
- "companies_learned": 2,
+ "companies_learned": 0,
  "reposts_flagged": 1,
  "repeats_skipped": 11,
  "sources_ok": 19,
@@ -147,12 +147,7 @@
  "closed_found": 0,
  "gmail_updated": 0,
  "kept_by_source": {
-  "indeed_world": 12,
-  "ashby": 10,
-  "indeed": 1,
-  "amazon": 3,
-  "smartrecruiters": 4,
-  "greenhouse": 2,
-  "linkedin": 4
+  "indeed_world": 1,
+  "linkedin": 1
  }
 }
