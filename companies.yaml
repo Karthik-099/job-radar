@@ -746,6 +746,10 @@ companies:
   ats: smartrecruiters
   slug: Devoteam
   learned_from: indeed_world
+- name: Dexcom
+  ats: workday
+  url: https://dexcom.wd1.myworkdayjobs.com/Dexcom
+  learned_from: indeed_world
 - name: Discord
   ats: greenhouse
   slug: discord
@@ -1288,6 +1292,10 @@ companies:
   slug: kalshi
   yc: Winter 2019
   jobs_at_discovery: 49
+- name: KBR
+  ats: workday
+  url: https://kbr.wd5.myworkdayjobs.com/KBR_Careers
+  learned_from: indeed_world
 - name: Kentik
   ats: greenhouse
   slug: kentik
