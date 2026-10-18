@@ -665,6 +665,10 @@ companies:
   ats: greenhouse
   slug: cultureamp
   jobs_at_discovery: 31
+- name: CureMD
+  ats: workday
+  url: https://curemd.wd1.myworkdayjobs.com/CureMD
+  learned_from: indeed_world
 - name: Curri
   ats: ashby
   slug: curri
@@ -810,6 +814,10 @@ companies:
   ats: greenhouse
   slug: duolingo
   jobs_at_discovery: 63
+- name: DXC Technology
+  ats: workday
+  url: https://dxctechnology.wd1.myworkdayjobs.com/DXCJobs
+  learned_from: indeed_world
 - name: Eight Sleep
   ats: ashby
   slug: eightsleep
