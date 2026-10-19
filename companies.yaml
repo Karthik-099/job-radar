@@ -127,6 +127,10 @@ companies:
   ats: ashby
   slug: alchemy
   jobs_at_discovery: 22
+- name: Alcoa
+  ats: workday
+  url: https://alcoa.wd5.myworkdayjobs.com/careers
+  learned_from: indeed_world
 - name: Aleph
   ats: lever
   slug: aleph
@@ -860,6 +864,10 @@ companies:
   ats: smartrecruiters
   slug: endava
   jobs_at_discovery: 114
+- name: EngFlow
+  ats: ashby
+  slug: engflow
+  learned_from: indeed_world
 - name: Enode
   ats: ashby
   slug: enode
@@ -2232,6 +2240,10 @@ companies:
   ats: greenhouse
   slug: singlestore
   jobs_at_discovery: 44
+- name: Skip Loans
+  ats: ashby
+  slug: skip-loans
+  learned_from: indeed_world
 - name: Slice
   ats: greenhouse
   slug: slice
@@ -2392,6 +2404,10 @@ companies:
   slug: tavus
   yc: Summer 2021
   jobs_at_discovery: 19
+- name: Techsur Solutions
+  ats: smartrecruiters
+  slug: TechSurSolutions
+  learned_from: indeed_world
 - name: Tekion
   ats: ashby
   slug: tekion
@@ -2467,6 +2483,10 @@ companies:
   slug: tovala
   yc: Winter 2016
   jobs_at_discovery: 11
+- name: Tower Loan
+  ats: workday
+  url: https://towerloan.wd12.myworkdayjobs.com/Tower_Loan_Careers
+  learned_from: indeed_world
 - name: Trigger.dev
   ats: ashby
   slug: triggerdev
@@ -2600,6 +2620,10 @@ companies:
   slug: versemedical
   yc: Summer 2018
   jobs_at_discovery: 36
+- name: Versent
+  ats: workday
+  url: https://aett.wd3.myworkdayjobs.com/Versent
+  learned_from: indeed_world
 - name: Version 1
   ats: smartrecruiters
   slug: Version1
