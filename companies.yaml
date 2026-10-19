@@ -153,6 +153,10 @@ companies:
   slug: alpaca
   yc: Winter 2019
   jobs_at_discovery: 69
+- name: Amadeus
+  ats: workday
+  url: https://amadeus.wd502.myworkdayjobs.com/jobs
+  learned_from: indeed_world
 - name: Amplitude
   ats: ashby
   slug: amplitude
@@ -262,6 +266,10 @@ companies:
   slug: atomic
   yc: Summer 2020
   jobs_at_discovery: 10
+- name: Augur Initiative Ltd
+  ats: ashby
+  slug: augur
+  learned_from: indeed_world
 - name: Aurelian
   ats: ashby
   slug: aurelian
@@ -886,6 +894,10 @@ companies:
   slug: escape
   yc: Winter 2023
   jobs_at_discovery: 6
+- name: Eurofins GSC IT DC
+  ats: smartrecruiters
+  slug: Eurofins
+  learned_from: indeed
 - name: Eventual
   ats: ashby
   slug: eventual
@@ -2564,9 +2576,17 @@ companies:
   ats: smartrecruiters
   slug: upstox
   jobs_at_discovery: 1
+- name: UptimeAI
+  ats: ashby
+  slug: uptimeai
+  learned_from: indeed
 - name: Valarian Technologies
   ats: lever
   slug: valarian
+  learned_from: indeed_world
+- name: Valeo
+  ats: workday
+  url: https://valeo.wd3.myworkdayjobs.com/valeo_jobs
   learned_from: indeed_world
 - name: Vanta
   ats: ashby
@@ -2731,6 +2751,10 @@ companies:
   ats: ashby
   slug: zapier
   jobs_at_discovery: 11
+- name: Zebra Technologies
+  ats: workday
+  url: https://zebra.wd501.myworkdayjobs.com/Zebra_careers
+  learned_from: indeed
 - name: Zeit AI
   ats: ashby
   slug: zeit-ai
