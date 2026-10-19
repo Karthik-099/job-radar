@@ -1950,6 +1950,10 @@ companies:
   slug: prelim
   yc: Summer 2017
   jobs_at_discovery: 8
+- name: Priceline.com
+  ats: workday
+  url: https://priceline.wd1.myworkdayjobs.com/Priceline
+  learned_from: indeed
 - name: Prodigal
   ats: greenhouse
   slug: prodigal
