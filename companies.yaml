@@ -1621,6 +1621,10 @@ companies:
 - name: Morgan Stanley
   ats: workday
   url: https://ms.wd5.myworkdayjobs.com/External
+- name: Motive
+  ats: greenhouse
+  slug: gomotive
+  learned_from: indeed_world
 - name: Motorola Solutions
   ats: workday
   url: https://motorolasolutions.wd5.myworkdayjobs.com/Careers
