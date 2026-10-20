@@ -10,6 +10,10 @@ companies:
   ats: lever
   slug: 360learning
   learned_from: indeed_world
+- name: 8x8
+  ats: workday
+  url: https://8x8inc.wd5.myworkdayjobs.com/8x8_External_Careers
+  learned_from: indeed_world
 - name: Abacum
   ats: ashby
   slug: abacum
@@ -164,6 +168,10 @@ companies:
 - name: Amadeus
   ats: workday
   url: https://amadeus.wd502.myworkdayjobs.com/jobs
+  learned_from: indeed_world
+- name: Amber Tech
+  ats: ashby
+  slug: amber
   learned_from: indeed_world
 - name: Amplitude
   ats: ashby
