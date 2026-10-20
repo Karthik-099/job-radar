@@ -123,6 +123,10 @@ companies:
   slug: albedo
   yc: Winter 2021
   jobs_at_discovery: 5
+- name: Albemarle
+  ats: workday
+  url: https://albemarle.wd5.myworkdayjobs.com/External
+  learned_from: indeed
 - name: Alchemy
   ats: ashby
   slug: alchemy
