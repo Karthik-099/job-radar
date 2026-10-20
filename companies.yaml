@@ -35,6 +35,10 @@ companies:
   ats: workday
   url: https://accelya.wd103.myworkdayjobs.com/Careers
   learned_from: indeed
+- name: Accendra Health
+  ats: workday
+  url: https://accendra.wd504.myworkdayjobs.com/AccendraCareers
+  learned_from: indeed_world
 - name: Accenture
   ats: workday
   url: https://accenture.wd103.myworkdayjobs.com/AccentureCareers
