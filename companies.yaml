@@ -1384,6 +1384,10 @@ companies:
   ats: lever
   slug: keyloop
   learned_from: indeed
+- name: kiefer
+  ats: ashby
+  slug: kiefer
+  learned_from: indeed_world
 - name: Kivo Health
   ats: ashby
   slug: kivo-health
