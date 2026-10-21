@@ -276,6 +276,10 @@ companies:
   slug: atlas
   yc: Summer 2021
   jobs_at_discovery: 6
+- name: Atlys
+  ats: ashby
+  slug: atlys
+  learned_from: indeed
 - name: AtoB
   ats: ashby
   slug: atob
@@ -636,6 +640,10 @@ companies:
 - name: Coinbase
   ats: greenhouse
   slug: coinbase
+- name: Commonwealth Bank of Australia
+  ats: workday
+  url: https://cba.wd3.myworkdayjobs.com/commbank_careers
+  learned_from: indeed
 - name: Commvault
   ats: greenhouse
   slug: commvault
@@ -1372,6 +1380,10 @@ companies:
   ats: greenhouse
   slug: kentik
   jobs_at_discovery: 4
+- name: Keyloop
+  ats: lever
+  slug: keyloop
+  learned_from: indeed
 - name: Kivo Health
   ats: ashby
   slug: kivo-health
