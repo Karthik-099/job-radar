@@ -398,6 +398,10 @@ companies:
   ats: smartrecruiters
   slug: bluestone
   jobs_at_discovery: 147
+- name: BMO Financial Group
+  ats: workday
+  url: https://bmo.wd3.myworkdayjobs.com/External
+  learned_from: indeed_world
 - name: Bosch
   ats: smartrecruiters
   slug: BoschGroup
@@ -611,6 +615,10 @@ companies:
   ats: ashby
   slug: cloudzero
   jobs_at_discovery: 16
+- name: CME Group
+  ats: workday
+  url: https://cmegroup.wd1.myworkdayjobs.com/cme_careers
+  learned_from: indeed_world
 - name: Cockroach Labs
   ats: greenhouse
   slug: cockroachlabs
@@ -871,6 +879,10 @@ companies:
   slug: eightsleep
   yc: Summer 2015
   jobs_at_discovery: 40
+- name: Elanco
+  ats: workday
+  url: https://elanco.wd5.myworkdayjobs.com/External_Career
+  learned_from: indeed
 - name: Elastic
   ats: greenhouse
   slug: elastic
@@ -1672,6 +1684,10 @@ companies:
   ats: ashby
   slug: navi
   jobs_at_discovery: 4
+- name: NCR
+  ats: workday
+  url: https://ncr.wd1.myworkdayjobs.com/ext_apac
+  learned_from: indeed
 - name: NCS
   ats: smartrecruiters
   slug: NCS3
@@ -1715,6 +1731,10 @@ companies:
   slug: new-story
   yc: Summer 2015
   jobs_at_discovery: 2
+- name: NextPower
+  ats: workday
+  url: https://nextracker.wd5.myworkdayjobs.com/nextpower_careers
+  learned_from: indeed
 - name: Ninjavan
   ats: lever
   slug: ninjavan
@@ -2514,6 +2534,10 @@ companies:
   slug: titan
   yc: Summer 2018
   jobs_at_discovery: 11
+- name: Tms Llc
+  ats: smartrecruiters
+  slug: TMSLLC
+  learned_from: indeed_world
 - name: Toast
   ats: greenhouse
   slug: toast
