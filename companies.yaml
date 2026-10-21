@@ -165,6 +165,10 @@ companies:
   slug: alpaca
   yc: Winter 2019
   jobs_at_discovery: 69
+- name: Alt Platform Inc
+  ats: ashby
+  slug: alt
+  learned_from: indeed_world
 - name: Amadeus
   ats: workday
   url: https://amadeus.wd502.myworkdayjobs.com/jobs
@@ -1672,6 +1676,10 @@ companies:
   ats: smartrecruiters
   slug: NCS3
   learned_from: indeed_world
+- name: NCS
+  ats: smartrecruiters
+  slug: NCSAustralia
+  learned_from: indeed_world
 - name: Nebius
   ats: greenhouse
   slug: nebius
@@ -2135,6 +2143,10 @@ companies:
   ats: ashby
   slug: resend
   jobs_at_discovery: 14
+- name: Reserve Bank of Australia
+  ats: workday
+  url: https://rba.wd105.myworkdayjobs.com/RBA_Careers
+  learned_from: indeed_world
 - name: Retell AI
   ats: ashby
   slug: retell-ai
@@ -2145,6 +2157,10 @@ companies:
   slug: revenuecat
   yc: Summer 2018
   jobs_at_discovery: 17
+- name: RMIT University
+  ats: workday
+  url: https://rmit.wd3.myworkdayjobs.com/RMIT_Careers
+  learned_from: indeed_world
 - name: Robco
   ats: ashby
   slug: robco
@@ -2682,6 +2698,10 @@ companies:
   slug: vetcove
   yc: Summer 2016
   jobs_at_discovery: 28
+- name: VicRoads
+  ats: workday
+  url: https://rlservices.wd105.myworkdayjobs.com/External_Careers
+  learned_from: indeed_world
 - name: Visa
   ats: workday
   url: https://visa.wd5.myworkdayjobs.com/Visa
