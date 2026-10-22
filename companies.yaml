@@ -1479,6 +1479,10 @@ companies:
   ats: smartrecruiters
   slug: lendingkart
   jobs_at_discovery: 1
+- name: Leonardo
+  ats: workday
+  url: https://leonardocompany.wd3.myworkdayjobs.com/LeonardoCareerSite
+  learned_from: indeed_world
 - name: Levi Strauss
   ats: workday
   url: https://levistraussandco.wd5.myworkdayjobs.com/External
@@ -1560,6 +1564,10 @@ companies:
 - name: Mattermost
   ats: greenhouse
   slug: mattermost
+- name: Mavenir
+  ats: workday
+  url: https://mavenir.wd1.myworkdayjobs.com/Mavenir_Careers
+  learned_from: indeed
 - name: May Mobility
   ats: greenhouse
   slug: maymobility
@@ -2050,6 +2058,10 @@ companies:
 - name: Protex AI
   ats: ashby
   slug: protex%20ai
+  learned_from: indeed_world
+- name: Prudential Plc
+  ats: workday
+  url: https://prudential.wd3.myworkdayjobs.com/prudential
   learned_from: indeed_world
 - name: PTC
   ats: workday
