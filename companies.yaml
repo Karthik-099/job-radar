@@ -492,6 +492,10 @@ companies:
   slug: cardboard
   yc: Winter 2026
   jobs_at_discovery: 7
+- name: Cardinal Health
+  ats: workday
+  url: https://cardinalhealth.wd1.myworkdayjobs.com/EXT
+  learned_from: indeed_world
 - name: Careem
   ats: greenhouse
   slug: careem
@@ -950,6 +954,10 @@ companies:
 - name: F5
   ats: workday
   url: https://ffive.wd5.myworkdayjobs.com/f5jobs
+- name: FactSet
+  ats: workday
+  url: https://factset.wd108.myworkdayjobs.com/FactSetCareers
+  learned_from: linkedin
 - name: Faire
   ats: greenhouse
   slug: faire
@@ -2856,6 +2864,10 @@ companies:
   slug: zeit-ai
   yc: Summer 2024
   jobs_at_discovery: 7
+- name: Zendesk
+  ats: workday
+  url: https://zendesk.wd1.myworkdayjobs.com/zendesk
+  learned_from: indeed
 - name: Zenoti
   ats: greenhouse
   slug: zenoti
