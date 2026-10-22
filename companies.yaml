@@ -345,6 +345,10 @@ companies:
   slug: benepass
   yc: Winter 2020
   jobs_at_discovery: 4
+- name: Berkeley Insurance Group
+  ats: workday
+  url: https://bbinsurance.wd1.myworkdayjobs.com/Careers_Europe
+  learned_from: indeed_world
 - name: Bill.com
   ats: greenhouse
   slug: billcom
@@ -1267,6 +1271,10 @@ companies:
   slug: humaninterest
   yc: Summer 2015
   jobs_at_discovery: 67
+- name: Humanoid
+  ats: ashby
+  slug: humanoid
+  learned_from: indeed_world
 - name: Hyperbound
   ats: ashby
   slug: hyperbound
@@ -1358,6 +1366,10 @@ companies:
   slug: juicebox
   yc: Summer 2022
   jobs_at_discovery: 31
+- name: JULIUS BAER
+  ats: workday
+  url: https://juliusbaer.wd3.myworkdayjobs.com/External
+  learned_from: indeed_world
 - name: JumpCloud
   ats: lever
   slug: jumpcloud
