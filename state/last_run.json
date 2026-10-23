@@ -1,13 +1,13 @@
 {
- "finished_at": "2026-10-23T17:11:49+00:00",
- "duration_seconds": 239.6,
- "raw": 4206,
- "unique": 2273,
- "fresh": 2068,
- "kept": 68,
- "kept_india": 19,
- "kept_remote": 1,
- "kept_abroad": 48,
+ "finished_at": "2026-10-23T21:28:27+00:00",
+ "duration_seconds": 209.1,
+ "raw": 4376,
+ "unique": 2363,
+ "fresh": 2143,
+ "kept": 59,
+ "kept_india": 4,
+ "kept_remote": 0,
+ "kept_abroad": 54,
  "dry_run": false,
  "sources": [
   {
@@ -19,43 +19,43 @@
   {
    "name": "lever",
    "jobs": 10,
-   "seconds": 22.9,
+   "seconds": 22.1,
    "error": ""
   },
   {
    "name": "ashby",
    "jobs": 88,
-   "seconds": 106.1,
+   "seconds": 106.3,
    "error": ""
   },
   {
    "name": "smartrecruiters",
-   "jobs": 87,
-   "seconds": 168.4,
+   "jobs": 88,
+   "seconds": 171.9,
    "error": ""
   },
   {
    "name": "workday",
    "jobs": 35,
-   "seconds": 26.8,
+   "seconds": 24.7,
    "error": ""
   },
   {
    "name": "amazon",
    "jobs": 0,
-   "seconds": 5.5,
+   "seconds": 4.4,
    "error": ""
   },
   {
    "name": "microsoft",
-   "jobs": 0,
-   "seconds": 6.7,
-   "error": "RetryError: HTTPSConnectionPool(host='apply.careers.microsoft.com', port=443): Max retries exceeded with url: /api/pcsx/search?domain=microsoft.com&query=site+reliability+engineer+devops&location=India&start=0&sort_by=relevance (Caused by ResponseError('too many 429 error responses'))"
+   "jobs": 2,
+   "seconds": 6.8,
+   "error": ""
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 1.0,
+   "seconds": 1.2,
    "error": ""
   },
   {
@@ -67,93 +67,90 @@
   {
    "name": "weworkremotely",
    "jobs": 2,
-   "seconds": 1.4,
+   "seconds": 0.7,
    "error": ""
   },
   {
    "name": "himalayas",
-   "jobs": 30,
-   "seconds": 6.0,
+   "jobs": 31,
+   "seconds": 2.3,
    "error": ""
   },
   {
    "name": "jobicy",
    "jobs": 7,
-   "seconds": 1.3,
+   "seconds": 1.5,
    "error": ""
   },
   {
    "name": "arbeitnow",
-   "jobs": 6,
-   "seconds": 0.7,
+   "jobs": 3,
+   "seconds": 1.0,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 5,
-   "seconds": 2.9,
+   "seconds": 3.8,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 1592,
-   "seconds": 31.5,
+   "jobs": 1610,
+   "seconds": 33.6,
    "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 1303,
-   "seconds": 89.8,
+   "jobs": 1300,
+   "seconds": 100.8,
    "error": ""
   },
   {
    "name": "linkedin",
-   "jobs": 135,
-   "seconds": 23.7,
+   "jobs": 140,
+   "seconds": 27.1,
    "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 817,
-   "seconds": 30.6,
+   "jobs": 961,
+   "seconds": 34.4,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 75,
-   "seconds": 23.7,
+   "jobs": 80,
+   "seconds": 24.6,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 1425,
-  "title_excluded": 265,
-  "too_much_experience": 127,
-  "needs_local_language": 94,
-  "abroad_country_not_listed": 47,
+  "title_not_target": 1485,
+  "title_excluded": 270,
+  "too_much_experience": 126,
+  "needs_local_language": 107,
+  "abroad_country_not_listed": 55,
   "description_excluded": 12,
   "abroad_no_sponsorship": 8,
   "too_old": 7,
   "company_excluded": 2
  },
- "companies_learned": 2,
+ "companies_learned": 5,
  "reposts_flagged": 3,
- "repeats_skipped": 13,
- "sources_ok": 18,
+ "repeats_skipped": 12,
+ "sources_ok": 19,
  "sources_total": 19,
- "sources_failed": "microsoft",
- "llm_scored": 30,
+ "sources_failed": "",
+ "llm_scored": 38,
  "llm_cached": 0,
  "closed_found": 0,
  "gmail_updated": 0,
  "kept_by_source": {
-  "indeed": 10,
-  "linkedin": 7,
-  "jobicy": 1,
-  "arbeitnow": 2,
-  "indeed_world": 2,
-  "linkedin_world": 44,
-  "workday": 1,
-  "naukri": 3
+  "indeed": 3,
+  "indeed_world": 16,
+  "ashby": 1,
+  "linkedin_world": 38,
+  "linkedin": 1
  }
 }

@@ -393,6 +393,10 @@ companies:
   slug: blee
   yc: Summer 2022
   jobs_at_discovery: 5
+- name: Bleu Robotics
+  ats: ashby
+  slug: bleu-robotics
+  learned_from: indeed_world
 - name: Blissway
   ats: ashby
   slug: blissway
@@ -737,6 +741,10 @@ companies:
   ats: ashby
   slug: crusoe
   jobs_at_discovery: 350
+- name: CRYPTO.com
+  ats: lever
+  slug: crypto
+  learned_from: indeed_world
 - name: Culture Amp
   ats: greenhouse
   slug: cultureamp
@@ -1712,6 +1720,10 @@ companies:
   ats: workday
   url: https://movadogroup.wd1.myworkdayjobs.com/Careers
   learned_from: indeed
+- name: MRI Software
+  ats: workday
+  url: https://mrisoftware.wd501.myworkdayjobs.com/External_CareerSite
+  learned_from: linkedin
 - name: Mutiny
   ats: ashby
   slug: mutiny
@@ -2436,6 +2448,10 @@ companies:
   ats: greenhouse
   slug: solarwinds
   jobs_at_discovery: 76
+- name: Solera
+  ats: workday
+  url: https://solera.wd5.myworkdayjobs.com/Global_Career_Site
+  learned_from: indeed
 - name: Solo.io
   ats: greenhouse
   slug: soloioinc
@@ -2647,6 +2663,10 @@ companies:
   ats: workday
   url: https://towerloan.wd12.myworkdayjobs.com/Tower_Loan_Careers
   learned_from: indeed_world
+- name: Transaction Network Services
+  ats: workday
+  url: https://tnsi.wd1.myworkdayjobs.com/Search
+  learned_from: indeed
 - name: Trigger.dev
   ats: ashby
   slug: triggerdev
