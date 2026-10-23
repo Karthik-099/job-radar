@@ -466,6 +466,10 @@ companies:
   ats: ashby
   slug: camunda
   jobs_at_discovery: 40
+- name: Canadian Tire Corporation, Ltd.
+  ats: workday
+  url: https://canadiantirecorporation.wd3.myworkdayjobs.com/Enterprise_External_Careers_Site
+  learned_from: indeed_world
 - name: Canary Technologies
   ats: lever
   slug: canarytechnologies
@@ -1074,6 +1078,10 @@ companies:
   ats: greenhouse
   slug: gemini
   jobs_at_discovery: 31
+- name: General Mills
+  ats: workday
+  url: https://genmills.wd1.myworkdayjobs.com/GMI_External_Careers
+  learned_from: indeed
 - name: GetYourGuide
   ats: greenhouse
   slug: getyourguide
@@ -1256,6 +1264,10 @@ companies:
 - name: HPE
   ats: workday
   url: https://hpe.wd5.myworkdayjobs.com/Jobsathpe
+- name: HUB24
+  ats: workday
+  url: https://hub24management.wd105.myworkdayjobs.com/HUB24_Careers
+  learned_from: indeed_world
 - name: HUD
   ats: ashby
   slug: hud
@@ -1284,6 +1296,10 @@ companies:
   ats: greenhouse
   slug: hyperproof
   jobs_at_discovery: 4
+- name: i3D.net
+  ats: ashby
+  slug: i3d
+  learned_from: indeed_world
 - name: ICEYE
   ats: ashby
   slug: iceye
@@ -1800,6 +1816,10 @@ companies:
   ats: ashby
   slug: nord-security
   jobs_at_discovery: 136
+- name: Northern Trust Corp.
+  ats: workday
+  url: https://ntrs.wd1.myworkdayjobs.com/northerntrust
+  learned_from: indeed
 - name: Notabene
   ats: ashby
   slug: notabene
@@ -2289,6 +2309,10 @@ companies:
 - name: Samsung
   ats: workday
   url: https://sec.wd3.myworkdayjobs.com/Samsung_Careers
+- name: SAP IT Business Systeme
+  ats: smartrecruiters
+  slug: SAPITBusinessSysteme
+  learned_from: indeed_world
 - name: Sarvam AI
   ats: ashby
   slug: sarvam
