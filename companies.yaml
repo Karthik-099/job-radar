@@ -2006,6 +2006,10 @@ companies:
   ats: greenhouse
   slug: planetscale
   jobs_at_discovery: 10
+- name: PlayerZero
+  ats: ashby
+  slug: playerzero
+  learned_from: indeed_world
 - name: Pocket FM
   ats: lever
   slug: pocketfm
