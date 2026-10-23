@@ -449,6 +449,10 @@ companies:
   ats: ashby
   slug: bunny
   jobs_at_discovery: 1
+- name: Bupa
+  ats: workday
+  url: https://bupa.wd3.myworkdayjobs.com/BCC_Career_Site
+  learned_from: indeed
 - name: Cadence
   ats: workday
   url: https://cadence.wd1.myworkdayjobs.com/External_Careers
@@ -1794,6 +1798,10 @@ companies:
 - name: NextPower
   ats: workday
   url: https://nextracker.wd5.myworkdayjobs.com/nextpower_careers
+  learned_from: indeed
+- name: NielsenIQ
+  ats: smartrecruiters
+  slug: NielsenIQ
   learned_from: indeed
 - name: Ninjavan
   ats: lever
