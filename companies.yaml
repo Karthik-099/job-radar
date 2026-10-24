@@ -950,6 +950,10 @@ companies:
   slug: epsilon3
   yc: Summer 2021
   jobs_at_discovery: 4
+- name: Equal1
+  ats: ashby
+  slug: equal1
+  learned_from: indeed_world
 - name: Equinix
   ats: workday
   url: https://equinix.wd1.myworkdayjobs.com/External
