@@ -2097,6 +2097,10 @@ companies:
   slug: postscript
   yc: Winter 2019
   jobs_at_discovery: 3
+- name: Pramaana Labs
+  ats: ashby
+  slug: pramaana-labs
+  learned_from: indeed
 - name: Prelim
   ats: ashby
   slug: prelim
