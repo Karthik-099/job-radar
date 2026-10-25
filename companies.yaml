@@ -460,6 +460,10 @@ companies:
 - name: Cadence
   ats: workday
   url: https://cadence.wd1.myworkdayjobs.com/External_Careers
+- name: Caisse de dépôt et placement du Québec
+  ats: workday
+  url: https://cdpq.wd10.myworkdayjobs.com/CDPQ
+  learned_from: indeed_world
 - name: Cambio
   ats: ashby
   slug: cambio
@@ -711,6 +715,10 @@ companies:
   slug: conveo
   yc: Summer 2024
   jobs_at_discovery: 12
+- name: Copperleaf Technologies
+  ats: smartrecruiters
+  slug: IFS1
+  learned_from: naukri
 - name: CoreWeave
   ats: greenhouse
   slug: coreweave
@@ -1216,6 +1224,10 @@ companies:
   ats: ashby
   slug: harvey
   jobs_at_discovery: 345
+- name: Hasbro, Inc.
+  ats: greenhouse
+  slug: hasbro
+  learned_from: indeed_world
 - name: Hastings Direct
   ats: workday
   url: https://hastingsdirect.wd3.myworkdayjobs.com/external_careers
