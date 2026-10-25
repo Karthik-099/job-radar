@@ -2131,6 +2131,10 @@ companies:
   ats: workday
   url: https://prudential.wd3.myworkdayjobs.com/prudential
   learned_from: indeed_world
+- name: Prysm Health
+  ats: ashby
+  slug: prysmhealth
+  learned_from: indeed_world
 - name: PTC
   ats: workday
   url: https://ptc.wd1.myworkdayjobs.com/PTC
