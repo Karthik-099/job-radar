@@ -983,6 +983,10 @@ companies:
   ats: smartrecruiters
   slug: Experian
   learned_from: indeed_world
+- name: Exploration GmbH
+  ats: ashby
+  slug: the-exploration-company
+  learned_from: indeed_world
 - name: F5
   ats: workday
   url: https://ffive.wd5.myworkdayjobs.com/f5jobs
@@ -1767,11 +1771,19 @@ companies:
   ats: ashby
   slug: namespace
   jobs_at_discovery: 14
+- name: Nasdaq
+  ats: workday
+  url: https://nasdaq.wd1.myworkdayjobs.com/Global_External_Site
+  learned_from: linkedin
 - name: Nash
   ats: ashby
   slug: nash
   yc: Summer 2021
   jobs_at_discovery: 22
+- name: Natwest Digitalx
+  ats: workday
+  url: https://rbs.wd3.myworkdayjobs.com/RBS
+  learned_from: naukri
 - name: Navi
   ats: ashby
   slug: navi
