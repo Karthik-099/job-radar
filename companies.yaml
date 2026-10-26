@@ -2432,6 +2432,10 @@ companies:
   ats: greenhouse
   slug: singlestore
   jobs_at_discovery: 44
+- name: SIXT
+  ats: smartrecruiters
+  slug: SIXT
+  learned_from: indeed
 - name: Skip Loans
   ats: ashby
   slug: skip-loans
