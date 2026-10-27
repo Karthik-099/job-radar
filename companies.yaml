@@ -414,6 +414,10 @@ companies:
   ats: workday
   url: https://bmo.wd3.myworkdayjobs.com/External
   learned_from: indeed_world
+- name: Booz Allen Hamilton
+  ats: workday
+  url: https://bah.wd1.myworkdayjobs.com/BAH_Jobs
+  learned_from: indeed_world
 - name: Bosch
   ats: smartrecruiters
   slug: BoschGroup
@@ -841,6 +845,10 @@ companies:
 - name: Dexcom
   ats: workday
   url: https://dexcom.wd1.myworkdayjobs.com/Dexcom
+  learned_from: indeed_world
+- name: Dirac
+  ats: greenhouse
+  slug: diracinc
   learned_from: indeed_world
 - name: Discord
   ats: greenhouse
@@ -1582,6 +1590,10 @@ companies:
 - name: Logz.io
   ats: lever
   slug: logz
+- name: Lovelace AI
+  ats: ashby
+  slug: lovelace
+  learned_from: indeed_world
 - name: Lowe's
   ats: workday
   url: https://lowes.wd5.myworkdayjobs.com/LWS_External_CS
@@ -1864,6 +1876,10 @@ companies:
   ats: ashby
   slug: nord-security
   jobs_at_discovery: 136
+- name: Northeastern University
+  ats: workday
+  url: https://northeastern.wd1.myworkdayjobs.com/careers
+  learned_from: indeed_world
 - name: Northern Trust Corp.
   ats: workday
   url: https://ntrs.wd1.myworkdayjobs.com/northerntrust
@@ -2500,6 +2516,10 @@ companies:
   slug: solveintelligence
   yc: Summer 2023
   jobs_at_discovery: 17
+- name: Solventum
+  ats: workday
+  url: https://healthcare.wd1.myworkdayjobs.com/Search
+  learned_from: indeed_world
 - name: Sonatype
   ats: lever
   slug: sonatype
