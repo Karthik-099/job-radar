@@ -887,6 +887,14 @@ companies:
   slug: double
   yc: Summer 2021
   jobs_at_discovery: 5
+- name: Dover Corporation
+  ats: workday
+  url: https://dover.wd103.myworkdayjobs.com/Dover
+  learned_from: indeed
+- name: Dovetail
+  ats: ashby
+  slug: dovetail
+  learned_from: indeed_world
 - name: DOW
   ats: workday
   url: https://dow.wd1.myworkdayjobs.com/ExternalCareers
@@ -1207,6 +1215,10 @@ companies:
   slug: gridware
   yc: Winter 2021
   jobs_at_discovery: 19
+- name: Griffin
+  ats: ashby
+  slug: griffin
+  learned_from: indeed_world
 - name: Groww
   ats: greenhouse
   slug: groww
@@ -1563,6 +1575,10 @@ companies:
   ats: workday
   url: https://levistraussandco.wd5.myworkdayjobs.com/External
   learned_from: indeed
+- name: Light & Wonder
+  ats: workday
+  url: https://lnw.wd5.myworkdayjobs.com/LightWonderExternalCareers
+  learned_from: indeed
 - name: Lightdash
   ats: ashby
   slug: lightdash
@@ -1714,6 +1730,10 @@ companies:
 - name: Miro
   ats: ashby
   slug: miro
+- name: Mobile First
+  ats: ashby
+  slug: mobilefirst
+  learned_from: indeed_world
 - name: Modal
   ats: ashby
   slug: modal
