@@ -210,6 +210,10 @@ companies:
   slug: aon3d
   yc: Winter 2017
   jobs_at_discovery: 3
+- name: Apex Group
+  ats: workday
+  url: https://theapexgroup.wd3.myworkdayjobs.com/apexgroupcareers
+  learned_from: indeed
 - name: Apollo GraphQL
   ats: ashby
   slug: apollo-graphql
@@ -553,6 +557,10 @@ companies:
   ats: lever
   slug: csit
   learned_from: indeed_world
+- name: Centric Software
+  ats: workday
+  url: https://centricsoftware.wd501.myworkdayjobs.com/Centric
+  learned_from: indeed
 - name: Cerebras
   ats: ashby
   slug: cerebras
@@ -1356,6 +1364,10 @@ companies:
   ats: ashby
   slug: iceye
   learned_from: indeed_world
+- name: Illumina
+  ats: workday
+  url: https://illumina.wd1.myworkdayjobs.com/illumina-careers
+  learned_from: indeed
 - name: incident.io
   ats: ashby
   slug: incident
@@ -1594,6 +1606,10 @@ companies:
   slug: livingcarbon
   yc: Winter 2020
   jobs_at_discovery: 1
+- name: Lloyds Technology Centre
+  ats: workday
+  url: https://lbg.wd3.myworkdayjobs.com/Lloyds_Technology_Centre
+  learned_from: indeed
 - name: Lob
   ats: greenhouse
   slug: lob
@@ -1669,6 +1685,10 @@ companies:
   slug: maymobility
   yc: Summer 2017
   jobs_at_discovery: 39
+- name: MB Energy
+  ats: workday
+  url: https://mabanaft.wd3.myworkdayjobs.com/Mabanaft
+  learned_from: indeed_world
 - name: Mednet
   ats: ashby
   slug: mednet
