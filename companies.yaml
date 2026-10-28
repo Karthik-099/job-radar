@@ -842,6 +842,10 @@ companies:
   ats: workday
   url: https://db.wd3.myworkdayjobs.com/DBWebsite
   learned_from: indeed
+- name: Deutsche Telekom
+  ats: smartrecruiters
+  slug: DeutscheTelekomITSolutions
+  learned_from: indeed_world
 - name: Deutscher Sparkassen Verlag GmbH
   ats: workday
   url: https://dsvgruppe.wd103.myworkdayjobs.com/DSV
@@ -2983,6 +2987,10 @@ companies:
 - name: Wise
   ats: smartrecruiters
   slug: wise
+- name: Wix.com, Inc.
+  ats: smartrecruiters
+  slug: Wix2
+  learned_from: indeed_world
 - name: Wolt
   ats: greenhouse
   slug: wolt
