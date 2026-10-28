@@ -414,6 +414,10 @@ companies:
   ats: greenhouse
   slug: block
   jobs_at_discovery: 221
+- name: Blue Yonder
+  ats: workday
+  url: https://jda.wd5.myworkdayjobs.com/JDA_Careers
+  learned_from: linkedin
 - name: Bluestone
   ats: smartrecruiters
   slug: bluestone
@@ -2670,6 +2674,10 @@ companies:
   ats: lever
   slug: sysdig
   jobs_at_discovery: 33
+- name: T-Systems Iberia
+  ats: smartrecruiters
+  slug: T-SystemsIberia
+  learned_from: indeed_world
 - name: Tailor
   ats: ashby
   slug: tailor
