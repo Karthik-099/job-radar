@@ -320,6 +320,10 @@ companies:
   ats: greenhouse
   slug: axiom
   jobs_at_discovery: 17
+- name: Axos Bank
+  ats: workday
+  url: https://axos.wd5.myworkdayjobs.com/Axos
+  learned_from: indeed_world
 - name: Babel
   ats: workday
   url: https://babelgroup.wd103.myworkdayjobs.com/es
@@ -1079,6 +1083,10 @@ companies:
   slug: fleek
   yc: Winter 2022
   jobs_at_discovery: 10
+- name: Flex
+  ats: workday
+  url: https://flextronics.wd1.myworkdayjobs.com/Careers
+  learned_from: indeed_world
 - name: Flexport
   ats: greenhouse
   slug: flexport
@@ -1137,6 +1145,10 @@ companies:
 - name: General Mills
   ats: workday
   url: https://genmills.wd1.myworkdayjobs.com/GMI_External_Careers
+  learned_from: indeed
+- name: Genpact
+  ats: workday
+  url: https://genpact.wd108.myworkdayjobs.com/External_Careers
   learned_from: indeed
 - name: GetYourGuide
   ats: greenhouse
@@ -1732,6 +1744,10 @@ companies:
   slug: middesk
   yc: Winter 2019
   jobs_at_discovery: 15
+- name: Millicom
+  ats: workday
+  url: https://tigo.wd103.myworkdayjobs.com/tigocareers
+  learned_from: indeed_world
 - name: Mindtickle
   ats: lever
   slug: mindtickle
@@ -1872,6 +1888,10 @@ companies:
   ats: ashby
   slug: neptune
   jobs_at_discovery: 3
+- name: Netcompany
+  ats: smartrecruiters
+  slug: Netcompany1
+  learned_from: indeed_world
 - name: Netlify
   ats: greenhouse
   slug: netlify
