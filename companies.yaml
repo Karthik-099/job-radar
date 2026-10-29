@@ -1006,6 +1006,10 @@ companies:
   slug: escape
   yc: Winter 2023
   jobs_at_discovery: 6
+- name: Etched
+  ats: ashby
+  slug: etched
+  learned_from: linkedin_world
 - name: Eurofins GSC IT DC
   ats: smartrecruiters
   slug: Eurofins
@@ -1751,6 +1755,10 @@ companies:
 - name: Millicom
   ats: workday
   url: https://tigo.wd103.myworkdayjobs.com/tigocareers
+  learned_from: indeed_world
+- name: Milwaukee Tool
+  ats: workday
+  url: https://tti.wd1.myworkdayjobs.com/Milwaukee
   learned_from: indeed_world
 - name: Mindtickle
   ats: lever
