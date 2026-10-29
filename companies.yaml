@@ -1876,6 +1876,10 @@ companies:
   ats: workday
   url: https://ncr.wd1.myworkdayjobs.com/ext_apac
   learned_from: indeed
+- name: NCR Atleos
+  ats: workday
+  url: https://ncratleos.wd1.myworkdayjobs.com/ext_intern_apac
+  learned_from: indeed
 - name: NCS
   ats: smartrecruiters
   slug: NCS3
@@ -1993,6 +1997,10 @@ companies:
 - name: Observe.AI
   ats: greenhouse
   slug: observeai
+- name: OCBC
+  ats: workday
+  url: https://ocbc.wd102.myworkdayjobs.com/External
+  learned_from: indeed_world
 - name: Octopus Deploy
   ats: greenhouse
   slug: octopusdeploy
@@ -2810,6 +2818,10 @@ companies:
 - name: Transaction Network Services
   ats: workday
   url: https://tnsi.wd1.myworkdayjobs.com/Search
+  learned_from: indeed
+- name: TransUnion
+  ats: workday
+  url: https://transunion.wd5.myworkdayjobs.com/TransUnion
   learned_from: indeed
 - name: Trigger.dev
   ats: ashby
