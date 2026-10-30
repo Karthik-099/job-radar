@@ -1,5 +1,5 @@
-# Legacy path, kept only for old cached dashboards: the current dashboard commits status changes to
-# state/inbox/ instead (0 Actions minutes) and the next scan applies them. Still capped by the minutes guard.
+# Dashboard sync for tokens without Contents permission: applies batched status changes and republishes.
+# Tokens WITH Contents: write skip this entirely (changes go to state/inbox/, 0 minutes). Capped by the minutes guard.
 name: update-status
 
 on:

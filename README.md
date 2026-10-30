@@ -88,22 +88,21 @@ job-radar-dashboard → **Settings** → **Pages** → Source **Deploy from a br
 github.com → your photo → **Settings** → **Notifications**: set the default email to your Gmail and make
 sure **Watching → Email** is ticked. On the job-radar repo page, **Watch** should show "All Activity".
 
-### 8. Optional: sync your marks to every device (0 Actions minutes)
-Each mark (Applied, stage, note, resume upload) is saved as a small file in a private repo; other browsers see it
-after Refresh and the next scan applies it. No workflow runs, so it costs no Actions minutes.
+### 8. Optional: sync your marks to every device
+Uses the token you already made (`job-radar-status`). Paste it in the dashboard → **Settings** → Sync →
+**Save** → **Test**. Without a token, marks are saved in that browser only (still fully usable).
 
-Recommended (most secure): a separate empty inbox repo, so the browser's token can never touch your code or keys.
-1. github.com → **+** → **New repository** → name `job-radar-inbox` → **Private** → tick **Add a README** → **Create**.
-2. Token for the dashboard: Settings → Developer settings → Fine-grained tokens → **Generate new token** →
-   name `job-radar-inbox`, expiration 1 year, Repository access **Only select repositories** → `job-radar-inbox`,
-   Permissions → **Contents: Read and write**, nothing else → **Generate**. Copy it.
-3. The scan needs the same access: job-radar → Settings → Secrets and variables → Actions →
-   **New repository secret** `INBOX_TOKEN` = that token. Then the **Variables** tab → **New repository variable**
-   `INBOX_REPO` = `Karthik-099/job-radar-inbox`.
-4. Dashboard → **Settings** → Sync: Inbox repository `Karthik-099/job-radar-inbox`, paste the token → **Save** → **Test**.
+The dashboard picks the cheapest way the token allows:
+- **Free (recommended, 1 minute once):** give the same token one more permission. github.com → your photo →
+  **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens** → click
+  `job-radar-status` → **Edit** → **Repository permissions** → **Contents** → **Read and write** → **Update**.
+  Then press **Test** in the dashboard. Marks are saved as small files (0 Actions minutes) and other devices see them
+  after Refresh.
+- **Without that permission:** it still works through a short workflow run (~1-2 Actions minutes), batched to at most
+  one run every 5 minutes. Counted in the 1,050-minute cap.
 
-Simpler (less isolated): skip 1 and 3, make the token for repository **job-radar** with **Contents: Read and write**,
-and enter `Karthik-099/job-radar` in the dashboard. Without any token, marks stay in that browser only.
+Extra isolation (optional, advanced): set repo variable `INBOX_REPO` + secret `INBOX_TOKEN` to keep the inbox in a
+separate private repo, so the browser token can never write code. Not needed for normal use.
 
 ### 9. Optional: Gmail status sync (read-only, about 10 minutes, once)
 Jobs you marked **Applied** move to Rejected / Shortlisted / Interview / Offer when the company replies.

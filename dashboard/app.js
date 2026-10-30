@@ -17,6 +17,10 @@
   const REGION = { india: "India", remote: "Remote", abroad: "Abroad", unknown: "Unclear" };
   const LOCK_AFTER_MS = 15 * 60 * 1000;
   const SYNC_DEBOUNCE_MS = 20 * 1000;
+  // Fallback when the token can't write files: one workflow run per batch, at most every 5 minutes (~1-2 Actions
+  // minutes each), and anything GitHub dropped (it cancels queued runs) is re-sent after 15 minutes.
+  const DISPATCH_EVERY_MS = 5 * 60 * 1000;
+  const RESEND_MS = 15 * 60 * 1000;
   const LS = { local: "jr.local.v1", salt: "jr.salt.v1", theme: "jr.theme" };
   const DAY = 86400000;
   const VIEWS = ["today", "jobs", "board", "map", "learn", "insights", "settings"];
@@ -153,7 +157,7 @@
     }
   }
   const unconfirmed = () => Object.entries(S.local.overrides);
-  const pendingChanges = () => unconfirmed().filter(([, o]) => !o.sent);
+  const pendingChanges = () => unconfirmed().filter(([, o]) => !o.sent || (S.local.mode === "actions" && Date.now() - (o.sentAt || 0) > RESEND_MS));
 
   function appliedStamp(job) {
     const stamps = (job.history || []).filter((h) => h.status === "applied").map((h) => h.at);
@@ -258,7 +262,7 @@
   }
   function guessRepo() {
     const owner = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : "";
-    return owner ? `${owner}/job-radar-inbox` : "";
+    return owner ? `${owner}/job-radar` : "";
   }
 
   $("#lock-form").addEventListener("submit", async (e) => {
@@ -330,9 +334,12 @@
   applyTheme();
   hydrateIcons();
 
-  // ------------------------------------------------------------------ GitHub repo inbox (0 Actions minutes)
-  // Changes are committed as small JSON files to state/inbox/ in the private repo; the next scan applies them.
-  // Other devices read the same files, so they see each other's marks within seconds of pressing Refresh.
+  // ------------------------------------------------------------------ sync to the private repo
+  // Two ways, picked automatically from what the token may do:
+  //   files    token has Contents: write -> each batch is a small JSON file in state/inbox/ (0 Actions minutes);
+  //            other devices read those files, and the next scan applies them.
+  //   actions  token has only Actions: write -> the update-status workflow is started (old way, costs minutes),
+  //            batched to at most one run per DISPATCH_EVERY_MS.
   const repoOk = () => /^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(S.local.repo || "");
   async function gh(path, opts = {}) {
     return fetch(`https://api.github.com/repos/${S.local.repo}/${path}`, { ...opts,
@@ -345,8 +352,13 @@
     const name = `state/inbox/${stamp}-${Math.random().toString(36).slice(2, 8)}-${kind}.json`;
     const resp = await gh(`contents/${name}`, { method: "PUT", body: JSON.stringify({
       message: `inbox: ${kind}`, content: b64utf8(JSON.stringify({ v: 1, kind, ...body })) }) }); // default branch
-    if (resp.status === 401 || resp.status === 403 || resp.status === 404) throw new Error("Token needs Contents: Read and write on your job-radar repo");
+    if (resp.status === 401 || resp.status === 403 || resp.status === 404) throw Object.assign(new Error("Token can't write files"), { noContents: true });
     if (!resp.ok) throw new Error(`GitHub said ${resp.status}`);
+  }
+  async function dispatch(changes, keepalive) {
+    const resp = await gh("actions/workflows/update-status.yml/dispatches", { method: "POST", keepalive,
+      body: JSON.stringify({ ref: "prod", inputs: { changes: JSON.stringify(changes) } }) });
+    if (resp.status !== 204) throw new Error(resp.status === 401 || resp.status === 403 ? "Token rejected: check it in Settings" : `GitHub said ${resp.status}`);
   }
   async function readInbox() {
     if (!S.local.token || !repoOk()) return;
@@ -372,18 +384,40 @@
   function scheduleSync() {
     if (!S.local.token) return renderSyncPill();
     clearTimeout(S.syncTimer);
-    S.syncTimer = setTimeout(() => sync(), SYNC_DEBOUNCE_MS);
+    const wait = S.local.mode === "actions" ? Math.max(SYNC_DEBOUNCE_MS, (S.local.lastDispatch || 0) + DISPATCH_EVERY_MS - Date.now()) : SYNC_DEBOUNCE_MS;
+    S.syncTimer = setTimeout(() => sync(), wait);
     renderSyncPill();
   }
-  function flushSync() { if (S.local.token && pendingChanges().length) sync(); }
-  async function sync() {
+  // Leaving the page: send now in files mode; in actions mode only if no run was started in the last 2 minutes.
+  function flushSync() {
+    if (!S.local.token || !pendingChanges().length) return;
+    if (S.local.mode !== "actions" || Date.now() - (S.local.lastDispatch || 0) > 2 * 60 * 1000) sync(true);
+  }
+  async function sync(keepalive = false) {
     clearTimeout(S.syncTimer);
     const pending = pendingChanges();
     if (!pending.length || !S.local.token) return renderSyncPill();
-    const changes = pending.map(([id, o]) => ({ id, status: o.status, at: o.at, note: o.note || undefined }));
+    if (!repoOk()) { S.local.lastSyncError = "Set the repository in Settings"; return renderSyncPill(); }
     try {
-      await pushInbox("status", { changes });
-      for (const [, o] of pending) o.sent = true;
+      if (S.local.mode !== "actions") {
+        try {
+          await pushInbox("status", { changes: pending.map(([id, o]) => ({ id, status: o.status, at: o.at, note: o.note || undefined })) });
+          S.local.mode = "files";
+          for (const [, o] of pending) o.sent = true;
+        } catch (e) {
+          if (!e.noContents) throw e;
+          S.local.mode = "actions"; // this token can't write files: fall back to the workflow, batched
+        }
+      }
+      if (S.local.mode === "actions") {
+        // Every run carries ALL unconfirmed changes: GitHub cancels a queued run when a newer one arrives.
+        const all = unconfirmed().sort((a, b) => (a[1].at < b[1].at ? 1 : -1)).slice(0, 150)
+          .map(([id, o]) => ({ id, status: o.status, at: o.at, note: o.note || undefined }));
+        while (all.length > 1 && JSON.stringify(all).length > 60000) all.pop(); // workflow input limit ~65 KB
+        await dispatch(all, keepalive);
+        S.local.lastDispatch = Date.now();
+        for (const c of all) Object.assign(S.local.overrides[c.id] || {}, { sent: true, sentAt: Date.now() });
+      }
       S.local.lastSync = new Date().toISOString();
       S.local.lastSyncError = "";
     } catch (e) { S.local.lastSyncError = e.message || "Sync failed"; }
@@ -398,7 +432,12 @@
     if (!S.local.token) { pill.textContent = n ? `${n} on this device only` : "Local only"; if (n) pill.classList.add("pending"); return; }
     if (S.local.lastSyncError) { pill.textContent = "Sync error"; pill.title = S.local.lastSyncError; pill.classList.add("pending"); return; }
     if (due) { pill.textContent = `${due} to sync`; pill.classList.add("pending"); return; }
-    if (n) { pill.textContent = `${n} saved to repo`; pill.classList.add("busy"); pill.title = "Saved in your private repo; folded into the data at the next scan."; return; }
+    if (n) {
+      pill.textContent = S.local.mode === "actions" ? `${n} syncing` : `${n} saved to repo`;
+      pill.classList.add("busy");
+      pill.title = S.local.mode === "actions" ? "Sent to GitHub; other devices show it in about 3 minutes after Refresh." : "Saved in your private repo; folded into the data at the next scan.";
+      return;
+    }
     pill.textContent = "Synced";
     pill.classList.add("ok");
   }
@@ -1174,11 +1213,12 @@
     const test = async () => {
       status.textContent = "Testing…";
       try {
-        const r = await gh("");
-        const info = r.ok ? await r.json() : {};
-        status.textContent = !r.ok ? `GitHub said ${r.status}. Check the repository name and that the token has Contents: Read and write on it.`
-          : info.permissions && !info.permissions.push ? "The token can read but not write: give it Contents: Read and write."
-          : `Connection works with ${info.full_name}${info.private ? " (private)" : " — warning: this repo is PUBLIC, use a private one"}. Marks are saved instantly, 0 Actions minutes.`;
+        const files = await gh("contents/README.md");
+        const flow = await gh("actions/workflows/update-status.yml");
+        if (files.ok) { S.local.mode = "files"; status.textContent = "Works: free sync (0 Actions minutes). Marks are saved within ~20 seconds; other devices see them after Refresh."; }
+        else if (flow.ok) { S.local.mode = "actions"; status.textContent = "Works, using Actions: about 1-2 minutes per sync, batched to at most one run every 5 minutes. To make it free, add one permission to this token (see below)."; }
+        else status.textContent = `GitHub said ${flow.status}. Check the repository name (${S.local.repo}) and that the token is for that repo.`;
+        await saveLocal(); renderSyncPill();
       } catch (_) { status.textContent = "Network error."; }
     };
     const upStatus = el("div", { class: "sub", role: "status" });
@@ -1191,10 +1231,10 @@
       setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     };
     put(root, pageHead("Settings", "Everything here is stored encrypted in this browser."), el("div", { class: "settings" },
-      box("Sync across devices (0 Actions minutes)",
-        el("p", {}, "With a token, each mark (Applied, stages, notes) is saved as a small file in your private job-radar repo within ~20 seconds. Other browsers see it after Refresh; the next scan folds it into the data. No workflow runs, so it costs no Actions minutes."),
-        el("p", {}, "Most secure: create an empty private repo named job-radar-inbox and use it here, so this token can never touch your job-radar code or secrets (README step 8). Fine-grained token: GitHub → Settings → Developer settings → Fine-grained tokens → Generate → Repository access: only that repo → Permissions → Contents: Read and write. Nothing else."),
-        el("label", {}, "Inbox repository", repo), el("label", {}, "Token", token),
+      box("Sync across devices",
+        el("p", {}, `Your marks (Applied, stages, notes) are sent to your private job-radar repo so every browser and phone shows the same thing. Current mode: ${S.local.mode === "files" ? "free (0 Actions minutes)" : S.local.mode === "actions" ? "via Actions (batched, ~1-2 minutes per sync)" : "detected on the first sync"}.`),
+        el("p", {}, "Make it free (1 minute, same token): GitHub → your photo → Settings → Developer settings → Personal access tokens → Fine-grained tokens → click your job-radar token → Edit → Repository permissions → Contents: Read and write → Update. Then press Test here."),
+        el("label", {}, "Repository", repo), el("label", {}, "Token", token),
         el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: saveSettings }, "Save"),
           el("button", { class: "btn", type: "button", onclick: test, disabled: !S.local.token }, "Test"),
           el("button", { class: "btn", type: "button", onclick: () => sync(), disabled: !S.local.token }, `Sync now (${pendingChanges().length})`),
