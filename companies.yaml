@@ -380,6 +380,10 @@ companies:
   slug: bitmovin
   yc: Summer 2015
   jobs_at_discovery: 11
+- name: Bitsight
+  ats: workday
+  url: https://bitsight.wd1.myworkdayjobs.com/broadbean_external
+  learned_from: indeed_world
 - name: Bitwarden
   ats: greenhouse
   slug: bitwarden
