@@ -157,6 +157,8 @@ def test_export_publishes_encrypted_world_and_vendor_files(tmp_path, monkeypatch
     blob = json.loads((tmp_path / "dist/data/world.enc.json").read_text())
     assert decrypt_json(blob, "a long enough passphrase")["countries"]["442"]["name"] == "Luxembourg"
     assert (tmp_path / "dist/vendor/d3-geo.min.js").exists() and (tmp_path / "dist/map.js").exists()
+    page = (tmp_path / "dist/index.html").read_text()
+    assert '"app.js?v=' in page and '"app.css?v=' in page and 'name="jr-build"' in page  # no stale cached code
     (tmp_path / "dist/data/world.enc.json").write_text(json.dumps({"countries": {}}))  # plaintext must be refused
     with pytest.raises(RuntimeError):
         export.assert_publishable(tmp_path / "dist")

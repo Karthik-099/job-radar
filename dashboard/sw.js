@@ -1,6 +1,6 @@
 // Network-first service worker: always try fresh files, fall back to the last copy when offline.
 // It only ever caches this site's own static files and the (encrypted) data file.
-const CACHE = "job-radar-v3";
+const CACHE = "job-radar-v4";
 const SHELL = ["./", "index.html", "app.css", "crypto.js", "app.js", "map.js", "icon.svg", "manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
@@ -14,7 +14,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== "GET" || url.origin !== self.location.origin) return;
   e.respondWith(
-    fetch(e.request).then((resp) => {
+    fetch(e.request, { cache: "no-cache" }).then((resp) => { // always revalidate: never run stale code
       if (resp.ok) {
         const copy = resp.clone();
         caches.open(CACHE).then((c) => c.put(e.request, copy));

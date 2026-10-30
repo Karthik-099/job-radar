@@ -5,6 +5,7 @@ icon.svg, data/jobs.enc.json. `assert_publishable` refuses anything else and any
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
@@ -177,6 +178,19 @@ def assert_publishable(dist: Path = DIST) -> None:
                 raise RuntimeError(f"{name} contains resume text")
 
 
+def stamp_build(dist: Path) -> str:
+    """Version the page's own assets (app.js?v=<hash>). GitHub Pages lets browsers reuse files for 10 minutes, so
+    without this a new index.html could run with a cached old app.js and break. Returns the build id."""
+    code = b"".join((dist / n).read_bytes() for n in ("app.js", "app.css", "crypto.js", "map.js", "sw.js"))
+    build = hashlib.sha1(code).hexdigest()[:10]
+    page = (dist / "index.html").read_text(encoding="utf-8")
+    for name in ("app.css", "crypto.js", "app.js"):
+        page = page.replace(f'"{name}"', f'"{name}?v={build}"')
+    page = page.replace("<title>", f'<meta name="jr-build" content="{build}">\n<title>', 1)
+    (dist / "index.html").write_text(page, encoding="utf-8")
+    return build
+
+
 def export(jobs: list[Job], meta: dict[str, Any], passphrase: str, dist: Path = DIST) -> Path:
     payload = build_payload(jobs, meta)
     if dist.exists():
@@ -185,6 +199,7 @@ def export(jobs: list[Job], meta: dict[str, Any], passphrase: str, dist: Path = 
         (dist / sub).mkdir(parents=True)
     for name in PUBLIC_FILES - ENCRYPTED:
         shutil.copy2(DASHBOARD_SRC / name, dist / name)
+    stamp_build(dist)
     out = dist / "data" / "jobs.enc.json"
     out.write_text(json.dumps(encrypt_json(payload, passphrase)), encoding="utf-8")
     if WORLD_FILE.exists():  # employers by country for the Map tab, encrypted like everything else

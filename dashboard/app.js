@@ -1177,7 +1177,9 @@
   }
 
   // ------------------------------------------------------------------ Map (globe, loaded only when opened)
+  const BUILD = document.querySelector('meta[name="jr-build"]')?.content || "";
   function loadScript(src) {
+    if (BUILD) src = `${src}?v=${BUILD}`; // same build as this page: never a stale cached copy
     return new Promise((ok, fail) => { if (document.querySelector(`script[src="${src}"]`)) return ok(); const s = el("script", { src }); s.onload = ok; s.onerror = () => fail(new Error(`could not load ${src}`)); document.head.append(s); });
   }
   async function renderMap(root) {
