@@ -29,76 +29,69 @@ encrypted, password-protected dashboard. You apply by hand; nothing logs in anyw
 
 ## Architecture
 
-No servers and no database: GitHub Actions is the compute, the private repo is the database, GitHub Pages (a
-global CDN) serves the dashboard, and your browser decrypts and renders it.
-
-### System overview
-
-```mermaid
-flowchart LR
-    T(["Cron every 4h<br/>or Run workflow"]) --> G{"Minutes guard<br/>1,050 cap, paced"}
-    G -- "skip, 1 min" --> X(["Stop"])
-    G -- "run" --> E["<b>GitHub Actions runner</b><br/>scan engine: python -m src.main<br/>the only compute"]
-
-    I["<b>Inputs, public or free</b><br/>JobSpy: Indeed, Naukri, Glassdoor, Bayt, LinkedIn guest<br/>775 career sites: Greenhouse, Lever, Ashby, Workday, ...<br/>Amazon and Microsoft APIs, remote boards<br/>Free AI: Groq, Gemini, GitHub Models, OpenRouter<br/>Gmail read-only, YouTube RSS, Wikidata"] --> E
-
-    E <--> D[("<b>Private repo: the database</b><br/>state/jobs.json, caches, usage<br/>profile/ resume, preferences<br/>state/inbox/ your marks")]
-
-    E -- "encrypt + publish" --> C["<b>GitHub Pages: the CDN</b><br/>static app HTML, JS, CSS<br/>jobs.enc.json, world.enc.json<br/>AES-256-GCM"]
-    E -- "digest" --> M(["Email via<br/>GitHub issue"])
-
-    C --> B["<b>Your browser</b><br/>decrypts with your passphrase<br/>no backend"]
-    B -- "mark applied: GitHub API<br/>commits a small file, 0 min" --> D
-```
-
-### One scan, step by step
+A serverless system: GitHub Actions is the only compute (a fresh VM for ~5 minutes per run), the private repo is
+the database, GitHub Pages is a global CDN for the static dashboard, and your browser decrypts the data locally.
+No server, no database, $0. The full design, libraries, endpoints and cost model are in
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ```mermaid
-flowchart TD
-    A["Start: cron or manual"] --> B{"Minutes guard"}
-    B -- "over cap or ahead of pace" --> Z["Record 1 min, stop"]
-    B -- "ok" --> C["Restore cached virtualenv"]
-    C --> D["Apply dashboard inbox<br/>marks, notes, resume upload"]
-    D --> E["Fetch all sources in parallel<br/>time-boxed to 3 min"]
-    E --> F["Normalise and dedupe<br/>same role across cities and boards"]
-    F --> G["Filter<br/>title, seniority, max 3 yrs,<br/>age, language, visa"]
-    G --> H["Extract ATS keywords and job id<br/>from the full description"]
-    H --> I["Rank: fit x location x level<br/>x freshness x company"]
-    I --> J["AI score top new jobs<br/>cache hit = free, else free LLM lanes"]
-    J --> K["Cover letters for top picks<br/>fact-checked against resume"]
-    K --> L["Daily: re-check links, flag closed jobs"]
-    L --> M["Gmail: move applied jobs<br/>rejected, interview, offer"]
-    M --> N["Twice a day: Learn videos<br/>Monthly: world employers"]
-    N --> O["Save state, commit to private repo"]
-    O --> P["Build payload: tailoring plans,<br/>analytics; gzip + encrypt"]
-    P --> Q["Publish to Pages; email digest"]
+flowchart TB
+    TRIGGER(["Cron every 4 hours<br/>or the Run workflow button"])
+    REPO_IN[("<b>Private repo job-radar: the database</b><br/>state/ jobs, AI cache, minutes used<br/>profile/ resume, preferences<br/>companies.yaml: 775 career sites<br/>state/inbox/ your marks from the browser")]
+
+    subgraph RUNNER["GitHub Actions runner: serverless, a fresh Ubuntu VM for ~5 minutes per run"]
+        GUARD{"<b>Minutes guard</b> budget.py<br/>under 1,050 / month and on pace?"}
+        STOP(["Record 1 min, stop"])
+        LOAD["<b>Load</b> restore cached venv, read state,<br/>apply your marks from the inbox<br/>actions/cache, inbox.py"]
+        FETCH["<b>Fetch engine</b> base.py + net.py<br/>one thread per source, 8 companies at a time,<br/>retries, 0.35 s per-host gap, 180 s budget,<br/>learn.py adds new career sites it sees"]
+        PROC["<b>Clean and rank</b><br/>dedupe, filters, geo: title, seniority,<br/>max 3 yrs, age, language, visa<br/>recommend, match, tailor keywords"]
+        AISTEP["<b>AI</b> scoring.py, letters.py, guard.py<br/>cache first, then free lanes,<br/>keyword score if none answer"]
+        LIFE["<b>Lifecycle</b> closed-job check, Gmail replies,<br/>Learn videos, world employers"]
+        SAVE["<b>Save</b> commit and push state<br/>commit_state.sh"]
+        EXPORT["<b>Export</b> gzip + AES-256-GCM<br/>export.py, crypto.py via cryptography"]
+        GUARD -- "no" --> STOP
+        GUARD -- "yes" --> LOAD --> FETCH --> PROC --> AISTEP --> LIFE --> SAVE --> EXPORT
+    end
+
+    subgraph WEB["The internet: public endpoints, no login"]
+        BOARDS["<b>Job boards</b><br/>Indeed GraphQL API, Naukri API,<br/>LinkedIn guest search, Glassdoor, Bayt<br/><i>python-jobspy: requests, curl_cffi</i>"]
+        ATS["<b>775 company career sites</b><br/>Greenhouse, Lever, Ashby, SmartRecruiters,<br/>Workable, Recruitee, BambooHR APIs,<br/>Teamtailor RSS, Workday CXS API<br/><i>requests + beautifulsoup4</i>"]
+        BIG["<b>Big tech + remote boards</b><br/>Amazon, Microsoft APIs, Remotive,<br/>RemoteOK, Himalayas, Jobicy, Arbeitnow,<br/>WWR RSS, HN via Algolia<br/><i>requests, xml.etree</i>"]
+    end
+
+    subgraph SIDE["Services called during the run"]
+        AI["<b>Free AI lanes, in parallel</b><br/>Groq gpt-oss, Gemini Flash-Lite<br/>fallback: GitHub Models, OpenRouter :free"]
+        READ["<b>Read-only inputs</b><br/>Gmail API, YouTube RSS,<br/>Wikidata SPARQL"]
+    end
+
+    CDN["<b>GitHub Pages: global CDN</b><br/>static app: index.html, app.js, map.js, CSS, vendor libs<br/>data: jobs.enc.json, world.enc.json, ciphertext only"]
+    MAIL(["Email digest<br/>via GitHub issue"])
+
+    subgraph BROWSER["Your browser: no backend"]
+        UNLOCK["Passphrase -> PBKDF2 600k -> AES-GCM<br/>decrypted locally with WebCrypto"]
+        APP["<b>Dashboard</b> app.js<br/>Today, Jobs, Pipeline, Insights, Learn<br/>Map: d3-geo + WebGL + NASA imagery<br/>tailored resume PDF, pdf.js upload"]
+        SYNC{"Mark applied:<br/>token has Contents<br/>permission?"}
+        UNLOCK --> APP --> SYNC
+    end
+
+    WF["update-status workflow<br/>batched, max 1 run per 5 min"]
+    REPO_OUT[("<b>Private repo job-radar</b><br/>same repo, written back:<br/>new state, your marks in state/inbox/")]
+
+    TRIGGER --> GUARD
+    REPO_IN -- "checkout" --> LOAD
+    BOARDS --> FETCH
+    ATS --> FETCH
+    BIG --> FETCH
+    AISTEP <-- "HTTPS, prompt prefix cached" --> AI
+    READ --> LIFE
+    EXPORT -- "force-push" --> CDN
+    EXPORT -- "notify.py" --> MAIL
+    SAVE -- "git push" --> REPO_OUT
+    CDN --> UNLOCK
+    SYNC -- "yes: GitHub contents API,<br/>a small file, 0 min" --> REPO_OUT
+    SYNC -- "no" --> WF
+    WF -- "applies marks" --> REPO_OUT
 ```
-
-### Browser: no backend
-
-```mermaid
-sequenceDiagram
-    participant You
-    participant Page as Dashboard (browser)
-    participant CDN as GitHub Pages CDN
-    participant API as GitHub API
-    participant Repo as Private repo
-    participant Scan as Next scan (Actions)
-
-    Page->>CDN: load app + encrypted data (starts before you type)
-    You->>Page: passphrase
-    Page->>Page: PBKDF2 600k -> AES-GCM decrypt (WebCrypto)
-    Page-->>You: jobs, map, insights, tailored resume PDF
-    You->>Page: mark Applied
-    Page->>API: save change (token encrypted in this browser)
-    API->>Repo: commit state/inbox/<time>.json
-    Scan->>Repo: apply inbox, re-publish
-    Scan->>CDN: new encrypted data
-```
-
-AI scoring runs several free lanes in parallel (Groq gpt-oss-120b and 20b, Gemini Flash-Lite, then GitHub Models and
-the best currently-free OpenRouter models if those fall behind). Results are cached by resume + job content, the
-system prompt and resume are sent first so providers can reuse that prefix, and keyword scoring is the fallback.
 
 ## One-time setup (about 15 minutes)
 
