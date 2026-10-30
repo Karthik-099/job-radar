@@ -93,6 +93,107 @@ flowchart TB
     WF -- "applies marks" --> REPO_OUT
 ```
 
+### How a run works, step by step
+
+Numbers below are from real scans (October 2026).
+
+**1. The schedule fires.** GitHub's scheduler reads `cron: "17 */4 * * *"` in `.github/workflows/scan.yml` and
+queues a job at :17 past every 4th hour (UTC). GitHub sometimes delays or skips scheduled runs when it is busy, so
+in practice 4-6 runs a day happen. The **Run workflow** button queues the same job immediately.
+
+**2. A machine is allocated.** GitHub takes a clean virtual machine from its pool (`ubuntu-latest`; for a private
+repo that is a 2-core Linux VM with about 7 GB of RAM). Nothing from the previous run is on it, and it is destroyed
+when the job ends. This is what "serverless" means here: there is no machine of yours that stays on; compute exists
+only for the ~5 minutes a run needs, and GitHub bills only those minutes (free up to 2,000 a month).
+
+**3. The code arrives.** `actions/checkout` copies the private repo onto the VM. That brings the code *and* the
+data: the repo is the database, so `state/jobs.json` (every job you track), the AI cache, your resume and
+preferences, the 775 career sites and your pending dashboard marks are all just files on disk now.
+
+**4. The minutes guard decides (about 5 s).** Before anything is installed, `python3 -m src.budget check` reads
+`state/usage.json`. If this month is already at 1,050 minutes, or ahead of an even pace for the date, the run
+records one minute, commits that, and stops. Otherwise it continues. This is why the bill can never grow.
+
+**5. Python is made ready (about 5 s).** `actions/setup-python` selects Python 3.11 and `actions/cache` restores the
+whole virtual environment saved by an earlier run (`python-jobspy`, `requests`, `beautifulsoup4`, `PyYAML`,
+`python-dateutil`, `cryptography`). Only when `requirements.txt` changes is it reinstalled (about 25 s).
+
+**6. Your marks are applied (under 1 s).** `src/inbox.py` reads every file in `state/inbox/` (the Applied / stage /
+note changes your browser saved), validates each one, applies it to the job, and deletes the file. An uploaded
+resume is structured here too (`src/resume_import.py`).
+
+**7. The internet is fetched (up to 180 s, usually 100-170 s).** `src/sources/base.py` starts **25 workers at
+once, one per source** (Indeed, Naukri, Glassdoor, Bayt, LinkedIn, Greenhouse, Lever, Ashby, Workday, ...). They
+run side by side inside the one Python process because almost all their time is spent *waiting* for websites to
+answer, and waiting doesn't need the CPU. While Indeed is waiting for a reply, Greenhouse is reading one.
+- The **job-board workers** call `python-jobspy`, which sends each search term x city (for example "devops engineer"
+  in Bangalore) to the board's own search endpoint: Indeed's GraphQL API, Naukri's job API, LinkedIn's public guest
+  search, and Glassdoor and Bayt with a browser-like connection (`curl_cffi`). Results come back as a table and are
+  turned into job records.
+- Each **career-site worker** opens up to **8 companies at a time**. For Greenhouse that means: GET
+  `boards-api.greenhouse.io/v1/boards/<company>/jobs` (a JSON list), keep only titles that match your roles and
+  that aren't already known, then GET each kept job's details and turn its HTML description into text with
+  `beautifulsoup4`. Workday works the same way with a POST search; RSS feeds are read with `xml.etree`.
+- Every request goes through one shared HTTP session (`src/net.py`): it retries on errors and rate limits with
+  increasing waits, honours `Retry-After`, leaves 0.35 s between requests to the same website, and gives up on a
+  slow site after 20 s.
+- A worker that crashes is logged and ignored; one still running at 180 s is abandoned. The rest of the run
+  continues with whatever arrived. Typical haul: about 1,700 unique postings.
+
+**8. The postings are cleaned and ranked (a few seconds).**
+- `enrich()` works out region (India, remote, abroad), country, "3+ years", visa and deadline wording.
+- `dedupe()` merges the same job seen on several boards or cities.
+- `JobFilter` applies your rules (titles, no senior roles, max 3 years, recency, language, visa).
+- `drop_same_role()` removes roles you already track or applied to; about 200 per run are skipped this way.
+- The ~120 ATS keywords and the employer's job id are pulled out of the full description, and `rank()` gives each
+  job an apply priority from 0 to 100.
+- Links that point to a company's own career site teach `learn.py` a new company to poll directly next time.
+
+**9. AI scores the best new jobs (up to ~2 min).** The top unscored jobs (at most 48) are checked against the result
+cache first: a job already scored for this resume costs nothing. The rest are cleaned of hidden instructions
+(`src/guard.py`) and sent 4 per request to free models. Groq (two models) and Gemini work **in parallel lanes**,
+each taking the next batch from a shared queue; if one hits its per-minute limit it pauses while the others carry
+on, and GitHub Models / OpenRouter free models join only if they fall behind. Each answer is checked (score,
+must-haves, brief, red flags, interview topics) and cached for 60 days. If no model answers, the keyword score
+stands. Then up to 6 cover letters are drafted for top picks and fact-checked against your resume.
+
+**10. Housekeeping (seconds to a minute).** Once a day, saved job links are re-opened to flag closed postings.
+Gmail (read-only) is checked for replies about jobs you applied to. About three times a day the Learn videos are
+refreshed from YouTube RSS, and once a month the employers-by-country list from Wikidata.
+
+**11. State is saved (a few seconds).** `state/jobs.json` is written atomically (a crash can't corrupt it),
+minutes used are recorded, and `scripts/commit_state.sh` commits and pushes to the private repo, retrying with a
+rebase if your browser saved something in the meantime.
+
+**12. The dashboard is published (about 10 s).** `src/export.py` builds one data file (jobs, tailoring plans,
+analytics, videos), gzips it, and encrypts it with AES-256-GCM using a key derived from your passphrase (PBKDF2,
+600,000 rounds). Asset links get a version stamp so browsers never mix old and new code. A safety check refuses to
+publish anything that isn't the allow-listed files or that contains your email, phone or resume text. Then
+`publish_dashboard.sh` force-pushes the folder as a single commit to the public `job-radar-dashboard` repo, and
+GitHub Pages serves it from its global CDN about a minute later.
+
+**13. You get an email.** `src/notify.py` posts a GitHub issue (or a comment) when good new jobs arrive and each
+morning; GitHub emails it to you.
+
+**14. The machine is destroyed.** Total: about 4-6 billed minutes. Nothing keeps running until the next schedule.
+
+**In your browser.** The page and the encrypted data download from the CDN as soon as you open it. Your passphrase
+turns into the key inside the browser (WebCrypto) and decrypts the data on your device; the passphrase and the
+decrypted data never leave it. Everything you see (lists, charts, the globe drawn with WebGL, tailored resume PDFs)
+is computed in the page. When you mark a job, the page saves a small file into `state/inbox/` through GitHub's API
+(free), or, if your token lacks that permission, starts the small update-status workflow (batched). Step 6 of the
+next run applies it.
+
+### Why this design
+
+- **$0 to run.** Every piece is inside a free tier, and the minutes guard makes overspending impossible.
+- **Nothing to operate.** No server to patch, restart or keep online; a run that fails just tries again next time.
+- **Private on a public host.** The CDN only ever holds ciphertext; only your passphrase opens it.
+- **Fast where you are.** The dashboard is static files on a CDN, and all the work happens before you open it.
+- **Resilient.** Each source is isolated and time-boxed, AI has several free fallbacks plus a keyword score, and
+  every change to your data is a Git commit you can inspect or roll back.
+- **Easy to grow.** A new source is one function; a new company is one line in `companies.yaml`.
+
 ## One-time setup (about 15 minutes)
 
 You need: the free Groq and Gemini keys (already in your local `.env`), and two new GitHub items.

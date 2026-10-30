@@ -267,7 +267,8 @@ def run(args: argparse.Namespace) -> int:
     if names:  # a real scan, not a status-only re-export
         _record_run(store.meta, stats, fresh_count=len(unique), already=len(unique) - len(fresh) + repeats)
     pruned = store.prune()
-    store.meta["last_run"] = stats
+    if names:  # a status-only re-export must not overwrite the last real scan's summary
+        store.meta["last_run"] = stats
     store.save()
     (STATE_DIR / "last_run.json").write_text(json.dumps(stats, indent=1) + "\n", encoding="utf-8")
     log.info("saved %d jobs (pruned %d)", len(store.jobs), pruned)
