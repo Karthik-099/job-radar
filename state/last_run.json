@@ -1,158 +1,161 @@
 {
- "finished_at": "2026-10-30T01:03:42+00:00",
- "duration_seconds": 202.9,
- "raw": 4500,
- "unique": 2422,
- "fresh": 2216,
- "kept": 21,
- "kept_india": 9,
- "kept_remote": 1,
- "kept_abroad": 11,
+ "finished_at": "2026-10-30T10:06:36+00:00",
+ "duration_seconds": 285.7,
+ "raw": 4399,
+ "unique": 2399,
+ "fresh": 2187,
+ "kept": 27,
+ "kept_india": 19,
+ "kept_remote": 2,
+ "kept_abroad": 5,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
-   "jobs": 14,
-   "seconds": 71.6,
+   "jobs": 15,
+   "seconds": 71.9,
    "error": ""
   },
   {
    "name": "lever",
    "jobs": 12,
-   "seconds": 37.0,
+   "seconds": 51.1,
    "error": ""
   },
   {
    "name": "ashby",
    "jobs": 89,
-   "seconds": 109.7,
+   "seconds": 109.8,
    "error": ""
   },
   {
    "name": "smartrecruiters",
-   "jobs": 91,
-   "seconds": 189.5,
+   "jobs": 89,
+   "seconds": 188.7,
    "error": ""
   },
   {
    "name": "workday",
-   "jobs": 53,
-   "seconds": 30.2,
+   "jobs": 45,
+   "seconds": 27.6,
    "error": ""
   },
   {
    "name": "amazon",
    "jobs": 0,
-   "seconds": 4.2,
+   "seconds": 4.1,
    "error": ""
   },
   {
    "name": "microsoft",
-   "jobs": 2,
-   "seconds": 12.5,
-   "error": ""
+   "jobs": 0,
+   "seconds": 7.2,
+   "error": "RetryError: HTTPSConnectionPool(host='apply.careers.microsoft.com', port=443): Max retries exceeded with url: /api/pcsx/search?domain=microsoft.com&query=site+reliability+engineer+devops&location=India&start=0&sort_by=relevance (Caused by ResponseError('too many 429 error responses'))"
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 1.1,
+   "seconds": 0.9,
    "error": ""
   },
   {
    "name": "remoteok",
    "jobs": 1,
-   "seconds": 0.8,
+   "seconds": 0.7,
    "error": ""
   },
   {
    "name": "weworkremotely",
-   "jobs": 3,
-   "seconds": 0.6,
+   "jobs": 5,
+   "seconds": 0.5,
    "error": ""
   },
   {
    "name": "himalayas",
    "jobs": 40,
-   "seconds": 8.7,
+   "seconds": 8.5,
    "error": ""
   },
   {
    "name": "jobicy",
    "jobs": 6,
-   "seconds": 17.3,
+   "seconds": 1.6,
    "error": ""
   },
   {
    "name": "arbeitnow",
-   "jobs": 6,
-   "seconds": 0.7,
+   "jobs": 9,
+   "seconds": 0.5,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 4,
-   "seconds": 35.6,
+   "seconds": 5.2,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 1680,
-   "seconds": 32.3,
+   "jobs": 1668,
+   "seconds": 29.4,
    "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 1307,
-   "seconds": 88.8,
+   "jobs": 1309,
+   "seconds": 108.4,
    "error": ""
   },
   {
    "name": "linkedin",
-   "jobs": 125,
-   "seconds": 24.9,
+   "jobs": 150,
+   "seconds": 26.1,
    "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 973,
-   "seconds": 32.0,
+   "jobs": 857,
+   "seconds": 32.1,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 94,
-   "seconds": 24.3,
+   "jobs": 100,
+   "seconds": 24.8,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 1541,
-  "title_excluded": 232,
-  "too_much_experience": 173,
-  "abroad_country_not_listed": 113,
-  "needs_local_language": 88,
+  "title_not_target": 1494,
+  "title_excluded": 265,
+  "too_much_experience": 163,
+  "abroad_country_not_listed": 102,
+  "needs_local_language": 89,
   "description_excluded": 12,
   "abroad_no_sponsorship": 9,
   "too_old": 7,
   "company_excluded": 2
  },
- "companies_learned": 1,
- "reposts_flagged": 6,
- "repeats_skipped": 18,
- "sources_ok": 19,
+ "companies_learned": 0,
+ "reposts_flagged": 7,
+ "repeats_skipped": 17,
+ "sources_ok": 18,
  "sources_total": 19,
- "sources_failed": "",
- "llm_scored": 20,
+ "sources_failed": "microsoft",
+ "llm_scored": 24,
  "llm_cached": 0,
  "closed_found": 0,
  "gmail_updated": 0,
  "kept_by_source": {
-  "indeed": 3,
-  "weworkremotely": 1,
-  "indeed_world": 8,
   "workday": 1,
-  "ashby": 1,
+  "linkedin": 5,
+  "indeed": 6,
+  "weworkremotely": 2,
+  "jobicy": 1,
+  "himalayas": 1,
+  "indeed_world": 4,
   "arbeitnow": 1,
-  "linkedin": 6
+  "naukri": 8,
+  "linkedin_world": 1
  }
 }
