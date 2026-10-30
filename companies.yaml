@@ -652,6 +652,10 @@ companies:
   slug: clearly-ai
   yc: Summer 2024
   jobs_at_discovery: 2
+- name: ClearRoute
+  ats: teamtailor
+  slug: clearroute
+  learned_from: indeed
 - name: Cleo
   ats: greenhouse
   slug: cleo
@@ -1475,6 +1479,10 @@ companies:
   slug: invert
   yc: Winter 2022
   jobs_at_discovery: 6
+- name: ITP Media Group
+  ats: teamtailor
+  slug: itpmediagroup
+  learned_from: indeed_world
 - name: Ixigo
   ats: smartrecruiters
   slug: ixigo
@@ -2048,6 +2056,10 @@ companies:
   slug: odeko
   yc: Summer 2019
   jobs_at_discovery: 19
+- name: Odin Groep
+  ats: recruitee
+  slug: odingroepobs
+  learned_from: indeed_world
 - name: Odys Aviation
   ats: ashby
   slug: odys-aviation
@@ -2864,6 +2876,10 @@ companies:
 - name: Tokio Marine HCC
   ats: workday
   url: https://tmhcc.wd108.myworkdayjobs.com/External
+  learned_from: indeed_world
+- name: TOMRA
+  ats: smartrecruiters
+  slug: Tomra
   learned_from: indeed_world
 - name: Topline Pro
   ats: ashby
