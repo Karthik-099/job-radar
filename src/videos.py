@@ -31,10 +31,11 @@ log = logging.getLogger(__name__)
 CHANNELS_FILE = PROFILE_DIR / "youtube_channels.yaml"
 FEED = "https://www.youtube.com/feeds/videos.xml?channel_id={}"
 YT_API = "https://www.googleapis.com/youtube/v3"
-REFRESH_HOURS = 12
-MAX_AGE_DAYS = 30
-PER_SECTION = 9
-PER_CHANNEL = 3  # per section, for variety
+REFRESH_HOURS = 8
+MAX_AGE_DAYS = 45
+PER_SECTION = 12
+PER_CHANNEL = 4  # per section, for variety
+VERSION = 2  # bump when sections change: forces a refresh instead of waiting REFRESH_HOURS
 NS = {"a": "http://www.w3.org/2005/Atom", "yt": "http://www.youtube.com/xml/schemas/2015",
       "m": "http://search.yahoo.com/mrss/"}
 
@@ -167,7 +168,7 @@ def _api_search(key: str) -> list[dict[str, Any]]:
 
 def refresh(meta: dict[str, Any], gaps: list[str], force: bool = False) -> int:
     """Update meta['videos'] when due. Returns how many videos are listed."""
-    last = meta.get("videos_at")
+    last = meta.get("videos_at") if meta.get("videos_v") == VERSION else None
     if not force and last and datetime.now(timezone.utc) - datetime.fromisoformat(last) < timedelta(hours=REFRESH_HOURS):
         return len(meta.get("videos") or [])
 
@@ -186,6 +187,7 @@ def refresh(meta: dict[str, Any], gaps: list[str], force: bool = False) -> int:
     if found:
         meta["videos"] = rank(found, gaps)
         meta["videos_at"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+        meta["videos_v"] = VERSION
         log.info("videos: %d recent, kept %d in %d sections", len(found), len(meta["videos"]),
                  len({v["topic"] for v in meta["videos"]}))
     return len(meta.get("videos") or [])

@@ -62,3 +62,8 @@ channels:
   - {name: freeCodeCamp, id: UC8butISFwT-Wl7EV0hUK0BQ, section: Career}
   - {name: NetworkChuck, id: UC9x0AN7BWHpCDHSm9NiJFJQ, section: Career}
   - {name: Google Cloud Tech, id: UCJS9pqu9BzkAMNTmzNMNhvg, section: Kubernetes}
+  # More depth per section
+  - {name: Hello Interview, id: UC3kf-QFT6FZzDk9JsPg8Svg, section: System Design}
+  - {name: Arpit Bhayani (Asli Engineering), id: UC_b1GUJv_2QiMP4BxC9-Dxg, section: System Design}
+  - {name: ByteMonk, id: UCzCsyvyrq38R6TnztEzOmgg, section: System Design}
+  - {name: AWS Support, id: UCmbUo6azPfRePrpTJGZxILw, section: AWS}

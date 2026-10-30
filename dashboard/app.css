@@ -384,12 +384,16 @@ tbody tr[onclick], tbody tr:hover { background: var(--surface-2); }
 .globe-tools .btn { flex: none; }
 .globe-tools .search { min-width: 0; background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.18); }
 .globe-tools .btn { color: #d6dcea; }
-.globe { touch-action: none; cursor: grab; display: block; }
+.globe-stage { position: relative; }
+.globe { touch-action: none; display: block; position: absolute; inset: 0; }
+.globe.overlay { cursor: grab; }
+.globe.sat { pointer-events: none; }
 .globe:active { cursor: grabbing; }
 .globe-tip { position: absolute; pointer-events: none; background: rgba(8, 12, 22, .9); color: #fff; padding: 5px 9px; border-radius: 8px; font-size: 12.5px; white-space: nowrap; }
 .globe-legend { color: #c6cfe0; font-size: 11.5px; }
 .lg { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
-.lg.hot { background: var(--heat-3); } .lg.warm { background: var(--heat-1); } .lg.land { background: var(--land); }
+.lg.hot { background: var(--heat-3); } .lg.warm { background: var(--heat-1); } .lg.land { background: var(--land); } .lg.sel { background: var(--selected); }
+.globe-legend .credit { opacity: .6; }
 .country-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; max-height: calc(100dvh - 140px);
   overflow-y: auto; box-shadow: var(--shadow-1); display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; align-content: start; }
 .country-panel h2 { margin: 0; font-size: 18px; }

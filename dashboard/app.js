@@ -229,8 +229,12 @@
     if (!resp.ok) throw new Error(resp.status === 404 ? "No data published yet. Run the scan workflow once." : `Could not load data (${resp.status})`);
     return resp.json();
   }
+  // Start downloading the encrypted data as soon as the page opens, while you type the passphrase.
+  let early = fetchBlob().then((blob) => ({ blob, at: Date.now() })).catch(() => null);
   async function unlock(pass) {
-    const blob = await fetchBlob();
+    const pre = early && await early;
+    early = null;
+    const blob = pre && Date.now() - pre.at < 5 * 60 * 1000 ? pre.blob : await fetchBlob();
     const [data, localKey] = await Promise.all([decryptBlob(blob, pass), localKeyFor(pass)]);
     S.pass = pass;
     S.localKey = localKey;
@@ -1155,8 +1159,11 @@
 
   // ------------------------------------------------------------------ Learn (sections of recent videos)
   const SECTIONS = ["System Design", "DevOps", "DevSecOps", "Architecture", "AWS", "Azure", "Kubernetes", "Observability & SRE", "AI & MLOps", "Career"];
+  // Topic names used before the fixed sections existed: still shown until the next refresh replaces them.
+  const OLD_TOPICS = { "Kubernetes & cloud native": "Kubernetes", "IaC & CI/CD": "DevOps", Cloud: "DevOps", "AI & LLMs": "AI & MLOps",
+    Security: "DevSecOps", "System design & Linux": "System Design", "Career & interviews": "Career" };
   function renderLearn(root) {
-    const vids = S.data.videos || [];
+    const vids = (S.data.videos || []).map((v) => (SECTIONS.includes(v.topic) ? v : { ...v, topic: OLD_TOPICS[v.topic] || "DevOps" }));
     const have = SECTIONS.filter((s) => vids.some((v) => v.topic === s));
     if (S.learnTopic !== "all" && !have.includes(S.learnTopic)) S.learnTopic = "all";
     const gaps = (S.data.analytics?.skill_gap || []).slice(0, 5).map((g) => g.skill);

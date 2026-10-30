@@ -147,8 +147,8 @@ videos of the month from all of YouTube. Save it as repo secret `YOUTUBE_API_KEY
    LinkedIn people search in your browser; nothing on LinkedIn is automated).
 5. Jobs you applied to, and the same role found again under another city or board, disappear from the lists.
 6. **Learn** has fresh videos by topic (System Design, DevOps, DevSecOps, Architecture, AWS, Azure, Kubernetes,
-   Observability & SRE, AI & MLOps, Career). **Map** is a globe: click any country for its matching jobs and top
-   tech employers. **Insights** shows your funnel, reply rates by source, and whether high fit scores get replies.
+   Observability & SRE, AI & MLOps, Career). **Map** is a satellite globe (NASA imagery; "Map style" for a plain one): click any country for its
+   matching jobs and top tech employers. **Insights** shows your funnel, reply rates by source, and whether high fit scores get replies.
 7. Keyboard: `Ctrl K` search everything, `g j` jobs, `j`/`k` move, `a` applied, `x` hide, `?` all shortcuts.
    Themes: the moon button (Light, Dark, Midnight, Aurora, or match the system).
 

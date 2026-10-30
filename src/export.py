@@ -28,7 +28,7 @@ DIST = ROOT / "dist"
 FONTS = {f"fonts/lato-{w}.woff2" for w in ("400", "700", "400-italic", "700-italic")}
 # Third-party libraries, pinned and served from the dashboard itself (see dashboard/vendor/README.md).
 VENDOR = {f"vendor/{n}" for n in ("d3-array.min.js", "d3-geo.min.js", "topojson-client.min.js", "countries-50m.json",
-                                  "pdf.min.mjs", "pdf.worker.min.mjs")}
+                                  "countries-110m.json", "earth-2k.jpg", "earth-4k.jpg", "pdf.min.mjs", "pdf.worker.min.mjs")}
 ENCRYPTED = {"data/jobs.enc.json", "data/world.enc.json"}
 PUBLIC_FILES = {"index.html", "app.js", "map.js", "crypto.js", "app.css", "manifest.webmanifest", "sw.js", "icon.svg",
                 "autofill.user.js", *ENCRYPTED, *FONTS, *VENDOR}
@@ -143,7 +143,7 @@ def build_payload(jobs: list[Job], meta: dict[str, Any], now: datetime | None = 
         "jobs": [compact(j, base, SNIPPET if j.status != "new" or i < FULL_SNIPPETS else SHORT_SNIPPET)
                  for i, j in enumerate(chosen)],
         "resume": public_base(base),
-        "videos": (meta.get("videos") or [])[:100], "videos_at": meta.get("videos_at"),
+        "videos": (meta.get("videos") or [])[:130], "videos_at": meta.get("videos_at"),
         "gmail": {"last_sync": gmail.get("last_sync"), "stats": gmail.get("last_stats") or {},
                   "review": [{**r, "key": review_key(r)} for r in (gmail.get("review") or [])[-12:]]},
         "resume_import": meta.get("resume_import"),
