@@ -225,6 +225,19 @@
         if (fill) { g.globalAlpha = satOn ? 0.55 : 0.9; g.fillStyle = fill; g.fill(); g.globalAlpha = 1; }
         g.strokeStyle = "#fff"; g.lineWidth = fill ? 1.6 : 1.1; g.stroke();
       }
+      // Name label on the selected country (phones have no hover tooltip).
+      const sf = selected && features.find((x) => keyOf(x) === selected);
+      if (sf) {
+        const c = d3.geoCentroid(sf), visible = d3.geoDistance(c, [-projection.rotate()[0], -projection.rotate()[1]]) < Math.PI / 2;
+        const pt = visible && projection(c);
+        if (pt) {
+          const label = `${flag(world[selected]?.iso2)} ${nameOf(selected, sf)}`;
+          g.font = "600 13px system-ui, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
+          const w = g.measureText(label).width + 16;
+          g.fillStyle = "rgba(8, 12, 22, .82)"; g.beginPath(); g.roundRect(pt[0] - w / 2, pt[1] - 26, w, 22, 11); g.fill();
+          g.fillStyle = "#fff"; g.fillText(label, pt[0], pt[1] - 15);
+        }
+      }
       if (satOn && !gpu.ready()) { g.fillStyle = "rgba(255,255,255,.7)"; g.font = "13px system-ui"; g.textAlign = "center"; g.fillText("Loading satellite imagery…", size / 2, size / 2); }
       dirty = false;
     }
