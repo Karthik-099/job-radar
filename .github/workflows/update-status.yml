@@ -1,5 +1,5 @@
-# Applies status changes sent from the dashboard (Applied, Shortlisted, ...) to state/jobs.json,
-# then republishes the dashboard. Triggered only by workflow_dispatch with your fine-grained token.
+# Legacy path, kept only for old cached dashboards: the current dashboard commits status changes to
+# state/inbox/ instead (0 Actions minutes) and the next scan applies them. Still capped by the minutes guard.
 name: update-status
 
 on:
@@ -28,6 +28,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: prod
+
+      - name: Minutes budget guard
+        id: budget
+        run: python3 -m src.budget check --limit 1050
+      - name: Stop when over budget
+        if: steps.budget.outputs.skip == 'true'
+        run: exit 1
 
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:

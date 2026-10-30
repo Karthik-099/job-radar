@@ -1,12 +1,13 @@
 # job-radar
 
-Free, fully GitHub-hosted job search automation for DevOps / SRE / platform roles. Every 3 hours it
+Free, fully GitHub-hosted job search automation for DevOps / SRE / platform roles. Every 4 hours it
 searches India first, then remote, then the rest of the world, filters to roles you can actually get
 (stated minimum 3 years or less), scores each against your resume with free AI, and publishes an
 encrypted, password-protected dashboard. You apply by hand; nothing logs in anywhere or applies for you.
 
 - **Dashboard**: `https://<your-github-username>.github.io/job-radar-dashboard/` (GitHub Pages, free)
-- **Cost**: zero. Private-repo Actions minutes stay under ~1,000 of the free 2,000/month, with a hard guard at 1,700.
+- **Cost**: zero. Scans are paced through the month and hard-stop at 1,050 Actions minutes (CI adds ~50), so the
+  total stays around 1,100 of the free 2,000/month at the very worst. Dashboard clicks cost 0 minutes.
 - **Branch**: `prod` everywhere (this repo and the dashboard repo).
 
 ## What it does
@@ -30,7 +31,7 @@ encrypted, password-protected dashboard. You apply by hand; nothing logs in anyw
 
 ```
 job-radar (PRIVATE)                                      job-radar-dashboard (PUBLIC, GitHub Pages)
- .github/workflows/scan.yml  (cron every 3h)              index.html, app.js, crypto.js, app.css ...
+ .github/workflows/scan.yml  (cron every 4h)              index.html, app.js, crypto.js, app.css ...
    fetch -> filter -> rank -> AI score -> state/   ──►    data/jobs.enc.json   (AES-256-GCM ciphertext)
    -> encrypt -> publish -> digest issue (email)               ▲
  .github/workflows/update-status.yml  ◄────────────────  browser: your passphrase decrypts locally;
@@ -87,10 +88,22 @@ job-radar-dashboard → **Settings** → **Pages** → Source **Deploy from a br
 github.com → your photo → **Settings** → **Notifications**: set the default email to your Gmail and make
 sure **Watching → Email** is ticked. On the job-radar repo page, **Watch** should show "All Activity".
 
-### 8. Optional: sync your "Applied" ticks to every device
-Create another fine-grained token: name `job-radar-status`, only repository **job-radar**, permission
-**Actions: Read and write**, nothing else. Paste it in the dashboard → **Settings** → Sync. Without it,
-ticks are saved in that browser only (still fully usable).
+### 8. Optional: sync your marks to every device (0 Actions minutes)
+Each mark (Applied, stage, note, resume upload) is saved as a small file in a private repo; other browsers see it
+after Refresh and the next scan applies it. No workflow runs, so it costs no Actions minutes.
+
+Recommended (most secure): a separate empty inbox repo, so the browser's token can never touch your code or keys.
+1. github.com → **+** → **New repository** → name `job-radar-inbox` → **Private** → tick **Add a README** → **Create**.
+2. Token for the dashboard: Settings → Developer settings → Fine-grained tokens → **Generate new token** →
+   name `job-radar-inbox`, expiration 1 year, Repository access **Only select repositories** → `job-radar-inbox`,
+   Permissions → **Contents: Read and write**, nothing else → **Generate**. Copy it.
+3. The scan needs the same access: job-radar → Settings → Secrets and variables → Actions →
+   **New repository secret** `INBOX_TOKEN` = that token. Then the **Variables** tab → **New repository variable**
+   `INBOX_REPO` = `Karthik-099/job-radar-inbox`.
+4. Dashboard → **Settings** → Sync: Inbox repository `Karthik-099/job-radar-inbox`, paste the token → **Save** → **Test**.
+
+Simpler (less isolated): skip 1 and 3, make the token for repository **job-radar** with **Contents: Read and write**,
+and enter `Karthik-099/job-radar` in the dashboard. Without any token, marks stay in that browser only.
 
 ### 9. Optional: Gmail status sync (read-only, about 10 minutes, once)
 Jobs you marked **Applied** move to Rejected / Shortlisted / Interview / Offer when the company replies.
@@ -120,6 +133,11 @@ Install the Tampermonkey extension → dashboard **Settings** → **Install auto
 Tampermonkey icon → **Job Radar: my details** → fill your details once (stored only in your browser).
 On an application page click **⚡ Fill my details**, check everything, attach the tailored PDF, submit yourself.
 
+### 11. Optional: more videos in Learn
+A free YouTube Data API key (console.cloud.google.com → APIs & Services → Library → **YouTube Data API v3** →
+Enable → Credentials → **Create credentials → API key**, restrict it to that API) adds each section's most-watched
+videos of the month from all of YouTube. Save it as repo secret `YOUTUBE_API_KEY`. Uses ~2,000 of 10,000 free daily units.
+
 ## Daily use
 
 1. Open the email or the dashboard, enter your passphrase.
@@ -129,7 +147,11 @@ On an application page click **⚡ Fill my details**, check everything, attach t
    the referral message (replace `[Name]`, copy), interview topics, and **Find a referrer** (opens a normal
    LinkedIn people search in your browser; nothing on LinkedIn is automated).
 5. Jobs you applied to, and the same role found again under another city or board, disappear from the lists.
-6. **Learn** has fresh videos for your stack and gaps; **Insights** shows your funnel and who is hiring most.
+6. **Learn** has fresh videos by topic (System Design, DevOps, DevSecOps, Architecture, AWS, Azure, Kubernetes,
+   Observability & SRE, AI & MLOps, Career). **Map** is a globe: click any country for its matching jobs and top
+   tech employers. **Insights** shows your funnel, reply rates by source, and whether high fit scores get replies.
+7. Keyboard: `Ctrl K` search everything, `g j` jobs, `j`/`k` move, `a` applied, `x` hide, `?` all shortcuts.
+   Themes: the moon button (Light, Dark, Midnight, Aurora, or match the system).
 
 ## Local commands
 

@@ -257,7 +257,9 @@ def plan(title: str, terms_found: list[str], base: dict[str, Any] | None = None)
     original = resume_text(base)
     present, add, missing = [], {}, []
     added = 0
+    lines = max(1, len(base.get("skills") or []))
     for t in terms:
+        t = Term(t.name, min(t.line, lines - 1), t.jd, t.evidence)  # an uploaded resume may have fewer skill lines
         if t.jd.search(original):
             present.append(t.name)
         elif t.evidence and t.evidence.search(original) and added < MAX_ADD_TOTAL \

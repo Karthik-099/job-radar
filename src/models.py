@@ -8,8 +8,9 @@ from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
-STATUSES = ("new", "shortlisted", "applied", "interview", "offer", "rejected", "ignored")
-APPLIED_STATES = ("applied", "shortlisted", "interview", "offer", "rejected")  # you already applied
+# Pipeline. "shortlisted" = recruiter screen (key kept for old data); "ghosted" = no reply for weeks.
+STATUSES = ("new", "shortlisted", "applied", "assessment", "interview", "final", "offer", "rejected", "ghosted", "ignored")
+APPLIED_STATES = ("applied", "shortlisted", "assessment", "interview", "final", "offer", "rejected", "ghosted")
 
 # Query params that only track clicks and never identify a posting.
 _TRACKING_PARAMS = re.compile(r"^(utm_.*|ref|refid|src|source|trk|trackingid|gh_src|lever-source|from)$", re.I)
@@ -135,6 +136,7 @@ class Job:
     history: list[dict[str, Any]] = field(default_factory=list)
     jd_terms: list[str] = field(default_factory=list)  # ATS keywords found in the full JD (see tailor.py)
     ref: str = ""  # the employer's job/requisition id, when the posting states one
+    letter: dict[str, Any] = field(default_factory=dict)  # cover letter {"text", "rh": resume hash, "at"}
 
     def __post_init__(self) -> None:
         self.title = (self.title or "").strip()

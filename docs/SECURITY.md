@@ -27,7 +27,8 @@ Nothing secret is ever written to `state/`, `companies.yaml`, logs, or the dashb
 - OpenRouter: three independent locks. (1) Only models whose id ends in `:free` and whose every price is exactly
   0 are selected (`rank_free_models`). (2) Every request carries `provider.max_price = 0`, so OpenRouter refuses
   any paid route. (3) The key's credit limit is 0 (verified: `limit: 0`, `is_free_tier: true`).
-- GitHub Actions: no payment method on the account means a $0 spending limit; plus our own 1,700-minute guard.
+- GitHub Actions: no payment method on the account means a $0 spending limit; plus our own guard: scans are paced
+  evenly through the month and hard-stop at 1,050 minutes (src/budget.py), status clicks use no workflow at all.
 
 ## What is and isn't protected
 
@@ -39,8 +40,27 @@ Nothing secret is ever written to `state/`, `companies.yaml`, logs, or the dashb
 | Dashboard password | your head | Never stored. The derived key lives in browser memory only and is wiped on lock. |
 | Gmail (Phase 5) | Google | Read-only scope. Only subject, sender domain, date and matched job id are stored, never email bodies. |
 
+## Dashboard, browser and logs
+
+- **Public dashboard repo** holds only static files, pinned third-party libraries (`dashboard/vendor/`, licenses in its
+  README) and AES-256-GCM ciphertext (`data/jobs.enc.json`, `data/world.enc.json`). The publish step refuses any other
+  file, any plaintext data file, and any file containing your email, phone or resume lines.
+- **Strict Content-Security-Policy**: scripts, styles and fonts only from the dashboard itself; network only to
+  api.github.com; images also from YouTube thumbnails. No CDN, no analytics, no inline script.
+- **Untrusted text** (job postings, emails, company names) is only ever inserted as text, never HTML; links must be
+  http(s) and open with `noopener noreferrer`.
+- **Prompt injection**: job postings and emails pass through `src/guard.py` before any AI sees them (invisible
+  characters, hidden comments and lines that address an AI are removed); postings that tried it get a "Hidden text" flag.
+- **Actions logs** live in the private repo (only you can open them) and the scan runs with `--quiet`: no job titles,
+  companies, email subjects or resume text are printed. The public dashboard repo runs no workflows of its own.
+- **Sync token**: stored in the browser encrypted with your passphrase. Use the separate `job-radar-inbox` repo
+  (README step 8) so this token can only write inbox files, never code or workflow secrets. Inbox files are
+  size-capped and validated; unknown kinds are dropped.
+- **Resume upload**: the PDF is read in your browser; only its text is stored, in your private repo. Email, phone and
+  links are removed before the text goes to the AI; every structured bullet must appear word for word in your PDF.
+
 ## If a key leaks
 
-1. Revoke it immediately: Groq console > API Keys > delete; AI Studio > API keys > delete; OpenRouter > Keys > delete; GitHub > Settings > Developer settings > tokens > revoke.
+1. Revoke it immediately: Groq console > API Keys > delete; AI Studio > API keys > delete; OpenRouter > Keys > delete; GitHub > Settings > Developer settings > tokens > revoke (also the dashboard's inbox token; then Settings > Clear this device on each browser).
 2. Create a new one, update `.env` and the GitHub secret.
 3. If it was committed, rotating the key is the fix (rewriting git history does not un-leak it).

@@ -18,6 +18,7 @@ import os
 import sys
 import time
 from datetime import datetime, timezone
+from pathlib import Path
 
 from .config import STATE_DIR, Preferences, load_preferences
 from .dedupe import dedupe, drop_seen, merge_multi_city
@@ -33,13 +34,15 @@ from .recommend import apply_next, rank
 from .scoring import score_jobs
 from .envsecrets import secret
 from .state import JobStore
+from .guard import suspicious
+from .inbox import ingest
 from .tailor import jd_terms
 from .tracking import check_closed, drop_same_role
 
 log = logging.getLogger("job_radar")
-JOBSPY_SOURCES = {"indeed", "naukri", "google", "linkedin", "indeed_world", "linkedin_world"}
+JOBSPY_SOURCES = {"indeed", "naukri", "google", "linkedin", "indeed_world", "linkedin_world", "glassdoor", "bayt"}
 
-# Run budget: a 3-hourly cron must stay well inside 2,000 free minutes/month.
+# Run budget: a 4-hourly cron must stay well inside the 1,050-minute cap (src/budget.py).
 FETCH_BUDGET_SECONDS = 180
 MAX_DESCRIPTION_CHARS = 8000
 
@@ -59,6 +62,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--notify", action="store_true", help="post the email digest (GitHub Actions only)")
     p.add_argument("--check-closed", action="store_true", help="force the closed-job check now")
     p.add_argument("--gmail", action="store_true", help="update applied jobs from Gmail replies (read-only)")
+    p.add_argument("--quiet", action="store_true", help="no job titles/companies in the output (CI logs)")
     p.add_argument("-v", "--verbose", action="store_true")
     return p.parse_args(argv)
 
@@ -124,6 +128,23 @@ def run(args: argparse.Namespace) -> int:
     store = JobStore()
     log.info("sources: %s | tracked jobs: %d | backfill=%s", ", ".join(names) or "-", len(store.jobs), args.backfill)
 
+    # 0. Dashboard inbox: your marks, notes, review decisions and an uploaded resume (0 Actions minutes).
+    inbox_stats: dict = {}
+    if not args.dry_run:
+        inbox_stats = ingest(store)
+        if os.environ.get("INBOX_DIR"):  # separate inbox repo checked out by the workflow
+            extra = ingest(store, Path(os.environ["INBOX_DIR"]))
+            for k, v in extra.items():
+                if k == "resume":
+                    inbox_stats[k] = v or inbox_stats.get(k)
+                else:
+                    inbox_stats[k] = inbox_stats.get(k, 0) + v
+        if inbox_stats.get("resume"):
+            from .resume_import import import_resume
+            result = import_resume(inbox_stats["resume"]["text"], inbox_stats["resume"]["name"])
+            log.info("resume upload: %s", result.get("status"))
+            store.meta["resume_import"] = result
+
     # 1. Fetch (each source isolated and time-boxed).
     ctx = FetchContext(prefs=prefs, backfill=args.backfill, deadline=time.monotonic() + args.budget,
                        known_urls=store.seen_urls,
@@ -146,6 +167,8 @@ def run(args: argparse.Namespace) -> int:
         # The full JD is only available now (state keeps a snippet): extract ATS keywords and the job id once.
         job.jd_terms = jd_terms(f"{job.title}\n{job.description}")
         job.ref = job.ref or posting_ref(job.url, job.description)
+        if suspicious(job.description) and "hidden_text" not in job.flags:
+            job.flags.append("hidden_text")  # tried to hide text or instruct an AI screener
         rank(job, prefs)
     kept.sort(key=lambda j: j.apply_priority or 0, reverse=True)
     learned = learn_companies([j for j in unique if jf.title_ok(j.title)], dry_run=args.dry_run)
@@ -164,6 +187,13 @@ def run(args: argparse.Namespace) -> int:
         for job in pool:
             rank(job, prefs)
 
+    # 3b. Cover letters for the very top picks (fact-checked against the resume, redrafted only on resume change).
+    letters = 0
+    if not args.no_score and not args.dry_run:
+        from .letters import write_letters
+        letters = write_letters([j for j in apply_next(pool, n=12)
+                                 if (j.scoring or {}).get("method") == "llm" and (j.apply_priority or 0) >= 60])
+
     # 4. Daily: re-open saved links and flag closed postings.
     closed_stats = (check_closed(pool, store.meta, force=args.check_closed)
                     if not (args.dry_run or args.no_fetch) or args.check_closed else {})
@@ -173,8 +203,9 @@ def run(args: argparse.Namespace) -> int:
     if args.gmail and not args.dry_run:
         gmail_stats = _gmail(store, prefs)
 
-    print_table(kept, args.limit)
-    print_apply_next(apply_next(pool, n=15))
+    if not args.quiet:
+        print_table(kept, args.limit)
+        print_apply_next(apply_next(pool, n=15))
 
     elapsed = round(time.monotonic() - started, 1)
     stats = {
@@ -196,6 +227,7 @@ def run(args: argparse.Namespace) -> int:
         "llm_scored": score_stats.get("llm", 0), "llm_cached": score_stats.get("cached", 0),
         "closed_found": closed_stats.get("closed", 0),
         "gmail_updated": gmail_stats.get("updated", 0),
+        "letters": letters,
     }
     by_source: dict[str, int] = {}
     for j in kept:
@@ -205,6 +237,8 @@ def run(args: argparse.Namespace) -> int:
     stats["kept_by_source"] = by_source
     print("\nkept by source: " + ", ".join(f"{k}={v}" for k, v in sorted(by_source.items(), key=lambda kv: -kv[1])))
     print(f"raw={len(raw)} unique={len(unique)} fresh={len(fresh)} kept={len(kept)} rejected={dict(jf.rejections)}")
+    if inbox_stats.get("files"):
+        print(f"dashboard inbox: {inbox_stats['files']} files, {inbox_stats['applied']} changes applied")
     print(f"companies learned: {len(learned)} | same role skipped: {repeats} | reposts flagged: {ghosts} | "
           f"llm scored: {stats['llm_scored']} (cache hits {stats['llm_cached']}) | closed found: {stats['closed_found']}")
 
@@ -219,6 +253,11 @@ def run(args: argparse.Namespace) -> int:
             refresh(store.meta, gaps=_skill_gaps(pool))
         except Exception as exc:  # noqa: BLE001 - optional feature, never fails the scan
             log.warning("videos skipped: %s", type(exc).__name__)
+        from . import world  # Map tab: employers by country from Wikidata, rebuilt at most monthly
+        try:
+            world.refresh(store.meta)
+        except Exception as exc:  # noqa: BLE001 - optional feature, never fails the scan
+            log.warning("world map refresh skipped: %s", type(exc).__name__)
 
     # 6. Save state.
     store.add(kept)
@@ -267,8 +306,6 @@ def _gmail(store: JobStore, prefs: Preferences) -> dict:
     except (GmailError, OSError, ValueError) as exc:  # never let Gmail trouble sink the scan
         log.warning("gmail sync skipped: %s", exc)
         return {}
-    for c in stats.get("changes", []):
-        log.info("gmail: %s @ %s: %s -> %s", c["title"], c["company"], c["from"], c["to"])
     log.info("gmail: read %d, hiring %d, updated %d, skipped %d",
              stats["read"], stats["hiring"], stats["updated"], stats["skipped"])
     return stats

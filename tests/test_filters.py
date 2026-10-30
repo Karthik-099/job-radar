@@ -176,5 +176,10 @@ def test_extract_deadline(text, expected):
 
 
 def test_expired_jobs_dropped(prefs):
-    assert check(prefs, make(desc="Apply by 15 October 2026.")) == "expired"
-    assert check(prefs, make(desc="Apply by 30 October 2026.")) is None
+    from datetime import datetime, timedelta, timezone
+    now = datetime.now(timezone.utc)  # enrich() reads deadlines against the real clock, so the filter must too
+    day = lambda d: (now + timedelta(days=d)).strftime("%d %B %Y")
+    live = lambda desc: JobFilter(prefs, now=now).reason(enrich(Job(title="DevOps Engineer", company="Acme",
+        location="Bengaluru", url="https://x.test/1", source="t", description=desc, posted_at=now.isoformat()), prefs))
+    assert live(f"Apply by {day(-3)}.") == "expired"
+    assert live(f"Apply by {day(5)}.") is None

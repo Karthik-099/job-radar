@@ -1,11 +1,16 @@
-# Every 3 hours: find jobs, score them, update state, publish the encrypted dashboard, email a digest.
-# Cost guard: ~3 billed minutes per run x 8 runs/day ~ 720 of the 2,000 free minutes/month. The budget
-# step skips the run (in ~10s) once this month's recorded usage passes 1,700 minutes.
+# Every 4 hours: find jobs, score them, read Gmail replies, apply dashboard marks, publish the encrypted
+# dashboard, email a digest.
+#
+# Minutes (private repo, 2,000 free/month): a scan bills ~5-6 minutes. The guard (src/budget.py) hard-stops
+# scans at 1,050 minutes and paces them evenly through the month, so this workflow can never pass ~1,050
+# even if GitHub fires every scheduled run (6/day x 31 = 186 runs). A skipped run costs 1 minute and ends in
+# ~15 s. Dashboard status changes no longer start any workflow (they are committed as small files in
+# state/inbox/ and folded in here), so they cost 0 minutes.
 name: scan
 
 on:
   schedule:
-    - cron: "17 */3 * * *"   # :17 past every 3rd hour UTC (off the busy top of the hour)
+    - cron: "17 */4 * * *"   # :17 past every 4th hour UTC (off the busy top of the hour)
   workflow_dispatch:
     inputs:
       backfill:
@@ -15,21 +20,21 @@ on:
       max_llm:
         description: "Max jobs sent to the AI this run (cache hits are free)"
         type: string
-        default: "40"
+        default: "48"
 
 permissions:
   contents: write   # commit state/ to this private repo
   issues: write     # email digest via a GitHub issue
-  models: read      # GitHub Models as a third free AI fallback
+  models: read      # GitHub Models as a free AI fallback
 
 concurrency:
-  group: job-radar-state   # shared with update-status: one writer at a time
+  group: job-radar-state   # one writer at a time
   cancel-in-progress: false
 
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 9
     steps:
       - name: Start timer
         run: echo "STARTED=$(date +%s)" >> "$GITHUB_ENV"
@@ -38,19 +43,47 @@ jobs:
         with:
           ref: prod
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: requirements.txt
-
+      # Runs on the runner's own python3, before any setup, so a skipped run ends in seconds.
       - name: Minutes budget guard
         id: budget
-        run: python -m src.budget check --limit 1700
+        run: python3 -m src.budget check --limit 1050 ${{ github.event_name == 'schedule' && '--pace' || '' }}
+
+      - name: Record skipped run
+        if: steps.budget.outputs.skip == 'true'
+        run: |
+          python3 -m src.budget record --seconds 30 --kind skipped
+          bash scripts/commit_state.sh "skip"
+
+      # Optional separate inbox repo (repo variable INBOX_REPO, secret INBOX_TOKEN): the dashboard's token can then
+      # only write there and can never touch this repo's code or secrets.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.budget.outputs.skip != 'true' && vars.INBOX_REPO != ''
+        with:
+          repository: ${{ vars.INBOX_REPO }}
+          token: ${{ secrets.INBOX_TOKEN }}
+          path: .inbox-repo
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        if: steps.budget.outputs.skip != 'true'
+        with:
+          python-version: "3.11"
+
+      # The whole virtualenv is cached: an install takes ~2 s instead of ~25 s on most runs.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        id: venv
+        if: steps.budget.outputs.skip != 'true'
+        with:
+          path: .venv-ci
+          key: venv-${{ runner.os }}-py311-${{ hashFiles('requirements.txt') }}
 
       - name: Install
         if: steps.budget.outputs.skip != 'true'
-        run: pip install --disable-pip-version-check -q -r requirements.txt
+        run: |
+          if [ "${{ steps.venv.outputs.cache-hit }}" != "true" ]; then
+            python -m venv .venv-ci
+            .venv-ci/bin/pip install --disable-pip-version-check -q -r requirements.txt
+          fi
+          echo "$PWD/.venv-ci/bin" >> "$GITHUB_PATH"
 
       - name: Scan, score, export, notify
         if: steps.budget.outputs.skip != 'true'
@@ -64,16 +97,31 @@ jobs:
           GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
           GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
           GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}   # optional
           DASHBOARD_URL: ${{ vars.DASHBOARD_URL }}
-          MAX_LLM: ${{ inputs.max_llm || '40' }}
+          MAX_LLM: ${{ inputs.max_llm || '48' }}
           BACKFILL: ${{ inputs.backfill && '--backfill' || '' }}
-        run: python -m src.main --export --notify --gmail --limit 0 --max-llm "$MAX_LLM" $BACKFILL
+          INBOX_DIR: ${{ vars.INBOX_REPO != '' && '.inbox-repo/state/inbox' || '' }}
+        run: python -m src.main --export --notify --gmail --quiet --limit 0 --max-llm "$MAX_LLM" $BACKFILL
 
       - name: Record minutes and commit state
         if: always() && steps.budget.outputs.skip != 'true'
         run: |
-          python -m src.budget record --seconds "$(( $(date +%s) - STARTED + 25 ))" --kind scan
+          python3 -m src.budget record --seconds "$(( $(date +%s) - STARTED + 30 ))" --kind scan
           bash scripts/commit_state.sh "scan"
+
+      # Only after state is safely committed: delete the inbox files this run applied.
+      - name: Clear applied inbox files
+        if: success() && steps.budget.outputs.skip != 'true' && vars.INBOX_REPO != ''
+        working-directory: .inbox-repo
+        run: |
+          git config user.name "job-radar-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -q -m "inbox: applied"
+          for attempt in 1 2 3; do git push -q && exit 0; git pull -q --rebase || { git rebase --abort; sleep 2; }; done
+          exit 1
 
       - name: Publish dashboard
         if: success() && steps.budget.outputs.skip != 'true'

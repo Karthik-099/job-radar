@@ -4,7 +4,7 @@ set -euo pipefail
 kind="${1:-scan}"
 git config user.name "job-radar-bot"
 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git add state/ companies.yaml
+git add -A state/ companies.yaml profile/resume.yaml profile/resume.md  # -A: also processed inbox deletions
 if git diff --cached --quiet; then
   echo "no state changes"
   exit 0

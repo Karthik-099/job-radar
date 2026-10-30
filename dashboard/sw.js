@@ -1,7 +1,7 @@
 // Network-first service worker: always try fresh files, fall back to the last copy when offline.
 // It only ever caches this site's own static files and the (encrypted) data file.
-const CACHE = "job-radar-v2";
-const SHELL = ["./", "index.html", "app.css", "crypto.js", "app.js", "icon.svg", "manifest.webmanifest"];
+const CACHE = "job-radar-v3";
+const SHELL = ["./", "index.html", "app.css", "crypto.js", "app.js", "map.js", "icon.svg", "manifest.webmanifest"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

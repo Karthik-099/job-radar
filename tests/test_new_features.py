@@ -42,7 +42,8 @@ REJECT = "Thank you for applying to the DevOps Engineer role at Razorpay. Unfort
 def test_classify():
     assert gmail_sync.classify("Your application", REJECT) == "rejected"
     assert gmail_sync.classify("Interview invitation", "We would like to schedule an interview with you") == "interview"
-    assert gmail_sync.classify("Next steps", "Please complete the online assessment on HackerRank") == "shortlisted"
+    assert gmail_sync.classify("Next steps", "Please complete the online assessment on HackerRank") == "assessment"
+    assert gmail_sync.classify("Good news", "You have been shortlisted for this role. Our recruiter will be in touch.") == "shortlisted"
     assert gmail_sync.classify("Offer", "We are pleased to offer you the position") == "offer"
     # A confirmation that says "unfortunately we can't reply to everyone" is NOT a rejection.
     assert gmail_sync.classify("Application received", "Thanks for applying. Due to volume we can't reply to every applicant.") is None

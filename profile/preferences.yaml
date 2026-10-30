@@ -164,6 +164,25 @@ sources:
       - {location: "Pune", country: india}
       - {location: "Hyderabad", country: india}
       - {location: "India", country: india}
+  glassdoor:
+    enabled: true
+    hours_old: 72
+    results_wanted: 25
+    search_terms: [devops engineer, site reliability engineer, platform engineer, cloud engineer]
+    locations:
+      - {location: "Bangalore", country: india}
+      - {location: "Pune", country: india}
+      - {location: "Hyderabad", country: india}
+  # Gulf board. Its search is loose (matches any word), so the title filter does the real work.
+  bayt:
+    enabled: true
+    hours_old: 168
+    results_wanted: 25
+    search_terms: [devops engineer, site reliability engineer, platform engineer]
+    locations:
+      - {location: "United Arab Emirates"}
+      - {location: "Saudi Arabia"}
+      - {location: "Qatar"}
   naukri:
     enabled: true
     hours_old: 72
@@ -219,6 +238,10 @@ sources:
   ashby: {enabled: true}
   smartrecruiters: {enabled: true}
   workday: {enabled: true}
+  workable: {enabled: true}
+  recruitee: {enabled: true}
+  bamboohr: {enabled: true}
+  teamtailor: {enabled: true}
 
   # Big cloud employers' own job APIs (public, no login). India roles only.
   amazon: {enabled: true}      # Amazon + AWS (DevOps, SysDE, Cloud Support, SRE)

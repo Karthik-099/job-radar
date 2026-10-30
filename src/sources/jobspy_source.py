@@ -1,4 +1,4 @@
-"""Job boards via python-jobspy: Indeed and Naukri first, Google and LinkedIn best effort."""
+"""Job boards via python-jobspy: Indeed, Naukri, Glassdoor (India) and Bayt (Gulf); Google and LinkedIn best effort."""
 from __future__ import annotations
 
 import logging
@@ -95,7 +95,7 @@ def _query(site: str, term: str, loc: dict[str, Any], cfg: dict[str, Any], ctx: 
         description_format="markdown",
         verbose=0,
     )
-    if site == "indeed":
+    if site in ("indeed", "glassdoor"):
         kwargs["country_indeed"] = loc.get("country", "india")
         if not kwargs["location"]:
             kwargs.pop("location")  # whole country
@@ -103,8 +103,8 @@ def _query(site: str, term: str, loc: dict[str, Any], cfg: dict[str, Any], ctx: 
         kwargs["is_remote"] = True
     if site == "google":
         kwargs["google_search_term"] = f"{term} jobs near {loc.get('location')} since {max(1, hours_old // 24)} days ago"
-    if site == "linkedin":
-        kwargs["fetch_description"] = bool(cfg.get("fetch_description", False))
+    # JobSpy >= 1.4 only opens each job page (for the description) when asked; LinkedIn's pages throttle fast.
+    kwargs["fetch_description"] = bool(cfg.get("fetch_description", site != "linkedin"))
 
     last_exc: Exception | None = None
     for attempt in range(2):
@@ -131,7 +131,7 @@ def _fetch_site(site: str, ctx: FetchContext) -> list[Job]:
     return jobs
 
 
-for _site in ("indeed", "naukri", "google", "linkedin"):
+for _site in ("indeed", "naukri", "google", "linkedin", "glassdoor", "bayt"):
     register(_site)(lambda ctx, _site=_site: _fetch_site(_site, ctx))
 
 

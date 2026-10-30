@@ -20,13 +20,17 @@ def _job(i=1, desc="Kubernetes Terraform"):
 def test_normalize_cleans_style_and_clamps():
     out = scoring.normalize_result({
         "score": 14, "level_fit": "weird", "matched_skills": ["k8s"] * 20,
-        "referral_message_draft": "Hi — I love this role! Really‑excited",
+        "red_flags": ["Hi — I love this role! Really‑excited"],
         "tailoring_tips": ["a", "b", "c", "d"], "interview_topics": list("abcdefg"),
+        "must_haves": [{"req": "Kubernetes", "met": True}, {"req": "Go"}, "junk"] + [{"req": "x", "met": False}] * 9,
+        "brief": {"they_want": ["platform"] * 9, "specifics": "not a list"},
     })
     assert out["score"] == 10.0 and out["level_fit"] == "ok"
     assert len(out["matched_skills"]) == 8 and len(out["tailoring_tips"]) == 3 and len(out["interview_topics"]) == 5
-    assert "—" not in out["referral_message_draft"] and "!" not in out["referral_message_draft"]
-    assert "‑" not in out["referral_message_draft"]
+    flag = out["red_flags"][0]
+    assert "—" not in flag and "!" not in flag and "‑" not in flag
+    assert out["must_haves"][:2] == [{"req": "Kubernetes", "met": True}, {"req": "Go", "met": False}]
+    assert len(out["must_haves"]) == 6 and len(out["brief"]["they_want"]) == 4 and out["brief"]["specifics"] == []
 
 
 def test_normalize_rejects_missing_score():

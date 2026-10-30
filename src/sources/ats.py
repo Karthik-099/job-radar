@@ -6,15 +6,21 @@ Endpoints (verified 2026-10):
   Ashby           GET  api.ashbyhq.com/posting-api/job-board/<slug>
   SmartRecruiters GET  api.smartrecruiters.com/v1/companies/<slug>/postings?q=   (+ /postings/<id>)
   Workday         POST <host>/wday/cxs/<tenant>/<site>/jobs                       (+ GET <host>/wday/cxs/.../job/...)
+  Workable        GET  apply.workable.com/api/v1/widget/accounts/<slug>?details=true
+  Recruitee       GET  <slug>.recruitee.com/api/offers/
+  BambooHR        GET  <slug>.bamboohr.com/careers/list                           (+ /careers/<id>/detail)
+  Teamtailor      GET  <slug>.teamtailor.com/jobs.rss
 """
 from __future__ import annotations
 
 import html
 import logging
 import re
+import xml.etree.ElementTree as ET
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -239,9 +245,118 @@ def workday(c: dict[str, Any], ctx: FetchContext) -> list[Job]:
     return jobs
 
 
+# --------------------------------------------------------------------------- Workable
+def workable(c: dict[str, Any], ctx: FetchContext) -> list[Job]:
+    slug = c["slug"]
+    data = net.get_json(f"https://apply.workable.com/api/v1/widget/accounts/{slug}", params={"details": "true"})
+    jobs: list[Job] = []
+    for item in data.get("jobs") or []:
+        title = (item.get("title") or "").strip()
+        posted = _iso(item.get("published_on") or item.get("created_at"))
+        url = f"https://apply.workable.com/{slug}/j/{item.get('shortcode')}/"
+        if not ctx.wants(title) or _too_old(posted, ctx) or ctx.is_known(url):
+            continue
+        locs = [", ".join(x for x in (loc.get("city"), loc.get("region"), loc.get("country")) if x)
+                for loc in item.get("locations") or [item]]
+        location = " / ".join(dict.fromkeys(x for x in locs if x))
+        if not ctx.location_ok(location):
+            continue
+        jobs.append(Job(
+            title=title, company=c.get("name") or data.get("name") or slug, location=location, url=url,
+            source="workable", description=html_to_text(item.get("description", "")),
+            remote=bool(item.get("telecommuting")), posted_at=posted,
+        ))
+    return jobs
+
+
+# --------------------------------------------------------------------------- Recruitee
+def recruitee(c: dict[str, Any], ctx: FetchContext) -> list[Job]:
+    slug = c["slug"]
+    jobs: list[Job] = []
+    for item in net.get_json(f"https://{slug}.recruitee.com/api/offers/").get("offers") or []:
+        title = (item.get("title") or "").strip()
+        posted = _iso(str(item.get("published_at") or item.get("created_at") or "").replace(" UTC", "+00:00"))
+        # The <slug>.recruitee.com link redirects to the company's own careers domain and keeps
+        # learn/closed-check working; the custom-domain link is kept as an alias for dedupe.
+        url = f"https://{slug}.recruitee.com/o/{item.get('slug')}"
+        careers = item.get("careers_url") or ""
+        if item.get("status", "published") != "published" or not ctx.wants(title) or _too_old(posted, ctx):
+            continue
+        if ctx.is_known(url) or ctx.is_known(careers):
+            continue
+        locs = [", ".join(x for x in (loc.get("city") or loc.get("name"), loc.get("country")) if x)
+                for loc in item.get("locations") or []] or [item.get("location", "")]
+        location = " / ".join(dict.fromkeys(x for x in locs if x))
+        if not ctx.location_ok(location):
+            continue
+        sal = item.get("salary") or {}
+        salary = f"{sal.get('currency')} {sal.get('min')}-{sal.get('max')} / {sal.get('period')}" if sal.get("min") else ""
+        jobs.append(Job(
+            title=title, company=c.get("name") or item.get("company_name") or slug, location=location, url=url,
+            alt_urls=[careers] if careers and careers != url else [], source="recruitee",
+            description="\n\n".join(html_to_text(item.get(k) or "") for k in ("description", "requirements")).strip(),
+            remote=bool(item.get("remote")), posted_at=posted, salary=salary, expires_at=_iso(item.get("close_at")),
+        ))
+    return jobs
+
+
+# --------------------------------------------------------------------------- BambooHR
+def bamboohr(c: dict[str, Any], ctx: FetchContext) -> list[Job]:
+    slug = c["slug"]
+    base = f"https://{slug}.bamboohr.com/careers"
+    jobs: list[Job] = []
+    for item in net.get_json(f"{base}/list").get("result") or []:
+        title = (item.get("jobOpeningName") or "").strip()
+        url = f"{base}/{item.get('id')}"
+        loc, ats_loc = item.get("location") or {}, item.get("atsLocation") or {}
+        location = ", ".join(x for x in (loc.get("city") or ats_loc.get("city"), loc.get("state") or ats_loc.get("state"),
+                                         ats_loc.get("country")) if x)
+        if not ctx.wants(title) or ctx.is_known(url) or not ctx.location_ok(location) or ctx.time_left() <= 0:
+            continue
+        detail = (net.get_json(f"{url}/detail").get("result") or {}).get("jobOpening") or {}
+        posted = _iso(detail.get("datePosted"))
+        if _too_old(posted, ctx) or detail.get("jobOpeningStatus", "Open") != "Open":
+            continue
+        jobs.append(Job(
+            title=title, company=c.get("name") or slug, location=location, url=url, source="bamboohr",
+            description=html_to_text(detail.get("description", "")), posted_at=posted,
+            remote=str(item.get("locationType")) == "1" or bool(item.get("isRemote")),
+            salary=detail.get("compensation") or "",
+        ))
+    return jobs
+
+
+# --------------------------------------------------------------------------- Teamtailor
+_TT = "{https://teamtailor.com/locations}"
+
+
+def teamtailor(c: dict[str, Any], ctx: FetchContext) -> list[Job]:
+    slug = c["slug"]
+    resp = net.get(f"https://{slug}.teamtailor.com/jobs.rss")
+    resp.raise_for_status()
+    jobs: list[Job] = []
+    for item in ET.fromstring(resp.content).iter("item"):
+        title = item.findtext("title", "").strip()
+        url = item.findtext("link", "")
+        pub = item.findtext("pubDate")
+        posted = parsedate_to_datetime(pub).astimezone(timezone.utc).isoformat(timespec="seconds") if pub else None
+        if not ctx.wants(title) or _too_old(posted, ctx) or ctx.is_known(url):
+            continue
+        location = " / ".join(dict.fromkeys(x for x in (n.findtext(f"{_TT}name", "") for n in item.iter(f"{_TT}location")) if x))
+        if not ctx.location_ok(location):
+            continue
+        jobs.append(Job(
+            title=title, company=c.get("name") or item.findtext("company_name") or slug, location=location, url=url,
+            source="teamtailor", description=html_to_text(item.findtext("description", "")),
+            remote=item.findtext("remoteStatus", "") in ("fully", "remote"), posted_at=posted,
+        ))
+    return jobs
+
+
 FETCHERS: dict[str, Callable[[dict[str, Any], FetchContext], list[Job]]] = {
     "greenhouse": greenhouse, "lever": lever, "ashby": ashby,
     "smartrecruiters": smartrecruiters, "workday": workday,
+    "workable": workable, "recruitee": recruitee, "bamboohr": bamboohr, "teamtailor": teamtailor,
 }
 
 

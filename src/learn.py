@@ -1,8 +1,8 @@
 """Grow companies.yaml automatically from the links job boards hand us.
 
 When Indeed/LinkedIn/etc. point at a company's own ATS page (Greenhouse, Lever, Ashby, SmartRecruiters,
-Workday), that company is hiring for our titles, so we start polling its career site directly. Direct
-polling catches new roles earlier and with full descriptions.
+Workday, Workable, Recruitee, BambooHR, Teamtailor), that company is hiring for our titles, so we start polling
+its career site directly. Direct polling catches new roles earlier and with full descriptions.
 """
 from __future__ import annotations
 
@@ -22,9 +22,13 @@ _PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("lever", re.compile(r"jobs\.lever\.co/([A-Za-z0-9_.-]+)", re.I)),
     ("ashby", re.compile(r"jobs\.ashbyhq\.com/([A-Za-z0-9_.%-]+)", re.I)),
     ("smartrecruiters", re.compile(r"jobs\.smartrecruiters\.com/([A-Za-z0-9_-]+)", re.I)),
+    ("workable", re.compile(r"apply\.workable\.com/([A-Za-z0-9_-]+)", re.I)),
+    ("recruitee", re.compile(r"//([A-Za-z0-9-]+)\.recruitee\.com", re.I)),
+    ("bamboohr", re.compile(r"//([A-Za-z0-9-]+)\.bamboohr\.com/(?:careers|jobs)", re.I)),
+    ("teamtailor", re.compile(r"//([A-Za-z0-9-]+)\.teamtailor\.com", re.I)),
     ("workday", re.compile(r"(https?://[a-z0-9-]+\.wd\d+\.myworkdayjobs\.com)/(?:[a-z]{2}-[A-Z]{2}/)?([A-Za-z0-9_-]+)", re.I)),
 ]
-_NOT_SLUGS = {"embed", "jobs", "job", "v1", "boards", "careers", "search"}
+_NOT_SLUGS = {"embed", "jobs", "job", "v1", "boards", "careers", "search", "j", "api", "www", "app", "career"}
 
 
 def ats_from_url(url: str) -> dict[str, str] | None:

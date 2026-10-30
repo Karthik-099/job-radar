@@ -1,6 +1,6 @@
 # Company career feeds. Generated/merged by `python -m src.discover`; safe to edit by hand.
 # yc: <batch> marks a Y Combinator company (badge + filter on the dashboard).
-# ats: greenhouse | lever | ashby | smartrecruiters (slug)  or  workday (url). enabled: false to pause.
+# ats: greenhouse | lever | ashby | smartrecruiters | workable | recruitee | bamboohr | teamtailor (slug)  or  workday (url). enabled: false to pause.
 companies:
 - name: 1Password
   ats: ashby
@@ -380,6 +380,10 @@ companies:
   slug: bitmovin
   yc: Summer 2015
   jobs_at_discovery: 11
+- name: Bitrise
+  ats: bamboohr
+  slug: bitrise
+  jobs_at_discovery: 4
 - name: Bitsight
   ats: workday
   url: https://bitsight.wd1.myworkdayjobs.com/broadbean_external
@@ -473,6 +477,10 @@ companies:
   ats: ashby
   slug: bunny
   jobs_at_discovery: 1
+- name: Bunq
+  ats: recruitee
+  slug: bunq
+  jobs_at_discovery: 25
 - name: Bupa
   ats: workday
   url: https://bupa.wd3.myworkdayjobs.com/BCC_Career_Site
@@ -1246,6 +1254,12 @@ companies:
   slug: greatquestion
   yc: Winter 2021
   jobs_at_discovery: 4
+- name: Grid Dynamics
+  ats: bamboohr
+  slug: griddynamics
+  jobs_at_discovery: 2
+  enabled: false
+  note: test/sandbox board (placeholder jobs)
 - name: Gridware
   ats: lever
   slug: gridware
@@ -1361,6 +1375,10 @@ companies:
   slug: hud
   yc: Winter 2025
   jobs_at_discovery: 30
+- name: Hugging Face
+  ats: workable
+  slug: huggingface
+  jobs_at_discovery: 6
 - name: Humaans
   ats: ashby
   slug: humaans
@@ -1500,6 +1518,10 @@ companies:
   slug: kalshi
   yc: Winter 2019
   jobs_at_discovery: 49
+- name: Katalon
+  ats: teamtailor
+  slug: katalon
+  jobs_at_discovery: 14
 - name: KBR
   ats: workday
   url: https://kbr.wd5.myworkdayjobs.com/KBR_Careers
@@ -1546,6 +1568,10 @@ companies:
   ats: smartrecruiters
   slug: KPN
   learned_from: indeed_world
+- name: Kubermatic
+  ats: bamboohr
+  slug: kubermatic
+  jobs_at_discovery: 10
 - name: Kyndryl
   ats: workday
   url: https://kyndryl.wd5.myworkdayjobs.com/KyndrylProfessionalCareers
@@ -2241,6 +2267,10 @@ companies:
   slug: promise
   yc: Winter 2018
   jobs_at_discovery: 11
+- name: Property Finder
+  ats: teamtailor
+  slug: propertyfinder
+  jobs_at_discovery: 39
 - name: Prospa
   ats: greenhouse
   slug: prospa
@@ -2487,6 +2517,10 @@ companies:
   ats: lever
   slug: secureframe
   jobs_at_discovery: 15
+- name: Semaphore
+  ats: bamboohr
+  slug: semaphore
+  jobs_at_discovery: 2
 - name: Semgrep
   ats: ashby
   slug: semgrep
@@ -2588,6 +2622,12 @@ companies:
   ats: greenhouse
   slug: sofi
   jobs_at_discovery: 49
+- name: Solaris
+  ats: bamboohr
+  slug: solaris
+  jobs_at_discovery: 2
+  enabled: false
+  note: 'same-name stranger: Solaris consultancy (Boston), not Solaris SE'
 - name: SolarWinds
   ats: greenhouse
   slug: solarwinds
@@ -2612,6 +2652,10 @@ companies:
   ats: lever
   slug: sonatype
   jobs_at_discovery: 15
+- name: Spacelift
+  ats: teamtailor
+  slug: spacelift
+  jobs_at_discovery: 7
 - name: Spade
   ats: ashby
   slug: spade
@@ -2622,6 +2666,10 @@ companies:
   slug: speak
   yc: Winter 2017
   jobs_at_discovery: 34
+- name: Spectro Cloud
+  ats: teamtailor
+  slug: spectrocloud
+  jobs_at_discovery: 23
 - name: Spotify
   ats: lever
   slug: spotify
@@ -2728,6 +2776,10 @@ companies:
   slug: tavus
   yc: Summer 2021
   jobs_at_discovery: 19
+- name: Tech Mahindra
+  ats: bamboohr
+  slug: techmahindra
+  jobs_at_discovery: 5
 - name: Techsur Solutions
   ats: smartrecruiters
   slug: TechSurSolutions
@@ -3074,6 +3126,12 @@ companies:
   ats: ashby
   slug: xero
   jobs_at_discovery: 106
+- name: Xflow
+  ats: bamboohr
+  slug: xflow
+  jobs_at_discovery: 13
+  enabled: false
+  note: 'same-name stranger: X-FLOW mobile games, not Xflow payments'
 - name: Y Combinator
   ats: ashby
   slug: ycombinator
@@ -3109,6 +3167,16 @@ companies:
   slug: zensors
   yc: Summer 2021
   jobs_at_discovery: 5
+- name: Zeotap
+  ats: recruitee
+  slug: zeotap
+  jobs_at_discovery: 1
+- name: Zepto
+  ats: bamboohr
+  slug: zepto
+  jobs_at_discovery: 1
+  enabled: false
+  note: 'same-name stranger: Zepto Payments (Australia), not Zepto India'
 - name: Zeta
   ats: lever
   slug: zeta

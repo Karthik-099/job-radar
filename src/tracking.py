@@ -101,6 +101,23 @@ def _ats_check(url: str) -> bool | None:
     if host == "jobs.smartrecruiters.com" and m:
         r = net.get(f"https://api.smartrecruiters.com/v1/companies/{m.group(1)}/postings/{m.group(2)}")
         return None if r.status_code >= 500 else r.status_code == 200
+    m = re.match(r"/([^/]+)/j/([0-9A-Za-z]+)", path)
+    if host == "apply.workable.com" and m:
+        r = net.get(f"https://apply.workable.com/api/v2/accounts/{m.group(1)}/jobs/{m.group(2)}")
+        return None if r.status_code >= 500 else r.status_code == 200
+    m = re.match(r"/o/([^/]+)", path)
+    if host.endswith(".recruitee.com") and m:
+        r = net.get(f"https://{host}/api/offers/{m.group(1)}")
+        return None if r.status_code >= 500 else r.status_code == 200
+    m = re.match(r"/careers/(\d+)", path)
+    if host.endswith(".bamboohr.com") and m:
+        r = net.get(f"https://{host}/careers/{m.group(1)}/detail")
+        if r.status_code in (404, 410):
+            return False
+        if not r.ok:
+            return None
+        return ((r.json().get("result") or {}).get("jobOpening") or {}).get("jobOpeningStatus", "Open") == "Open"
+    # Teamtailor job pages return 404 once closed, so the generic URL check below is enough.
     m = re.match(r"(?:/[a-z]{2}-[A-Z]{2})?/([^/]+)(/job/.+)", path)
     if host.endswith("myworkdayjobs.com") and m:
         tenant = host.split(".")[0]

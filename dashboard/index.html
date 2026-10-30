@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://i.ytimg.com; font-src 'self'; connect-src 'self' https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
-<meta name="theme-color" content="#1a1a19">
+<meta name="theme-color" content="#0f1115">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="app.css">
@@ -20,7 +20,7 @@
 
 <section id="lock" class="lock" aria-labelledby="lock-title">
   <form id="lock-form" class="lock-card" autocomplete="off">
-    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3" opacity=".25"/><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="3" opacity=".5"/><path d="M24 24 L40 12" stroke="#2a78d6" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3.5" fill="#2a78d6"/></svg>
+    <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3" opacity=".25"/><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="3" opacity=".5"/><path d="M24 24 L40 12" stroke="#4f7cff" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3.5" fill="#4f7cff"/></svg>
     <h1 id="lock-title">Job Radar</h1>
     <p>Your jobs are encrypted. Enter your passphrase to unlock them on this device.</p>
     <label for="pass" class="sr-only">Passphrase</label>
@@ -30,30 +30,38 @@
   </form>
 </section>
 
-<div id="app" class="hidden">
-  <header class="top">
-    <div class="top-inner">
-      <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3" opacity=".25"/><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="3" opacity=".5"/><path d="M24 24 L40 12" stroke="#2a78d6" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3.5" fill="#2a78d6"/></svg>Job Radar</div>
-      <span id="updated" class="updated"></span>
-      <span class="spacer"></span>
-      <span id="sync-pill" class="pill" role="status"></span>
-      <button class="btn small" id="refresh-btn" type="button" title="Fetch the latest data">Refresh</button>
-      <button class="btn small" id="theme-btn" type="button" aria-label="Toggle dark mode">Theme</button>
-      <button class="btn small" id="lock-btn" type="button">Lock</button>
-    </div>
-    <nav class="tabs" role="tablist" aria-label="Views">
-      <button role="tab" data-view="today" aria-selected="true">Today</button>
-      <button role="tab" data-view="board" aria-selected="false">Board</button>
-      <button role="tab" data-view="jobs" aria-selected="false">All jobs</button>
-      <button role="tab" data-view="learn" aria-selected="false">Learn</button>
-      <button role="tab" data-view="insights" aria-selected="false">Insights</button>
-      <button role="tab" data-view="settings" aria-selected="false">Settings</button>
+<div id="app" class="shell hidden">
+  <aside class="side" aria-label="Navigation">
+    <div class="brand"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3" opacity=".3"/><circle cx="24" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="3" opacity=".55"/><path d="M24 24 L40 12" stroke="#4f7cff" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3.5" fill="#4f7cff"/></svg><span>Job Radar</span></div>
+    <nav class="nav" role="tablist" aria-label="Views">
+      <button role="tab" data-view="today" aria-selected="true"><i data-icon="home"></i><span>Today</span></button>
+      <button role="tab" data-view="jobs" aria-selected="false"><i data-icon="list"></i><span>Jobs</span><b class="nav-count" id="count-jobs"></b></button>
+      <button role="tab" data-view="board" aria-selected="false"><i data-icon="board"></i><span>Pipeline</span><b class="nav-count" id="count-pipe"></b></button>
+      <button role="tab" data-view="map" aria-selected="false"><i data-icon="globe"></i><span>Map</span></button>
+      <button role="tab" data-view="learn" aria-selected="false"><i data-icon="play"></i><span>Learn</span></button>
+      <button role="tab" data-view="insights" aria-selected="false"><i data-icon="chart"></i><span>Insights</span></button>
+      <button role="tab" data-view="settings" aria-selected="false"><i data-icon="gear"></i><span>Settings</span></button>
     </nav>
-  </header>
-  <main id="view" tabindex="-1"></main>
+    <div class="side-foot">
+      <span id="sync-pill" class="pill" role="status"></span>
+      <span id="updated" class="updated"></span>
+    </div>
+  </aside>
+  <div class="main-col">
+    <header class="topbar">
+      <button class="search-trigger" id="palette-btn" type="button" aria-label="Search jobs and commands (Ctrl+K)">
+        <i data-icon="search"></i><span>Search jobs, companies, commands…</span><kbd>Ctrl K</kbd></button>
+      <span class="spacer"></span>
+      <button class="btn ghost small" id="refresh-btn" type="button" title="Fetch the latest data"><i data-icon="refresh"></i><span>Refresh</span></button>
+      <span class="theme-wrap"><button class="btn ghost small icon-only" id="theme-btn" type="button" aria-label="Choose theme" aria-haspopup="menu" title="Theme"><i data-icon="moon"></i></button></span>
+      <button class="btn ghost small" id="lock-btn" type="button"><i data-icon="lock"></i><span>Lock</span></button>
+    </header>
+    <main id="view" tabindex="-1"></main>
+  </div>
 </div>
 
 <div id="drawer-root"></div>
+<div id="modal-root"></div>
 <div id="print-root" aria-hidden="true"></div>
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 </body>

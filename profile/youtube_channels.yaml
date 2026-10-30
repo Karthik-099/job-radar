@@ -1,29 +1,64 @@
-# Channels for the dashboard's "Learn" tab. Their public RSS feeds are read about twice a day (no key, no login,
-# no YouTube account involved). Add a channel: open its page, View source, search "externalId", paste the UC... id.
+# Channels for the dashboard's "Learn" tab, read from their public RSS feeds about twice a day (no key, no login).
+# `section` is the channel's home section; a video whose title clearly belongs elsewhere (e.g. an AWS video on a
+# DevOps channel) is filed there instead. Sections: System Design, DevOps, DevSecOps, Architecture, AWS, Azure,
+# Kubernetes, Observability & SRE, AI & MLOps, Career.
+# Add a channel: open its page, View source, search "externalId", paste the UC... id.
+# Optional: a free YouTube Data API key (secret YOUTUBE_API_KEY) adds each section's most-watched recent videos
+# from all of YouTube, not only these channels.
 channels:
-  - {name: TechWorld with Nana, id: UCdngmbVKX1Tgre699-XLlUA}
-  - {name: KodeKloud, id: UCSWj8mqQCcrcBlXPi4ThRDQ}
-  - {name: CNCF, id: UCvqbFHwN-nwalWPjPUKpvTA}
-  - {name: Fireship, id: UCsBjURrPoezykLs9EqgamOA}
-  - {name: Kunal Kushwaha, id: UCBGOUQHNNtNGcGzVq5rIXjw}
-  - {name: Abhishek Veeramalla, id: UCnnQ3ybuyFdzvgv2Ky5jnAA}
-  - {name: DevOps & AI Toolkit, id: UCfz8x0lVzJpb_dgWm9kPVrw}
-  - {name: Google Cloud Tech, id: UCJS9pqu9BzkAMNTmzNMNhvg}
-  - {name: AWS Events, id: UCdoadna9HFHsxXWhafhNvKw}
-  - {name: HashiCorp, id: UC-AdvAxaagE9W2f0webyNUQ}
-  - {name: Grafana, id: UCYCwgQAMm9sTJv0rgwQLCxw}
-  - {name: That DevOps Guy, id: UCFe9-V_rN9nLqVNiI8Yof3w}
-  - {name: ByteByteGo, id: UCZgt6AzoyjslHTC9dz0UoTw}
-  - {name: Hussein Nasser, id: UC_ML5xP23TOWKUcc-oAE_Eg}
-  - {name: IBM Technology, id: UCKWaEZ-_VweaEx1j62do_vQ}
-  - {name: Andrej Karpathy, id: UCXUPKJO5MZQN11PqgIvyuvQ}
-  - {name: Two Minute Papers, id: UCbfYPyITQ-7l4upoX8nvctg}
-  - {name: AI Explained, id: UCNJ1Ymd5yFuUPtn21xtRbbw}
-  - {name: Rawkode Academy, id: UCrber_mFvp_FEF7D9u8PDEA}
-  - {name: Piyush Sachdeva, id: UCVMIYM0T_KBpX6FLLXLNlOA}
-  - {name: TrainWithShubham, id: UClboKaFwE4JHnga2hVmOasQ}
-  - {name: NetworkChuck, id: UC9x0AN7BWHpCDHSm9NiJFJQ}
-  - {name: Microsoft Azure, id: UC0m-80FnNY2Qb7obvTL_2fA}
-  - {name: Datadog, id: UCPO2QgTCReBAThZca6MB9jg}
-  - {name: GitHub, id: UC7c3Kb6jYCRj4JOHHZTxKsQ}
-  - {name: freeCodeCamp, id: UC8butISFwT-Wl7EV0hUK0BQ}
+  # DevOps
+  - {name: TechWorld with Nana, id: UCdngmbVKX1Tgre699-XLlUA, section: DevOps}
+  - {name: KodeKloud, id: UCSWj8mqQCcrcBlXPi4ThRDQ, section: DevOps}
+  - {name: Abhishek Veeramalla, id: UCnnQ3ybuyFdzvgv2Ky5jnAA, section: DevOps}
+  - {name: DevOps & AI Toolkit, id: UCfz8x0lVzJpb_dgWm9kPVrw, section: DevOps}
+  - {name: TrainWithShubham, id: UClboKaFwE4JHnga2hVmOasQ, section: DevOps}
+  - {name: Piyush Sachdeva, id: UCVMIYM0T_KBpX6FLLXLNlOA, section: DevOps}
+  - {name: DevOps Journey, id: UC4Snw5yrSDMXys31I18U3gg, section: DevOps}
+  - {name: HashiCorp, id: UC-AdvAxaagE9W2f0webyNUQ, section: DevOps}
+  - {name: GitHub, id: UC7c3Kb6jYCRj4JOHHZTxKsQ, section: DevOps}
+  - {name: Platform Engineering, id: UCKjVI0LawDxHaXSBMBOK1tA, section: DevOps}
+  # Kubernetes / cloud native
+  - {name: CNCF, id: UCvqbFHwN-nwalWPjPUKpvTA, section: Kubernetes}
+  - {name: That DevOps Guy, id: UCFe9-V_rN9nLqVNiI8Yof3w, section: Kubernetes}
+  - {name: Kunal Kushwaha, id: UCBGOUQHNNtNGcGzVq5rIXjw, section: Kubernetes}
+  - {name: Rawkode Academy, id: UCrber_mFvp_FEF7D9u8PDEA, section: Kubernetes}
+  - {name: Kubesimplify, id: UCi-1nnN0eC9nRleXdZA6ncg, section: Kubernetes}
+  # Observability & SRE
+  - {name: Grafana, id: UCYCwgQAMm9sTJv0rgwQLCxw, section: Observability & SRE}
+  - {name: Datadog, id: UCPO2QgTCReBAThZca6MB9jg, section: Observability & SRE}
+  # DevSecOps
+  - {name: Cloud Security Podcast, id: UC8jQKdbAHbv7LuIQOxN_mqQ, section: DevSecOps}
+  - {name: Snyk, id: UCh4dJzctb0NhSibjU-e2P6w, section: DevSecOps}
+  - {name: OWASP Foundation, id: UCe8j61ABYDuPTdtjItD2veA, section: DevSecOps}
+  - {name: tl;dr sec, id: UCzT8C6r1SqBofoYd8zKTEAQ, section: DevSecOps}
+  # AWS
+  - {name: AWS Events, id: UCdoadna9HFHsxXWhafhNvKw, section: AWS}
+  - {name: AWS Developers, id: UCT-nPlVzJI-ccQXlxjSvJmw, section: AWS}
+  - {name: AWS OnAir, id: UCjTBYgXfa6AZlhRvpr6n8hA, section: AWS}
+  - {name: Be A Better Dev, id: UCraiFqWi0qSIxXxXN4IHFBQ, section: AWS}
+  # Azure
+  - {name: John Savill's Technical Training, id: UCpIn7ox7j7bH_OFj7tYouOQ, section: Azure}
+  - {name: Microsoft Azure, id: UC0m-80FnNY2Qb7obvTL_2fA, section: Azure}
+  - {name: Adam Marczak - Azure for Everyone, id: UCdmEIMC3LBil4o0tjaTbj0w, section: Azure}
+  - {name: Microsoft Developer, id: UCsMica-v34Irf9KVTh6xx-g, section: Azure}
+  # System design
+  - {name: ByteByteGo, id: UCZgt6AzoyjslHTC9dz0UoTw, section: System Design}
+  - {name: Gaurav Sen, id: UCRPMAqdtSgd0Ipeef7iFsKw, section: System Design}
+  - {name: Hussein Nasser, id: UC_ML5xP23TOWKUcc-oAE_Eg, section: System Design}
+  - {name: Jordan has no life, id: UCbvDQKzAJ5GwCjTrv4FWkxg, section: System Design}
+  - {name: sudoCODE, id: UCMrRRZxUAXRzjai0SSoFgdw, section: System Design}
+  # Architecture
+  - {name: Software Architecture Monday, id: UC-Z7T0lAq_xECevIz8E5R5w, section: Architecture}
+  - {name: CodeOpinion, id: UC3RKA4vunFAfrfxiJhPEplw, section: Architecture}
+  - {name: GOTO Conferences, id: UCs_tLP3AiwYKwdUHpltJPuA, section: Architecture}
+  - {name: InfoQ, id: UCkQX1tChV7Z7l1LFF4L9j_g, section: Architecture}
+  # AI & MLOps
+  - {name: Andrej Karpathy, id: UCXUPKJO5MZQN11PqgIvyuvQ, section: AI & MLOps}
+  - {name: AI Explained, id: UCNJ1Ymd5yFuUPtn21xtRbbw, section: AI & MLOps}
+  - {name: Two Minute Papers, id: UCbfYPyITQ-7l4upoX8nvctg, section: AI & MLOps}
+  - {name: IBM Technology, id: UCKWaEZ-_VweaEx1j62do_vQ, section: AI & MLOps}
+  - {name: Fireship, id: UCsBjURrPoezykLs9EqgamOA, section: AI & MLOps}
+  # Career / broad
+  - {name: freeCodeCamp, id: UC8butISFwT-Wl7EV0hUK0BQ, section: Career}
+  - {name: NetworkChuck, id: UC9x0AN7BWHpCDHSm9NiJFJQ, section: Career}
+  - {name: Google Cloud Tech, id: UCJS9pqu9BzkAMNTmzNMNhvg, section: Kubernetes}

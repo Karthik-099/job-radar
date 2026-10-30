@@ -15,6 +15,8 @@ from typing import Any
 
 from .config import PROFILE_DIR, ROOT
 from .crypto import encrypt_json
+from .budget import DEFAULT_LIMIT, load as load_usage, used_minutes
+from .inbox import review_key
 from .models import Job, posting_ref, role_key
 from .recommend import apply_next
 from .tailor import jd_terms, load_base, plan, public_base
@@ -23,10 +25,17 @@ from .tracking import follow_ups, last_status_change
 DASHBOARD_SRC = ROOT / "dashboard"
 DIST = ROOT / "dist"
 FONTS = {f"fonts/lato-{w}.woff2" for w in ("400", "700", "400-italic", "700-italic")}
-PUBLIC_FILES = {"index.html", "app.js", "crypto.js", "app.css", "manifest.webmanifest", "sw.js", "icon.svg",
-                "autofill.user.js", "data/jobs.enc.json", *FONTS}
+# Third-party libraries, pinned and served from the dashboard itself (see dashboard/vendor/README.md).
+VENDOR = {f"vendor/{n}" for n in ("d3-array.min.js", "d3-geo.min.js", "topojson-client.min.js", "countries-50m.json",
+                                  "pdf.min.mjs", "pdf.worker.min.mjs")}
+ENCRYPTED = {"data/jobs.enc.json", "data/world.enc.json"}
+PUBLIC_FILES = {"index.html", "app.js", "map.js", "crypto.js", "app.css", "manifest.webmanifest", "sw.js", "icon.svg",
+                "autofill.user.js", *ENCRYPTED, *FONTS, *VENDOR}
+WORLD_FILE = ROOT / "state" / "world.json"
 MAX_JOBS = 900
 SNIPPET = 900
+SHORT_SNIPPET = 260
+FULL_SNIPPETS = 250  # select_jobs() lists acted jobs first, then open ones by priority
 
 
 def _days_ago(iso: str | None, now: datetime) -> float | None:
@@ -49,7 +58,7 @@ def select_jobs(jobs: list[Job]) -> list[Job]:
     return acted + open_good[: max(0, MAX_JOBS - len(acted))]
 
 
-def compact(job: Job, base: dict[str, Any] | None = None) -> dict[str, Any]:
+def compact(job: Job, base: dict[str, Any] | None = None, snippet: int = SNIPPET) -> dict[str, Any]:
     s = job.scoring or {}
     terms = job.jd_terms or jd_terms(f"{job.title}\n{job.description}")
     tailored = plan(job.title, terms, base) if base and job.status not in ("ignored", "rejected") else {}
@@ -61,11 +70,11 @@ def compact(job: Job, base: dict[str, Any] | None = None) -> dict[str, Any]:
         "status": job.status, "history": job.history[-12:],
         "score": job.score, "prio": job.apply_priority, "reasons": job.reasons, "flags": job.flags,
         "target": "target_company" in job.tags, "yc": "yc" in job.tags, "years": job.min_years, "salary": job.salary,
-        "visa": job.visa_sponsorship, "desc": (job.description or "")[:SNIPPET],
+        "visa": job.visa_sponsorship, "desc": (job.description or "")[:snippet],
         "rk": role_key(job.company, job.title), "ref": job.ref or posting_ref(job.url, job.description),
-        "tl": tailored,
+        "tl": tailored, "letter": (job.letter or {}).get("text", ""),
         "ai": {k: s.get(k) for k in ("method", "provider", "level_fit", "matched_skills", "missing_skills",
-                                      "tailoring_tips", "referral_message_draft", "interview_topics", "red_flags")},
+                                      "tailoring_tips", "interview_topics", "red_flags", "must_haves", "brief", "legit")},
     }
 
 
@@ -93,7 +102,7 @@ def analytics(jobs: list[Job], daily: dict[str, dict[str, int]], now: datetime) 
     interviews = [j for j in applied_ever if j.status in ("interview", "offer")
                   or any(h.get("status") == "interview" for h in j.history)]
 
-    days = [(now - timedelta(days=i)).date().isoformat() for i in range(29, -1, -1)]
+    days = [(now - timedelta(days=i)).date().isoformat() for i in range(89, -1, -1)]
     return {
         "daily": [{"date": d, **daily.get(d, {})} for d in days],
         "skill_gap": [{"skill": s, "pct": round(100 * n / n_good), "count": n} for s, n in gap.most_common(10)],
@@ -126,13 +135,17 @@ def build_payload(jobs: list[Job], meta: dict[str, Any], now: datetime | None = 
         "v": 1,
         "generated_at": now.isoformat(timespec="seconds"),
         "last_run": {k: v for k, v in (meta.get("last_run") or {}).items() if not isinstance(v, (list, dict))},
-        "schedule": {"every_hours": 3, "minute_utc": 17},  # mirrors the cron in .github/workflows/scan.yml
+        "schedule": {"every_hours": 4, "minute_utc": 17},  # mirrors the cron in .github/workflows/scan.yml
+        "budget": {"used": used_minutes(load_usage()), "cap": DEFAULT_LIMIT},
         "runs": (meta.get("runs") or [])[-56:],
-        "jobs": [compact(j, base) for j in chosen],
+        # Full posting snippet for jobs you acted on and the top open ones; a short preview for the long tail.
+        "jobs": [compact(j, base, SNIPPET if j.status != "new" or i < FULL_SNIPPETS else SHORT_SNIPPET)
+                 for i, j in enumerate(chosen)],
         "resume": public_base(base),
-        "videos": (meta.get("videos") or [])[:36], "videos_at": meta.get("videos_at"),
+        "videos": (meta.get("videos") or [])[:100], "videos_at": meta.get("videos_at"),
         "gmail": {"last_sync": gmail.get("last_sync"), "stats": gmail.get("last_stats") or {},
-                  "review": (gmail.get("review") or [])[-12:]},
+                  "review": [{**r, "key": review_key(r)} for r in (gmail.get("review") or [])[-12:]]},
+        "resume_import": meta.get("resume_import"),
         "apply_next": [j.id for j in picks],
         "follow_ups": [{"id": j.id, "since": (last_status_change(j) or now).isoformat(timespec="seconds")} for j in due],
         "analytics": analytics(jobs, meta.get("daily") or {}, now),
@@ -151,10 +164,11 @@ def assert_publishable(dist: Path = DIST) -> None:
     extra = files - PUBLIC_FILES
     if extra:
         raise RuntimeError(f"refusing to publish unexpected files: {sorted(extra)}")
-    blob = json.loads((dist / "data/jobs.enc.json").read_text(encoding="utf-8"))
-    if set(blob) != {"v", "salt", "iv", "iters", "ct"}:
-        raise RuntimeError("jobs.enc.json is not in the encrypted format")
-    for name in files - FONTS:
+    for name in ENCRYPTED & files | {"data/jobs.enc.json"}:
+        blob = json.loads((dist / name).read_text(encoding="utf-8"))
+        if set(blob) != {"v", "salt", "iv", "iters", "ct"}:
+            raise RuntimeError(f"{name} is not in the encrypted format")
+    for name in files - FONTS - VENDOR - ENCRYPTED:
         text = (dist / name).read_text(encoding="utf-8", errors="ignore")
         if re.search(r"[A-Za-z0-9._%+-]+@gmail\.com|\+91[- ]?\d{10}", text):
             raise RuntimeError(f"{name} contains contact details")
@@ -167,11 +181,14 @@ def export(jobs: list[Job], meta: dict[str, Any], passphrase: str, dist: Path = 
     payload = build_payload(jobs, meta)
     if dist.exists():
         shutil.rmtree(dist)
-    (dist / "data").mkdir(parents=True)
-    (dist / "fonts").mkdir()
-    for name in PUBLIC_FILES - {"data/jobs.enc.json"}:
+    for sub in ("data", "fonts", "vendor"):
+        (dist / sub).mkdir(parents=True)
+    for name in PUBLIC_FILES - ENCRYPTED:
         shutil.copy2(DASHBOARD_SRC / name, dist / name)
     out = dist / "data" / "jobs.enc.json"
     out.write_text(json.dumps(encrypt_json(payload, passphrase)), encoding="utf-8")
+    if WORLD_FILE.exists():  # employers by country for the Map tab, encrypted like everything else
+        world = json.loads(WORLD_FILE.read_text(encoding="utf-8"))
+        (dist / "data" / "world.enc.json").write_text(json.dumps(encrypt_json(world, passphrase)), encoding="utf-8")
     assert_publishable(dist)
     return out

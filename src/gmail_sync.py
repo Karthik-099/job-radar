@@ -25,6 +25,7 @@ import base64
 import hashlib
 import json
 import logging
+import os
 import re
 import sys
 import time
@@ -36,7 +37,8 @@ import requests
 
 from .envsecrets import install_log_redaction, load_dotenv, register_secret, secret
 from .models import Job, _norm_text, normalize_company, role_title
-from .scoring import GITHUB_MODELS, PROVIDERS, Provider, parse_response
+from .guard import clean
+from .scoring import complete_json
 from .state import JobStore
 
 log = logging.getLogger(__name__)
@@ -50,6 +52,8 @@ MAX_MESSAGES = 200
 BODY_CHARS = 6000
 AI_BODY_CHARS = 2500
 SEEN_KEEP = 4000
+AI_AUTO = 0.9    # AI confidence needed to change a status on its own
+AI_REVIEW = 0.6  # between AI_REVIEW and AI_AUTO the email waits in the dashboard's review queue
 APPLIED_MARK_LAG_DAYS = 14  # you may tick "Applied" days after applying; older emails are a previous application
 
 # Only emails that mention hiring at all are listed; the rest of the mailbox is never opened.
@@ -57,9 +61,9 @@ QUERY = ('{application applied applying candidacy candidate interview "next step
          'unfortunately regret "moving forward" "move forward" offer shortlisted position role opportunity} '
          '-in:sent -in:drafts -in:chats -in:spam -in:trash -category:promotions -category:social')
 
-ACTIVE = ("applied", "shortlisted", "interview")
-RANK = {"applied": 1, "shortlisted": 2, "interview": 3, "offer": 4}
-OUTCOMES = ("rejected", "offer", "interview", "shortlisted")
+ACTIVE = ("applied", "shortlisted", "assessment", "interview", "final", "ghosted")
+RANK = {"applied": 1, "ghosted": 1, "shortlisted": 2, "assessment": 3, "interview": 4, "final": 5, "offer": 6}
+OUTCOMES = ("rejected", "offer", "interview", "assessment", "shortlisted")
 
 _REJECT = re.compile(
     r"regret to inform|not (be )?(moving|proceeding) forward with your|(decided|chosen|chose|opted) (not )?to "
@@ -79,11 +83,12 @@ _INTERVIEW = re.compile(
     r"conversation|discussion)|like to (speak|talk|chat|connect) with you|(first|next|technical|hr|final) "
     r"(round|interview)|calendly\.com|goodtime\.io|share your availability|your availability for",
     re.I)
-_SHORTLIST = re.compile(
+_ASSESS = re.compile(
     r"(online|coding|technical|take-?home|aptitude) (assessment|test|challenge|assignment|exercise)|hackerrank|"
-    r"codility|hackerearth|testgorilla|mettl|codesignal|you('ve| have) been shortlisted|shortlisted for|"
-    r"moved? (you )?(forward )?to the next (stage|step|round)|next steps? in (the|our) (hiring|recruitment|"
-    r"interview|selection) process", re.I)
+    r"codility|hackerearth|testgorilla|mettl|codesignal", re.I)
+_SHORTLIST = re.compile(
+    r"you('ve| have) been shortlisted|shortlisted for|moved? (you )?(forward )?to the next (stage|step|round)|"
+    r"next steps? in (the|our) (hiring|recruitment|interview|selection) process", re.I)
 # Words so common that a company named like them needs stronger proof (sender domain or "at <Company>").
 _GENERIC = {"remote", "square", "block", "port", "bolt", "jar", "uni", "ola", "cred", "plum", "slice", "glance",
             "apna", "navi", "spry", "chalo", "bounce", "turing", "modal", "replicate", "together", "lambda",
@@ -185,7 +190,7 @@ def fetch(token: str, mid: str) -> dict[str, Any]:
 
 # ------------------------------------------------------------------------------------------- matching (pure)
 def classify(subject: str, body: str) -> str | None:
-    """rejected | offer | interview | shortlisted | None. Rejection wins: a 'thank you for interviewing,
+    """rejected | offer | interview | assessment | shortlisted | None. Rejection wins: a 'thank you for interviewing,
     unfortunately...' email is a rejection."""
     text = f"{subject}\n{body}"
     if _REJECT.search(text):
@@ -194,6 +199,8 @@ def classify(subject: str, body: str) -> str | None:
         return "offer"
     if _INTERVIEW.search(text):
         return "interview"
+    if _ASSESS.search(text):
+        return "assessment"
     if _SHORTLIST.search(text):
         return "shortlisted"
     return None
@@ -292,35 +299,17 @@ Given the email and the candidate's applications at the company it seems to come
 {"related": true/false   (is this email a reply about one of THESE applications, not a newsletter, job alert,
                           or a different role/company?),
  "job": index of the application it is about, or null if it can't be told,
- "outcome": "rejected" | "interview" | "shortlisted" (assessment/test/next stage) | "offer" | "confirmation" | "other",
+ "outcome": "rejected" | "interview" | "assessment" (online test / take-home) | "shortlisted" (recruiter screen / next stage) | "offer" | "confirmation" | "other",
  "confidence": 0.0-1.0}"""
 
 
 def ai_check(msg: dict[str, Any], candidates: list[Job]) -> dict[str, Any] | None:
     """Ask a free model to confirm. None = no AI available (keyword decision stands)."""
-    lanes: list[tuple[Provider, str]] = [(p, m) for p in PROVIDERS if secret(p.key_env) for m in p.models[:1]]
-    if secret(GITHUB_MODELS.key_env) and __import__("os").environ.get("GITHUB_ACTIONS"):
-        lanes.append((GITHUB_MODELS, GITHUB_MODELS.models[0]))
-    if not lanes:
-        return None
     apps = [{"index": i, "title": j.title, "company": j.company, "location": j.location} for i, j in enumerate(candidates)]
     email = {"from": f"{msg['from_name']} <{msg['from_addr'].split('@')[-1]}>", "subject": msg["subject"],
-             "date": msg["date"].date().isoformat(), "body": msg["body"][:AI_BODY_CHARS]}
+             "date": msg["date"].date().isoformat(), "body": clean(msg["body"], AI_BODY_CHARS)}
     content = "APPLICATIONS:\n" + json.dumps(apps) + "\n\nEMAIL:\n" + json.dumps(email, ensure_ascii=False)
-    for p, model in lanes:
-        try:
-            resp = requests.post(p.url, timeout=40, headers={"Authorization": f"Bearer {secret(p.key_env)}"}, json={
-                "model": model, "temperature": 0, "response_format": {"type": "json_object"}, **p.extra,
-                "messages": [{"role": "system", "content": AI_PROMPT}, {"role": "user", "content": content}]})
-            if resp.status_code != 200:
-                continue
-            text = resp.json()["choices"][0]["message"].get("content") or ""
-            data = json.loads(re.search(r"\{.*\}", text, re.S).group(0))  # type: ignore[union-attr]
-            if isinstance(data, dict):
-                return data
-        except (requests.RequestException, ValueError, KeyError, AttributeError, IndexError):
-            continue
-    return None
+    return complete_json(AI_PROMPT, content, max_tokens=200, in_ci=bool(os.environ.get("GITHUB_ACTIONS")))
 
 
 # ------------------------------------------------------------------------------------------- main
@@ -362,12 +351,17 @@ def sync(store: JobStore, *, dry_run: bool = False, use_ai: bool = True, now: da
         stats["hiring"] += 1
         job, why = match_job(msg, applied)
         candidates = [j for j in applied if _company_hit(j.company, msg)]
+        unsure = False  # True: right job and outcome found, but not certain enough to change it unasked
         if candidates and use_ai:
             verdict = ai_check(msg, candidates)
             if verdict is not None:
                 idx = verdict.get("job")
-                ok = (verdict.get("related") is True and float(verdict.get("confidence") or 0) >= 0.7
-                      and verdict.get("outcome") in OUTCOMES)
+                try:
+                    conf = float(verdict.get("confidence") or 0)
+                except (TypeError, ValueError):
+                    conf = 0.0
+                ok = verdict.get("related") is True and conf >= AI_REVIEW and verdict.get("outcome") in OUTCOMES
+                unsure = ok and conf < AI_AUTO
                 if not ok:
                     job, why = None, f"AI: not a clear {outcome} for your application ({verdict.get('outcome')})"
                 else:
@@ -377,19 +371,24 @@ def sync(store: JobStore, *, dry_run: bool = False, use_ai: bool = True, now: da
                             job, why = candidates[idx], why if job else "AI identified the job"
                         else:
                             job, why = None, "AI and keyword match disagree on which job"
+        if job is not None and unsure:
+            job, why, suggest = None, "AI matched it, but not confidently enough to change it without you", job.id
+        else:
+            suggest = None
         if job is None:
             stats["skipped"] += 1
-            if candidates:  # a company you applied to wrote, but we couldn't act: show it for manual review
+            if candidates:  # a company you applied to wrote, but we couldn't act: one-click review in the dashboard
                 review.append({"at": msg["date"].isoformat(timespec="seconds"), "company": candidates[0].company,
                                "outcome": outcome, "subject": msg["subject"][:140], "why": why,
-                               "jobs": [j.id for j in candidates][:5]})
-            log.info("gmail: skipped %s email (%s)", outcome, why)
+                               "jobs": [j.id for j in candidates][:5], "suggest": suggest})
+                stats["review"] = stats.get("review", 0) + 1
+            log.info("gmail: skipped a %s email (%s)", outcome, why)  # no titles/subjects in CI logs
             seen.append(h)
             continue
         ok, why2 = decide(job, outcome, msg["date"])
         if not ok:
             stats["skipped"] += 1
-            log.info("gmail: %s for %s @ %s not applied: %s", outcome, job.title, job.company, why2)
+            log.info("gmail: %s not applied: %s", outcome, why2)
             seen.append(h)
             continue
         change = {"id": job.id, "title": job.title, "company": job.company, "from": job.status, "to": outcome,

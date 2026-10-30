@@ -233,3 +233,8 @@ token*.json
 
 # build output (published to the dashboard repo by CI, never committed here)
 dist/
+
+# CI virtualenv (cached by actions/cache)
+.venv-ci/
+.inbox-repo/
+.claude/worktrees/
