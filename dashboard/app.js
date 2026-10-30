@@ -890,8 +890,12 @@
     const r = S.data.resume || {}, t = (j && j.tl) || {}, c = r.contact || {};
     const sec = (title, ...kids) => el("section", {}, el("h2", {}, title), ...kids);
     const profile = (r.profile || {})[t.fam] || (r.profile || {}).default || "";
+    const mine = j ? chosenSkills(j) : [];
+    const lastLine = Math.max(0, (r.skills || []).length - 1);
     const skills = (r.skills || []).map((line, i) => {
-      const items = [...ordered(line.items || [], (t.skills || [])[i]), ...((t.add || {})[i] || [])];
+      // Skills you chose to add for this job go in the line they belong to (or the last line).
+      const yours = mine.filter((name) => Math.min(t.mline?.[t.missing.indexOf(name)] ?? lastLine, lastLine) === i);
+      const items = [...ordered(line.items || [], (t.skills || [])[i]), ...((t.add || {})[i] || []), ...yours];
       return el("p", { class: "r-skill" }, el("strong", {}, `${line.label}: `), items.join(", "));
     });
     const exp = (r.experience || []).map((x, i) => el("div", { class: "r-role" },
@@ -941,6 +945,17 @@
     addEventListener("afterprint", done);
     setTimeout(() => window.print(), 50);
   }
+  // Missing keywords you decided to add to this job's tailored resume (saved encrypted on this device).
+  function chosenSkills(j) { return ((S.local.addedSkills || {})[j.id] || []).filter((x) => (j.tl?.missing || []).includes(x)); }
+  function toggleSkill(j, name, panel) {
+    const all = (S.local.addedSkills = S.local.addedSkills || {});
+    const cur = new Set(all[j.id] || []);
+    if (cur.has(name)) cur.delete(name); else cur.add(name);
+    if (cur.size) all[j.id] = [...cur]; else delete all[j.id];
+    saveLocal();
+    panel.replaceWith(tailorPanel(j));
+    toast(cur.has(name) ? `Added ${name} to this tailored resume` : `Removed ${name}`);
+  }
   function tailorPanel(j) {
     const t = j.tl || {};
     if (!S.data.resume?.name) return el("p", { class: "sub" }, "Tailored resume appears after the next scan.");
@@ -950,14 +965,25 @@
       return el("div", { class: "meter-row" }, el("span", {}, label), bar, el("strong", {}, v == null ? "–" : `${v}%`));
     };
     const fam = { default: "your standard profile", sre: "SRE wording", platform: "platform wording", cloud: "cloud wording", mlops: "MLOps wording", devsecops: "DevSecOps wording" }[t.fam] || "your standard profile";
-    return el("div", { class: "tailor" },
-      t.before != null ? el("div", { class: "meters" }, meter("Your resume", t.before, "before"), meter("Tailored", t.after, "after"))
+    const mine = chosenSkills(j);
+    // Keyword hits after tailoring, plus the ones you added yourself.
+    const after = t.after != null && t.n ? Math.min(100, Math.round((100 * (Math.round((t.after * t.n) / 100) + mine.length)) / t.n)) : t.after;
+    const panel = el("div", { class: "tailor" });
+    put(panel,
+      t.before != null ? el("div", { class: "meters" }, meter("Your resume", t.before, "before"), meter("Tailored", after, "after"))
         : el("p", { class: "sub" }, "This posting lists few keywords, so the resume is reordered only."),
       el("p", { class: "sub" }, `ATS keyword match with this job. Most relevant bullets first, profile uses ${fam}. Same layout, one page, nothing invented.`),
       t.added?.length ? [el("div", { class: "sub" }, "Added to skills (your resume already proves these):"), el("div", { class: "chips" }, t.added.map((x) => el("span", { class: "chip have" }, `+ ${x}`)))] : null,
-      t.missing?.length ? [el("div", { class: "sub" }, "Asked for but not on your resume (not added):"), el("div", { class: "chips" }, t.missing.map((x) => el("span", { class: "chip miss" }, x)))] : null,
+      t.missing?.length ? [el("div", { class: "sub" }, "Asked for but not on your resume. Click + to add one to this tailored resume's skills:"),
+        el("div", { class: "chips" }, t.missing.map((x) => {
+          const on = mine.includes(x);
+          return el("button", { type: "button", class: `chip add-skill${on ? " on" : ""}`, "aria-pressed": String(on),
+            title: on ? "Remove from this tailored resume" : "Add to this tailored resume's skills", onclick: () => toggleSkill(j, x, panel) }, on ? `✓ ${x}` : `+ ${x}`);
+        })),
+        mine.length ? el("p", { class: "sub warn-text" }, `Added by you: ${mine.join(", ")}. Only keep skills you can talk about in an interview.`) : null] : null,
       el("div", { class: "row" }, el("button", { class: "btn primary", type: "button", onclick: () => printDoc(j) }, icon("down", 14), "Download tailored resume (PDF)")),
       el("p", { class: "sub" }, "In the print window choose \"Save as PDF\" and paper A4. The PDF contains only your resume."));
+    return panel;
   }
 
   // ------------------------------------------------------------------ Pipeline (kanban)

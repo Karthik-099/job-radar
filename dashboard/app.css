@@ -528,3 +528,8 @@ tbody tr[onclick], tbody tr:hover { background: var(--surface-2); }
 .theme-card { flex-direction: column; align-items: stretch; border: 1px solid var(--border-2); background: var(--surface-2); padding: 8px; }
 .theme-card .swatch { width: 100%; height: 46px; border-radius: 8px; }
 .theme-card[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* ---------- "+ Add" missing skills in the tailored resume panel */
+.chip.add-skill { cursor: pointer; border-style: dashed; font: inherit; font-size: 11.5px; }
+.chip.add-skill:hover { border-color: var(--accent); color: var(--accent); }
+.chip.add-skill.on { border-style: solid; color: var(--accent); background: var(--accent-soft); border-color: var(--accent); }

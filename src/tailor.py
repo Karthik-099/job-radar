@@ -255,7 +255,7 @@ def plan(title: str, terms_found: list[str], base: dict[str, Any] | None = None)
     by_name = {t.name: t for t in VOCAB}
     terms = [by_name[n] for n in dict.fromkeys(terms_found) if n in by_name]
     original = resume_text(base)
-    present, add, missing = [], {}, []
+    present, add, missing, missing_line = [], {}, [], []
     added = 0
     lines = max(1, len(base.get("skills") or []))
     for t in terms:
@@ -268,6 +268,7 @@ def plan(title: str, terms_found: list[str], base: dict[str, Any] | None = None)
             added += 1
         else:
             missing.append(t.name)
+            missing_line.append(t.line)
     fam = family(title)
     if fam not in (base.get("profile") or {}):
         fam = "default"
@@ -285,6 +286,8 @@ def plan(title: str, terms_found: list[str], base: dict[str, Any] | None = None)
         "have": (present + [x for v in add.values() for x in v])[:10],
         "added": [x for v in add.values() for x in v],
         "missing": missing,
+        "mline": missing_line,  # skills line each missing keyword would go in, if you choose to add it
+        "n": len(terms),
         "before": round(100 * len(present) / n) if terms else None,
         "after": round(100 * after_hits / n) if terms else None,
         "hl": _best_highlight(base, words),
