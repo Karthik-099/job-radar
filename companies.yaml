@@ -308,6 +308,10 @@ companies:
   slug: authzed
   yc: Winter 2021
   jobs_at_discovery: 5
+- name: auticon
+  ats: teamtailor
+  slug: auticonlive
+  learned_from: indeed_world
 - name: Autodesk
   ats: workday
   url: https://autodesk.wd1.myworkdayjobs.com/Ext
@@ -343,6 +347,10 @@ companies:
   ats: ashby
   slug: baseten
   jobs_at_discovery: 104
+- name: bcn group
+  ats: recruitee
+  slug: bcngroup
+  learned_from: indeed_world
 - name: Belvo
   ats: ashby
   slug: belvo
@@ -2545,6 +2553,10 @@ companies:
 - name: ServiceNow
   ats: smartrecruiters
   slug: servicenow
+- name: ShareCompany
+  ats: recruitee
+  slug: sharecompanygroup
+  learned_from: indeed_world
 - name: Shepherd
   ats: ashby
   slug: shepherd
@@ -2940,6 +2952,10 @@ companies:
 - name: Unacademy
   ats: smartrecruiters
   slug: unacademy
+- name: Uniserver
+  ats: recruitee
+  slug: atomicgroep
+  learned_from: indeed_world
 - name: Unisys
   ats: workday
   url: https://unisys.wd5.myworkdayjobs.com/External
@@ -3045,6 +3061,10 @@ companies:
 - name: Visa
   ats: workday
   url: https://visa.wd5.myworkdayjobs.com/Visa
+- name: VOID Interactive
+  ats: bamboohr
+  slug: void
+  learned_from: indeed_world
 - name: voize
   ats: ashby
   slug: voize
