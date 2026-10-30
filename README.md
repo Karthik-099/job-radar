@@ -29,19 +29,76 @@ encrypted, password-protected dashboard. You apply by hand; nothing logs in anyw
 
 ## Architecture
 
-```
-job-radar (PRIVATE)                                      job-radar-dashboard (PUBLIC, GitHub Pages)
- .github/workflows/scan.yml  (cron every 4h)              index.html, app.js, crypto.js, app.css ...
-   fetch -> filter -> rank -> AI score -> state/   ──►    data/jobs.enc.json   (AES-256-GCM ciphertext)
-   -> encrypt -> publish -> digest issue (email)               ▲
- .github/workflows/update-status.yml  ◄────────────────  browser: your passphrase decrypts locally;
-   (dashboard "Applied" ticks, optional)                  "Applied" ticks sync via your token (optional)
+No servers and no database: GitHub Actions is the compute, the private repo is the database, GitHub Pages (a
+global CDN) serves the dashboard, and your browser decrypts and renders it.
+
+### System overview
+
+```mermaid
+flowchart LR
+    T(["Cron every 4h<br/>or Run workflow"]) --> G{"Minutes guard<br/>1,050 cap, paced"}
+    G -- "skip, 1 min" --> X(["Stop"])
+    G -- "run" --> E["<b>GitHub Actions runner</b><br/>scan engine: python -m src.main<br/>the only compute"]
+
+    I["<b>Inputs, public or free</b><br/>JobSpy: Indeed, Naukri, Glassdoor, Bayt, LinkedIn guest<br/>775 career sites: Greenhouse, Lever, Ashby, Workday, ...<br/>Amazon and Microsoft APIs, remote boards<br/>Free AI: Groq, Gemini, GitHub Models, OpenRouter<br/>Gmail read-only, YouTube RSS, Wikidata"] --> E
+
+    E <--> D[("<b>Private repo: the database</b><br/>state/jobs.json, caches, usage<br/>profile/ resume, preferences<br/>state/inbox/ your marks")]
+
+    E -- "encrypt + publish" --> C["<b>GitHub Pages: the CDN</b><br/>static app HTML, JS, CSS<br/>jobs.enc.json, world.enc.json<br/>AES-256-GCM"]
+    E -- "digest" --> M(["Email via<br/>GitHub issue"])
+
+    C --> B["<b>Your browser</b><br/>decrypts with your passphrase<br/>no backend"]
+    B -- "mark applied: GitHub API<br/>commits a small file, 0 min" --> D
 ```
 
-AI scoring runs in parallel lanes (Groq gpt-oss-120b, Groq gpt-oss-20b, Gemini Flash-Lite, the three best
-models that are free on OpenRouter right now (re-discovered every run, so newer free models are picked up
-automatically), and GitHub Models in CI) with a result cache keyed by resume + job content, prompt-prefix caching (system prompt and resume
-are byte-identical across calls), and keyword scoring as the always-available fallback.
+### One scan, step by step
+
+```mermaid
+flowchart TD
+    A["Start: cron or manual"] --> B{"Minutes guard"}
+    B -- "over cap or ahead of pace" --> Z["Record 1 min, stop"]
+    B -- "ok" --> C["Restore cached virtualenv"]
+    C --> D["Apply dashboard inbox<br/>marks, notes, resume upload"]
+    D --> E["Fetch all sources in parallel<br/>time-boxed to 3 min"]
+    E --> F["Normalise and dedupe<br/>same role across cities and boards"]
+    F --> G["Filter<br/>title, seniority, max 3 yrs,<br/>age, language, visa"]
+    G --> H["Extract ATS keywords and job id<br/>from the full description"]
+    H --> I["Rank: fit x location x level<br/>x freshness x company"]
+    I --> J["AI score top new jobs<br/>cache hit = free, else free LLM lanes"]
+    J --> K["Cover letters for top picks<br/>fact-checked against resume"]
+    K --> L["Daily: re-check links, flag closed jobs"]
+    L --> M["Gmail: move applied jobs<br/>rejected, interview, offer"]
+    M --> N["Twice a day: Learn videos<br/>Monthly: world employers"]
+    N --> O["Save state, commit to private repo"]
+    O --> P["Build payload: tailoring plans,<br/>analytics; gzip + encrypt"]
+    P --> Q["Publish to Pages; email digest"]
+```
+
+### Browser: no backend
+
+```mermaid
+sequenceDiagram
+    participant You
+    participant Page as Dashboard (browser)
+    participant CDN as GitHub Pages CDN
+    participant API as GitHub API
+    participant Repo as Private repo
+    participant Scan as Next scan (Actions)
+
+    Page->>CDN: load app + encrypted data (starts before you type)
+    You->>Page: passphrase
+    Page->>Page: PBKDF2 600k -> AES-GCM decrypt (WebCrypto)
+    Page-->>You: jobs, map, insights, tailored resume PDF
+    You->>Page: mark Applied
+    Page->>API: save change (token encrypted in this browser)
+    API->>Repo: commit state/inbox/<time>.json
+    Scan->>Repo: apply inbox, re-publish
+    Scan->>CDN: new encrypted data
+```
+
+AI scoring runs several free lanes in parallel (Groq gpt-oss-120b and 20b, Gemini Flash-Lite, then GitHub Models and
+the best currently-free OpenRouter models if those fall behind). Results are cached by resume + job content, the
+system prompt and resume are sent first so providers can reuse that prefix, and keyword scoring is the fallback.
 
 ## One-time setup (about 15 minutes)
 
