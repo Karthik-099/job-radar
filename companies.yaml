@@ -1133,6 +1133,10 @@ companies:
   ats: lever
   slug: fly
   jobs_at_discovery: 1
+- name: FNZ
+  ats: workday
+  url: https://fnz.wd3.myworkdayjobs.com/fnz_careers
+  learned_from: linkedin
 - name: Formance
   ats: ashby
   slug: formance
@@ -2232,6 +2236,10 @@ companies:
   ats: lever
   slug: pocketfm
   jobs_at_discovery: 10
+- name: Polygon Labs
+  ats: ashby
+  slug: polygon-labs
+  learned_from: indeed
 - name: Popl
   ats: ashby
   slug: popl
