@@ -25,7 +25,8 @@ from .tracking import follow_ups, last_status_change
 
 DASHBOARD_SRC = ROOT / "dashboard"
 DIST = ROOT / "dist"
-FONTS = {f"fonts/lato-{w}.woff2" for w in ("400", "700", "400-italic", "700-italic")}
+FONTS = {f"fonts/lato-{w}.woff2" for w in ("400", "700", "400-italic", "700-italic")} | {
+    "fonts/chakra-petch-600.woff2", "fonts/chakra-petch-700.woff2", "fonts/space-grotesk-400-700.woff2"}
 # Third-party libraries, pinned and served from the dashboard itself (see dashboard/vendor/README.md).
 VENDOR = {f"vendor/{n}" for n in ("d3-array.min.js", "d3-geo.min.js", "topojson-client.min.js", "countries-50m.json",
                                   "countries-110m.json", "earth-2k.jpg", "earth-4k.jpg", "pdf.min.mjs", "pdf.worker.min.mjs")}

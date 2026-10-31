@@ -295,6 +295,14 @@
       btn.textContent = "Unlock";
     }
   });
+  $("#pass-toggle").addEventListener("click", (e) => {
+    const input = $("#pass"), show = input.type === "password";
+    input.type = show ? "text" : "password";
+    e.currentTarget.textContent = show ? "Hide" : "Show";
+    e.currentTarget.setAttribute("aria-pressed", String(show));
+    e.currentTarget.setAttribute("aria-label", show ? "Hide passphrase" : "Show passphrase");
+    input.focus();
+  });
   $("#lock-btn").addEventListener("click", lock);
   $("#refresh-btn").addEventListener("click", refresh);
   $("#palette-btn").addEventListener("click", openPalette);
@@ -306,11 +314,11 @@
   });
 
   // ------------------------------------------------------------------ themes
-  const THEMES = { system: "Match system", light: "Light", dark: "Dark", midnight: "Midnight", aurora: "Aurora" };
-  function currentTheme() { try { return localStorage.getItem(LS.theme) || "system"; } catch (_) { return "system"; } }
+  const THEMES = { light: "Light · saffron", dark: "Dark · saffron" };
+  // Light is the default; any older saved choice (system, midnight, aurora) falls back to it.
+  function currentTheme() { try { const t = localStorage.getItem(LS.theme); return THEMES[t] ? t : "light"; } catch (_) { return "light"; } }
   function applyTheme() {
-    const t = currentTheme();
-    if (t !== "system" && THEMES[t]) document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+    document.documentElement.dataset.theme = currentTheme();
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.content = getComputedStyle(document.documentElement).getPropertyValue("--page").trim() || "#0f1115";
   }
@@ -537,27 +545,50 @@
         STATUSES.map((s) => el("option", { value: s, selected: s === st }, LABEL[s]))));
   }
   function stageChip(st) { return el("span", { class: `chip stage st-${st}` }, el("i", { class: "dot" }), LABEL[st]); }
-  function quickActions(j) {
-    const st = statusOf(j);
-    if (st === "new" || st === "ignored") {
-      return [el("button", { class: "btn small good", type: "button", onclick: (e) => { e.stopPropagation(); setStatus(j, "applied"); } }, icon("check", 14), "Applied"),
-        el("button", { class: "btn small ghost", type: "button", onclick: (e) => { e.stopPropagation(); setStatus(j, st === "ignored" ? "new" : "ignored"); } }, st === "ignored" ? "Unhide" : "Hide")];
-    }
-    return [stageSelect(j)];
+  // Fit as a "match" ring (score out of 10 shown as a percentage).
+  function matchRing(j) {
+    const s = j.score, v = s == null ? 0 : Math.max(0, Math.min(10, s)) / 10, r = 24, c = 2 * Math.PI * r;
+    const ring = svg("svg", { viewBox: "0 0 56 56", width: 56, height: 56, "aria-hidden": "true" });
+    ring.append(svg("circle", { cx: 28, cy: 28, r, class: "mr-bg" }),
+      svg("circle", { cx: 28, cy: 28, r, class: "mr-fg", "stroke-dasharray": `${c * v} ${c}`, transform: "rotate(-90 28 28)" }));
+    return el("div", { class: "match", title: `Resume fit ${s ?? "?"}/10 · priority ${Math.round(j.prio || 0)}`, "aria-label": `${s == null ? "Unscored" : `${Math.round(v * 100)}% match`}` },
+      ring, el("div", { class: "mr-text" }, el("strong", {}, s == null ? "–" : `${Math.round(v * 100)}%`), el("span", {}, "match")));
   }
+  const TONES = 6;
+  const toneOf = (name) => [...String(name)].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7) % TONES; // stable per company
+  const initials = (name) => String(name).replace(/[^A-Za-z0-9 ]/g, " ").trim().split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
   function jobCard(j) {
-    const st = statusOf(j);
-    return el("article", { class: `card st-${st}${(j.flags || []).includes("closed") ? " closed" : ""}` },
-      el("div", { class: "card-head" },
-        el("div", { class: "card-main" },
-          el("button", { class: "card-title", type: "button", onclick: () => openJob(j) }, j.title),
-          el("div", { class: "card-co" }, `${j.company} · ${j.location || REGION[j.region] || ""}`)),
-        scoreRing(j)),
-      metaLine(j),
-      (j.reasons || []).length ? el("div", { class: "reasons" }, j.reasons.join(" · ")) : null,
-      el("div", { class: "chips" }, st !== "new" ? stageChip(st) : null, flagChips(j)),
-      el("div", { class: "card-actions" }, extLink([icon("ext", 14), "Open"], j.url, "btn small primary"), quickActions(j),
-        el("button", { class: "btn small ghost", type: "button", onclick: () => openJob(j) }, "Details")));
+    const st = statusOf(j), sel = S.view === "jobs" && j.id === S.selectedId;
+    const skills = [...new Set([...(j.ai?.matched_skills || []), ...(j.tl?.have || [])])].slice(0, 6);
+    const posted = agoLabel(j.posted) || (j.seen ? `seen ${agoLabel(j.seen)}` : "");
+    const closes = closesLabel(j.expires);
+    return el("article", { class: `jc tone-${toneOf(j.company)} st-${st}${sel ? " sel" : ""}${(j.flags || []).includes("closed") ? " closed" : ""}`,
+      dataset: { id: j.id }, tabindex: "-1" },
+      el("div", { class: "jc-top" },
+        el("div", { class: "jc-head" },
+          el("div", { class: "jc-where" },
+            el("div", { class: "jc-loc" }, j.location || REGION[j.region] || "Location unclear",
+              j.years != null ? el("span", { class: "jc-badge", title: "Stated minimum experience" }, `${j.years}+ yrs`) : null),
+            el("div", { class: "jc-when" }, j.remote || j.region === "remote" ? el("span", { class: "jc-remote" }, "Remote") : null,
+              posted ? el("span", { class: postedAt(j) > Date.now() - DAY ? "jc-fresh" : "" }, posted) : null,
+              closes ? el("span", { class: "jc-closes" }, closes) : null)),
+          S.view === "jobs" ? el("input", { type: "checkbox", class: "bulk", checked: S.bulk.has(j.id), "aria-label": `Select ${j.title}`,
+            onclick: (e) => { e.stopPropagation(); toggleBulk(j.id); } }) : null,
+          matchRing(j)),
+        el("button", { class: "jc-title", type: "button", onclick: () => openJob(j) }, j.title),
+        skills.length ? el("div", { class: "jc-tags" }, skills.map((x) => el("span", {}, x))) : null,
+        el("div", { class: "jc-flags" }, st !== "new" ? stageChip(st) : null, flagChips(j))),
+      el("div", { class: "jc-bar" },
+        st === "new" || st === "ignored"
+          ? el("button", { type: "button", onclick: () => setStatus(j, "applied") }, icon("check", 14), "Mark applied")
+          : el("div", { class: "jc-stage" }, stageSelect(j)),
+        el("button", { type: "button", onclick: () => openJob(j) }, icon("list", 14), "Details")),
+      el("div", { class: "jc-foot" },
+        el("span", { class: "jc-avatar", "aria-hidden": "true" }, initials(j.company)),
+        el("span", { class: "jc-co", title: j.company }, j.company),
+        el("button", { class: "btn small pill", type: "button", title: st === "ignored" ? "Show again" : "Hide this job",
+          onclick: () => setStatus(j, st === "ignored" ? "new" : "ignored") }, st === "ignored" ? "Unpass" : "Pass"),
+        extLink("Apply", j.url, "btn small pill dark")));
   }
   function cardsOrEmpty(list, emptyText) {
     return list.length ? el("div", { class: "cards" }, list.map(jobCard)) : el("div", { class: "empty" }, emptyText);
@@ -712,7 +743,7 @@
         S.local.views.push({ name: name.slice(0, 30), filters: { ...S.filters } });
         await saveLocal(); render();
       } }, "+ Save view"));
-    const filters = el("div", { class: "filterbar" }, search,
+    const filters = el("div", { class: "filterbar" }, search, el("div", { class: "fpills" },
       pill("Status", "status", [["open", "Not applied"], ["active", "In progress"], ["", "Any"], ...STATUSES.map((s) => [s, LABEL[s]])]),
       pill("Region", "region", [["", "All"], ["india", "India"], ["remote", "Remote"], ["abroad", "Abroad"]]),
       pill("Posted", "posted", [["", "Any time"], ["24h", "24 hours"], ["3d", "3 days"], ["7d", "7 days"], ["30d", "30 days"]]),
@@ -721,35 +752,17 @@
       toggle("Target cos", "target"), toggle("YC", "yc"), toggle("Hide closed", "hideClosed"),
       el("label", { class: "fpill" }, el("span", { class: "fl" }, "Sort"),
         el("select", { "aria-label": "Sort", onchange: (e) => { S.sort = e.target.value; render(); } },
-          Object.entries(SORTS).map(([k, [t]]) => el("option", { value: k, selected: S.sort === k }, t)))));
-    const list = el("div", { class: "joblist", role: "listbox", "aria-label": "Jobs" });
-    for (const j of rows.slice(0, S.listLimit)) list.append(jobRow(j));
-    if (rows.length > S.listLimit) list.append(el("button", { class: "btn more", type: "button", onclick: () => { S.listLimit += 300; render(); } }, `Show ${fmtInt(Math.min(300, rows.length - S.listLimit))} more`));
-    if (!rows.length) list.append(el("div", { class: "empty" }, "No jobs match these filters."));
-    const detail = el("div", { class: "detail-pane" });
-    const sel = S.byId.get(S.selectedId);
-    detail.append(sel ? jobDetail(sel) : el("div", { class: "empty" }, "Select a job to see its details."));
-    put(root, pageHead("Jobs", `${fmtInt(rows.length)} shown · keys: j/k move · a applied · x hide · o open · space select`),
-      filters, saved, bulkBar(), el("div", { class: "split" }, list, detail));
+          Object.entries(SORTS).map(([k, [t]]) => el("option", { value: k, selected: S.sort === k }, t))))));
+    const more = rows.length > S.listLimit
+      ? el("button", { class: "btn more", type: "button", onclick: () => { S.listLimit += 150; render(); } }, `Show ${fmtInt(Math.min(150, rows.length - S.listLimit))} more`) : null;
+    put(root, pageHead("Browse jobs", `${fmtInt(rows.length)} shown · j/k move · Enter details · a applied · x pass · o open · space select`),
+      filters, saved, bulkBar(),
+      rows.length ? el("div", { class: "cards" }, rows.slice(0, S.listLimit).map(jobCard)) : el("div", { class: "empty" }, "No jobs match these filters."), more);
   }
-  function jobRow(j) {
-    const st = statusOf(j);
-    const checked = S.bulk.has(j.id);
-    return el("div", { class: `jrow${j.id === S.selectedId ? " sel" : ""} st-${st}`, role: "option", tabindex: "0", "aria-selected": String(j.id === S.selectedId),
-      dataset: { id: j.id }, onclick: () => selectJob(j.id, true), onkeydown: (e) => { if (e.key === "Enter") selectJob(j.id, true); } },
-      el("input", { type: "checkbox", class: "bulk", checked, "aria-label": `Select ${j.title}`, onclick: (e) => { e.stopPropagation(); toggleBulk(j.id); } }),
-      scoreRing(j, 34),
-      el("div", { class: "jrow-main" },
-        el("div", { class: "jrow-title" }, j.title),
-        el("div", { class: "jrow-co" }, `${j.company} · ${j.location || REGION[j.region] || ""}`),
-        el("div", { class: "jrow-meta" }, el("span", {}, agoLabel(j.posted) || agoLabel(j.seen)), j.years != null ? el("span", {}, `${j.years}+ yrs`) : null,
-          el("span", {}, j.source), st !== "new" ? stageChip(st) : null, flagChips(j).slice(0, 2))));
-  }
-  function selectJob(id, openOnMobile) {
+  function selectJob(id) {
     S.selectedId = id;
-    if (openOnMobile && matchMedia("(max-width: 980px)").matches) { const j = S.byId.get(id); if (j) return openDrawer(j); }
     render();
-    document.querySelector(`.jrow[data-id="${CSS.escape(id)}"]`)?.focus({ preventScroll: false });
+    document.querySelector(`.jc[data-id="${CSS.escape(id)}"]`)?.scrollIntoView({ block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
   }
   function toggleBulk(id) { if (S.bulk.has(id)) S.bulk.delete(id); else S.bulk.add(id); render(); }
   function bulkBar() {
@@ -766,8 +779,8 @@
       el("button", { class: "btn small ghost", type: "button", onclick: () => { S.bulk.clear(); render(); } }, "Clear"));
   }
   function openJob(j) {
-    if (matchMedia("(max-width: 980px)").matches || S.view !== "jobs") openDrawer(j);
-    else selectJob(j.id);
+    if (S.view === "jobs") S.selectedId = j.id;
+    openDrawer(j);
   }
 
   // ------------------------------------------------------------------ job detail (pane on desktop, drawer elsewhere)
@@ -1386,12 +1399,15 @@
       if (to) { go(to); return; }
     }
     if (S.view !== "jobs") return;
+    // Enter/Space on a focused button or link must still activate that control, not the shortcut.
+    if ((e.key === "Enter" || e.key === " ") && document.activeElement?.closest("button, a, label")) return;
     const rows = filtered().slice(0, S.listLimit), i = rows.findIndex((j) => j.id === S.selectedId), cur = rows[i];
     if (e.key === "j" || e.key === "ArrowDown") { if (rows[i + 1]) selectJob(rows[i + 1].id); e.preventDefault(); }
     else if (e.key === "k" || e.key === "ArrowUp") { if (rows[i - 1]) selectJob(rows[i - 1].id); e.preventDefault(); }
     else if (cur && e.key === "a") setStatus(cur, "applied");
     else if (cur && e.key === "x") setStatus(cur, "ignored");
     else if (cur && e.key === "o") window.open(safeUrl(cur.url), "_blank", "noopener,noreferrer");
+    else if (cur && e.key === "Enter") { e.preventDefault(); openDrawer(cur); } // else the press would also "click" the drawer's Close button
     else if (cur && e.key === " ") { e.preventDefault(); toggleBulk(cur.id); }
   });
 
