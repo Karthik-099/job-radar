@@ -52,7 +52,7 @@ def test_merge_by_domain_and_name_and_sort():
     sb = out[0]
     assert sb["t"] and sb["cr"] == "https://jobs.ashbyhq.com/supabase" and sb["w"] == "https://supabase.com"
     assert out[1]["c"] == ["Other"]  # tracked, unmatched
-    assert set(out[0]) == {"n", "w", "li", "lg", "c", "cc", "ct", "e", "yc", "h", "b", "cr", "t"}
+    assert set(out[0]) == {"n", "w", "li", "lg", "c", "cc", "ct", "e", "yc", "h", "b", "cr", "t", "f"}
 
 
 def test_domain_key():
@@ -88,3 +88,18 @@ def test_no_linkedin_urls_except_p4264():
                 assert k == "li" and re.fullmatch(r"https://www\.linkedin\.com/company/[^/]+/", v), (k, v)
             if k in ("w", "lg", "cr") and v:
                 assert v.startswith(("http://", "https://"))
+
+
+def test_founders_profile_urls_only_from_p6634():
+    rows = {"results": {"bindings": [
+        {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1"}, "fLabel": {"type": "literal", "value": "Ada"},
+         "li": {"type": "literal", "value": "ada-l"}},
+        {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1"}, "fLabel": {"type": "literal", "value": "Ada"},
+         "li": {"type": "literal", "value": "ada-l"}},
+        {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q2"}, "fLabel": {"type": "literal", "value": "Q99"},
+         "li": {"type": "literal", "value": "x"}},
+        {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q3"}, "fLabel": {"type": "literal", "value": "Bob"},
+         "li": {"type": "literal", "value": "../evil"}},
+    ]}}
+    assert d.parse_founders(rows) == {"Q1": [["Ada", "https://www.linkedin.com/in/ada-l/"]]}
+    assert all(c["f"] == [] for c in _built())

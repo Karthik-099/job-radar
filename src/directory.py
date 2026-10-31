@@ -41,6 +41,8 @@ BUDGET_S = 150
 CAT_LIMIT = 2000  # companies per category query (India query is uncapped up to IN_LIMIT)
 IN_LIMIT = 5000
 LI_PREFIX = "https://www.linkedin.com/company/"
+LI_PERSON = "https://www.linkedin.com/in/"
+MAX_FOUNDERS = 4
 
 # category label -> Wikidata P452 industry values (English labels checked on Wikidata, Oct 2026)
 CATEGORY_INDUSTRIES: dict[str, list[str]] = {
@@ -117,6 +119,13 @@ COMPANY_QUERY = """SELECT ?co ?coLabel ?site ?emp ?sl ?ind ?li ?logo ?iso ?hqLab
     } GROUP BY ?co ORDER BY DESC(?emp) DESC(?sl) LIMIT %d }
   OPTIONAL { ?co wdt:P452 ?ind } OPTIONAL { ?co wdt:P4264 ?li } OPTIONAL { ?co wdt:P154 ?logo }
   OPTIONAL { ?co wdt:P17/wdt:P297 ?iso } OPTIONAL { ?co wdt:P159 ?hq }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en,mul". }
+}"""
+
+# founders (P112) that Wikidata lists with a LinkedIn profile ID (P6634); joined to companies by QID afterwards.
+# Starting from P6634 keeps it ~20 s; filtering by industry first times out.
+FOUNDERS_QUERY = """SELECT ?co ?fLabel ?li WHERE {
+  ?f wdt:P6634 ?li . ?co wdt:P112 ?f ; wdt:P856 [] .
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en,mul". }
 }"""
 
@@ -197,6 +206,22 @@ def logo_url(commons: str | None) -> str:
 def linkedin_url(li_id: str | None) -> str:
     li_id = (li_id or "").strip().strip("/")
     return f"{LI_PREFIX}{quote(li_id)}/" if re.fullmatch(r"[\w.%&'-]+", li_id) else ""
+
+
+def person_url(li_id: str | None) -> str:
+    li_id = (li_id or "").strip().strip("/")
+    return f"{LI_PERSON}{quote(li_id)}/" if re.fullmatch(r"[\w.%-]+", li_id) else ""
+
+
+def parse_founders(data: dict[str, Any]) -> dict[str, list[list[str]]]:
+    """SPARQL rows -> {company qid: [[founder name, linkedin profile url], ...]} (max MAX_FOUNDERS each)."""
+    out: dict[str, list[list[str]]] = {}
+    for v in _rows(data):
+        name, url = _label(v.get("fLabel")), person_url(v.get("li"))
+        lst = out.setdefault(v["co"], [])
+        if name and url and len(lst) < MAX_FOUNDERS and all(f[1] != url for f in lst):
+            lst.append([name, url])
+    return {k: v for k, v in out.items() if v}
 
 
 def careers_url(entry: dict[str, Any]) -> str:
@@ -332,7 +357,7 @@ def merge(*sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
                     hit = cand
             if hit is None:
                 hit = {"n": rec["n"], "w": "", "li": "", "lg": "", "c": [], "cc": "", "ct": "", "e": None, "yc": "",
-                       "h": False, "b": "", "cr": "", "t": False, "sl": 0}
+                       "h": False, "b": "", "cr": "", "t": False, "sl": 0, "f": []}
                 out.append(hit)
             for k, v in rec.items():
                 if k == "c":
@@ -359,7 +384,7 @@ def finalize(companies: list[dict[str, Any]]) -> list[dict[str, Any]]:
             cats = ["Other"]
         keep.append({"n": c["n"], "w": c["w"], "li": c["li"], "lg": c["lg"], "c": cats, "cc": c["cc"], "ct": c["ct"],
                      "e": int(c["e"]) if c["e"] is not None else None, "yc": c["yc"], "h": c["h"], "b": c["b"],
-                     "cr": c["cr"], "t": c["t"], "_sl": c.get("sl", 0)})
+                     "cr": c["cr"], "t": c["t"], "f": c["f"], "_sl": c.get("sl", 0)})
     keep.sort(key=lambda c: (not c["t"], -(c["e"] if c["e"] is not None else -1), -c["_sl"], c["n"].lower()))
     for c in keep:
         del c["_sl"]
@@ -375,7 +400,8 @@ def build_directory(budget: float = BUDGET_S) -> dict[str, Any]:
     all_q = [q for qs in CATEGORY_INDUSTRIES.values() for q in qs]
     # India first so it is never the one cut by the deadline
     jobs: list[tuple[str, str, str]] = [("co", "India", wd(all_q, "?co wdt:P17 wd:Q668 .", IN_LIMIT)),
-                                        ("inst", "india", INST_QUERY % (INST_SELECT["india"], INST_LIMIT["india"]))]
+                                        ("inst", "india", INST_QUERY % (INST_SELECT["india"], INST_LIMIT["india"])),
+                                        ("f", "founders", FOUNDERS_QUERY)]
     jobs += [("co", cat, wd(qs, "", CAT_LIMIT)) for cat, qs in CATEGORY_INDUSTRIES.items()]
     jobs += [("inst", k, INST_QUERY % (INST_SELECT[k], INST_LIMIT[k])) for k in ("university", "research", "government")]
 
@@ -383,7 +409,8 @@ def build_directory(budget: float = BUDGET_S) -> dict[str, Any]:
         kind, name, query = job
         t = time.monotonic()
         data = _sparql(query, deadline)
-        got = parse_companies(data, "IN" if name == "India" else "") if kind == "co" else parse_institutions(data, name)
+        got = parse_companies(data, "IN" if name == "India" else "") if kind == "co" else \
+            parse_founders(data) if kind == "f" else parse_institutions(data, name)
         log.info("directory: %-4s %-26s %5d in %4.1fs", kind, name, len(got), time.monotonic() - t)
         return got
 
@@ -402,12 +429,16 @@ def build_directory(budget: float = BUDGET_S) -> dict[str, Any]:
     pool.shutdown(wait=False, cancel_futures=True)
     cos: dict[str, dict[str, Any]] = {}
     insts: dict[str, dict[str, Any]] = {}
+    founders: dict[str, list[list[str]]] = {}
     skipped = []
     for f, (kind, name, _) in futs.items():
         if not f.done() or f.cancelled() or f.exception() is not None:
             skipped.append(name)
             log.warning("directory: skipped %s %s: %s", kind, name,
                         "deadline" if not f.done() or f.cancelled() else repr(f.exception())[:200])
+            continue
+        if kind == "f":
+            founders = f.result()
             continue
         target = cos if kind == "co" else insts
         for qid, rec in f.result().items():
@@ -421,6 +452,8 @@ def build_directory(budget: float = BUDGET_S) -> dict[str, Any]:
                 target[qid] = rec
     if not cos:
         raise RuntimeError("directory: no Wikidata company query succeeded")
+    for qid, c in cos.items():
+        c["f"] = founders.get(qid, [])
 
     tracked = parse_tracked(yaml.safe_load(COMPANIES_FILE.read_text(encoding="utf-8")) or {})
     wd_list = sorted(cos.values(), key=lambda c: (-(c["e"] or -1), -c["sl"]))
@@ -475,7 +508,7 @@ def main() -> None:
     cos, inst = d["companies"], d["institutions"]
     print(f"\ncompanies: {len(cos)}  (tracked {sum(c['t'] for c in cos)}, YC {sum(bool(c['yc']) for c in cos)}, "
           f"LinkedIn {sum(bool(c['li']) for c in cos)}, logo {sum(bool(c['lg']) for c in cos)}, "
-          f"website {sum(bool(c['w']) for c in cos)})")
+          f"website {sum(bool(c['w']) for c in cos)}, founders {sum(bool(c['f']) for c in cos)})")
     cat = Counter(x for c in cos for x in c["c"])
     for k in d["categories"]:
         print(f"  {k:28} {cat[k]:6}")
