@@ -1,0 +1,47 @@
+{
+  "companies": {"head": {"vars": ["co", "coLabel", "site", "emp", "sl", "ind", "li", "logo", "iso", "hqLabel"]}, "results": {"bindings": [
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1066085"}, "coLabel": {"type": "literal", "value": "Infosys Limited"},
+     "site": {"type": "uri", "value": "https://www.infosys.com/"}, "emp": {"type": "literal", "value": "317240"}, "sl": {"type": "literal", "value": "60"},
+     "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q11661"}, "li": {"type": "literal", "value": "infosys"},
+     "logo": {"type": "uri", "value": "http://commons.wikimedia.org/wiki/Special:FilePath/Infosys%20logo.svg"},
+     "iso": {"type": "literal", "value": "IN"}, "hqLabel": {"type": "literal", "value": "Bengaluru"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1066085"}, "coLabel": {"type": "literal", "value": "Infosys Limited"},
+     "site": {"type": "uri", "value": "https://www.infosys.com/"}, "emp": {"type": "literal", "value": "317240"}, "sl": {"type": "literal", "value": "60"},
+     "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q483639"}, "iso": {"type": "literal", "value": "US"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1066085"}, "coLabel": {"type": "literal", "value": "Infosys Limited"},
+     "site": {"type": "uri", "value": "https://www.infosys.com/"}, "emp": {"type": "literal", "value": "317240"}, "sl": {"type": "literal", "value": "60"},
+     "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q4373046"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q95"}, "coLabel": {"type": "literal", "value": "Google"},
+     "site": {"type": "uri", "value": "https://about.google/"}, "emp": {"type": "literal", "value": "-1"}, "sl": {"type": "literal", "value": "150"},
+     "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q11660"}, "li": {"type": "literal", "value": "google"},
+     "hqLabel": {"type": "literal", "value": "Q123456"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q2"}, "coLabel": {"type": "literal", "value": "FTP Only"},
+     "site": {"type": "uri", "value": "ftp://ftp.example.org"}, "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q11660"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q3"}, "coLabel": {"type": "literal", "value": "Q3"},
+     "site": {"type": "uri", "value": "https://unlabelled.example"}, "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q11660"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q4"}, "coLabel": {"type": "literal", "value": "Sneaky Corp"},
+     "site": {"type": "uri", "value": "https://www.linkedin.com/company/sneaky"}, "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q11660"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q5"}, "coLabel": {"type": "literal", "value": "Unknown Size"},
+     "site": {"type": "uri", "value": "https://unknown-size.example.com"}, "emp": {"type": "uri", "value": "http://www.wikidata.org/.well-known/genid/abc"},
+     "ind": {"type": "uri", "value": "http://www.wikidata.org/entity/Q2729047"}}
+  ]}},
+  "institutions": {"head": {"vars": ["co", "coLabel", "site", "sl", "st", "li", "logo", "iso", "cityLabel", "ty"]}, "results": {"bindings": [
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1661242"}, "coLabel": {"type": "literal", "value": "Indian Institute of Technology Bombay"},
+     "site": {"type": "uri", "value": "https://www.iitb.ac.in/"}, "sl": {"type": "literal", "value": "40"}, "st": {"type": "literal", "value": "10500"},
+     "li": {"type": "literal", "value": "iit-bombay"}, "iso": {"type": "literal", "value": "IN"}, "cityLabel": {"type": "literal", "value": "Mumbai"},
+     "ty": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1371037"}},
+    {"co": {"type": "uri", "value": "http://www.wikidata.org/entity/Q948720"}, "coLabel": {"type": "literal", "value": "Indian Institute of Science"},
+     "site": {"type": "uri", "value": "https://iisc.ac.in"}, "sl": {"type": "literal", "value": "35"},
+     "iso": {"type": "literal", "value": "IN"}, "ty": {"type": "uri", "value": "http://www.wikidata.org/entity/Q31855"}}
+  ]}},
+  "yc": [
+    {"name": "Supabase", "website": "https://supabase.com", "small_logo_thumb_url": "https://bookface-images.s3.amazonaws.com/small_logos/x.png",
+     "one_liner": "Open source Postgres development platform that lets you build a backend in minutes and scale to millions of users with ease and joy",
+     "industry": "B2B", "subindustry": "B2B -> Engineering, Product and Design", "industries": ["B2B", "Engineering, Product and Design"],
+     "tags": ["Open Source", "Developer Tools"], "all_locations": "San Francisco, CA, USA; Remote", "team_size": 120, "batch": "Summer 2020",
+     "isHiring": true, "status": "Active"},
+    {"name": "Infosys", "website": "https://infosys.com", "small_logo_thumb_url": "", "one_liner": "Should merge with Wikidata Infosys",
+     "industries": ["B2B"], "tags": [], "all_locations": "Bengaluru, KA, India", "team_size": 5, "batch": "Winter 2099", "isHiring": false, "status": "Public"},
+    {"name": "Dead Co", "website": "https://dead.example", "industries": ["B2B"], "status": "Inactive"}
+  ]
+}

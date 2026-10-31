@@ -253,11 +253,12 @@ def run(args: argparse.Namespace) -> int:
             refresh(store.meta, gaps=_skill_gaps(pool))
         except Exception as exc:  # noqa: BLE001 - optional feature, never fails the scan
             log.warning("videos skipped: %s", type(exc).__name__)
-        from . import world  # Map tab: employers by country from Wikidata, rebuilt at most monthly
-        try:
-            world.refresh(store.meta)
-        except Exception as exc:  # noqa: BLE001 - optional feature, never fails the scan
-            log.warning("world map refresh skipped: %s", type(exc).__name__)
+        from . import directory, world  # Map and Companies tabs: Wikidata + YC data, rebuilt at most monthly
+        for name, mod in (("world map", world), ("company directory", directory)):
+            try:
+                mod.refresh(store.meta)
+            except Exception as exc:  # noqa: BLE001 - optional feature, never fails the scan
+                log.warning("%s refresh skipped: %s", name, type(exc).__name__)
 
     # 6. Save state.
     store.add(kept)

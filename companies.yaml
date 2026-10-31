@@ -592,6 +592,10 @@ companies:
 - name: Cerebras
   ats: ashby
   slug: cerebras
+- name: CERN
+  ats: smartrecruiters
+  slug: cern
+  jobs_at_discovery: 35
 - name: Chainguard
   ats: greenhouse
   slug: chainguard
@@ -1649,6 +1653,10 @@ companies:
   slug: legora
   yc: Winter 2024
   jobs_at_discovery: 305
+- name: Leiden University
+  ats: recruitee
+  slug: leidenuniversity
+  jobs_at_discovery: 1
 - name: Lendingkart
   ats: smartrecruiters
   slug: lendingkart

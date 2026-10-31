@@ -45,6 +45,9 @@ titles:
     - ai infra
     - gpu
     - hpc
+    - high performance computing
+    - (research|scientific) computing
+    - supercomput\w*
   exclude:
     - senior
     - sr
@@ -85,7 +88,8 @@ titles:
 # Training institutes and "job guarantee" academies that post fake openings.
 company_exclude:
   - academy
-  - institute
+  # "institute" alone would also drop IISc, the IITs and research institutes: only exclude training ones.
+  - (training|coaching|computer|software|it|career|skill|education|educational) institute
   - training
   - edutech
   - codeplusplus
@@ -158,7 +162,7 @@ sources:
     enabled: true
     hours_old: 72
     results_wanted: 40
-    search_terms: [devops engineer, site reliability engineer, sre, platform engineer, cloud engineer, kubernetes, devsecops, mlops engineer, cloud operations engineer, infrastructure engineer, aws devops, azure devops]
+    search_terms: [devops engineer, site reliability engineer, sre, platform engineer, cloud engineer, kubernetes, devsecops, mlops engineer, cloud operations engineer, infrastructure engineer, aws devops, azure devops, hpc engineer]
     locations:
       - {location: "Bangalore", country: india}
       - {location: "Pune", country: india}
@@ -200,7 +204,7 @@ sources:
     enabled: true
     hours_old: 168
     results_wanted: 25
-    search_terms: [devops engineer, site reliability engineer, platform engineer, cloud engineer]
+    search_terms: [devops engineer, site reliability engineer, platform engineer, cloud engineer, hpc engineer]
     every_run: [germany, netherlands, ireland, uk, united arab emirates, singapore]
     rotate_per_run: 8
     rotation_hours: 6

@@ -7,7 +7,7 @@
 <meta name="description" content="Private job search dashboard">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://i.ytimg.com; font-src 'self'; connect-src 'self' https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://i.ytimg.com https://commons.wikimedia.org https://upload.wikimedia.org https://thumb.wikimedia.org https://bookface-images.s3.amazonaws.com; font-src 'self'; connect-src 'self' https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="theme-color" content="#fffaf5">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
@@ -53,6 +53,7 @@
       <button role="tab" data-view="today" aria-selected="true"><i data-icon="home"></i><span>Today</span></button>
       <button role="tab" data-view="jobs" aria-selected="false"><i data-icon="list"></i><span>Jobs</span><b class="nav-count" id="count-jobs"></b></button>
       <button role="tab" data-view="board" aria-selected="false"><i data-icon="board"></i><span>Pipeline</span><b class="nav-count" id="count-pipe"></b></button>
+      <button role="tab" data-view="companies" aria-selected="false"><i data-icon="building"></i><span>Companies</span></button>
       <button role="tab" data-view="map" aria-selected="false"><i data-icon="globe"></i><span>Map</span></button>
       <button role="tab" data-view="learn" aria-selected="false"><i data-icon="play"></i><span>Learn</span></button>
       <button role="tab" data-view="insights" aria-selected="false"><i data-icon="chart"></i><span>Insights</span></button>

@@ -23,7 +23,7 @@
   const RESEND_MS = 15 * 60 * 1000;
   const LS = { local: "jr.local.v1", salt: "jr.salt.v1", theme: "jr.theme" };
   const DAY = 86400000;
-  const VIEWS = ["today", "jobs", "board", "map", "learn", "insights", "settings"];
+  const VIEWS = ["today", "jobs", "board", "companies", "map", "learn", "insights", "settings"];
 
   const S = {
     pass: null, localKey: null, data: null, jobs: [], byId: new Map(),
@@ -88,7 +88,7 @@
     ext: "M14 3h7v7M10 14 21 3M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5", check: "M20 6 9 17l-5-5",
     x: "M18 6 6 18M6 6l12 12", copy: "M9 9h11v11H9zM5 15H4V4h11v1", down: "M12 3v12m0 0-5-5m5 5 5-5M4 21h16",
     star: "m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z", mail: "M3 5h18v14H3zM3 6l9 7 9-7",
-    filter: "M3 5h18l-7 9v6l-4-2v-4z", key: "M15 7a4 4 0 1 1-3.9 5H3v3h3v3h3v-3h2.1A4 4 0 0 1 15 7z",
+    filter: "M3 5h18l-7 9v6l-4-2v-4z", building: "M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16M15 9h4a1 1 0 0 1 1 1v11M3 21h18M8 8h3M8 12h3M8 16h3", key: "M15 7a4 4 0 1 1-3.9 5H3v3h3v3h3v-3h2.1A4 4 0 0 1 15 7z",
   };
   function icon(name, size = 16) {
     const s = svg("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor",
@@ -478,7 +478,7 @@
     view.classList.remove("enter");
     if (S.renderedView !== S.view) { void view.offsetWidth; view.classList.add("enter"); S.renderedView = S.view; }
     view.dataset.view = S.view;
-    ({ today: renderToday, jobs: renderJobs, board: renderBoard, map: renderMap, learn: renderLearn,
+    ({ today: renderToday, jobs: renderJobs, board: renderBoard, companies: renderCompanies, map: renderMap, learn: renderLearn,
       insights: renderInsights, settings: renderSettings })[S.view](view);
     animateCounters(view);
   }
@@ -825,6 +825,9 @@
         el("div", { class: "row" }, el("button", { class: "btn small", type: "button", onclick: () => copy(j.letter, "Cover letter") }, icon("copy", 14), "Copy"),
           el("button", { class: "btn small", type: "button", onclick: () => printDoc(j, "letter") }, icon("down", 14), "Download PDF")),
         el("p", { class: "sub" }, "Drafted by a free model and fact-checked: sentences with numbers or tools not on your resume were removed.")) : null,
+      block("People to contact", el("p", { class: "sub" }, "Searches that open on LinkedIn in your browser. Nothing is fetched or automated, so your account is never at risk."),
+        el("div", { class: "contacts" }, contactLinks(j).map(([who, hint, url]) =>
+          el("a", { class: "contact", href: url, target: "_blank", rel: "noopener noreferrer" }, el("strong", {}, who), el("span", {}, hint), icon("ext", 14))))),
       block("Referral message", el("div", { class: "referral" }, message),
         el("div", { class: "row" }, el("button", { class: "btn small primary", type: "button", onclick: () => copy(message, "Referral message") }, icon("copy", 14), "Copy message"),
           el("button", { class: "btn small", type: "button", title: short, onclick: () => copy(short, "Short note (fits LinkedIn's 300 characters)") }, "Copy short note"),
@@ -853,6 +856,28 @@
       el("button", { class: "btn small ghost close", type: "button", onclick: close, "aria-label": "Close" }, icon("x")), jobDetail(j));
     rootEl.replaceChildren(el("div", { class: "backdrop", onclick: close }), drawer);
     drawer.querySelector(".close").focus();
+  }
+
+  // ------------------------------------------------------------------ people to contact (LinkedIn search links only)
+  // The likely hiring manager's title, from the job's family.
+  function managerTitle(title) {
+    const t = title.toLowerCase();
+    if (/hpc|research computing|scientific computing|supercomput|gpu/.test(t)) return "HPC OR \"Research Computing\" manager";
+    if (/mlops|ml ops|machine learning|ai /.test(t)) return "\"ML Platform\" OR \"MLOps\" manager";
+    if (/secur|devsecops/.test(t)) return "\"Security Engineering\" OR DevSecOps manager";
+    if (/sre|reliability|observability/.test(t)) return "SRE OR \"Site Reliability\" manager";
+    if (/platform|kubernetes/.test(t)) return "\"Platform Engineering\" manager";
+    if (/cloud|aws|azure|gcp/.test(t)) return "\"Cloud Engineering\" OR \"Cloud Infrastructure\" manager";
+    if (/system|linux|admin/.test(t)) return "\"IT Infrastructure\" OR \"Systems\" manager";
+    return "DevOps OR \"Engineering Manager\" OR \"Infrastructure\" manager";
+  }
+  function contactLinks(j) {
+    const q = (kw) => `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(`${kw} ${j.company}`)}`;
+    return [
+      ["Recruiters", "Technical recruiter, talent acquisition", q("\"technical recruiter\" OR \"talent acquisition\" OR recruiter")],
+      ["Likely hiring manager", managerTitle(j.title).replace(/\\?"/g, ""), q(managerTitle(j.title))],
+      ["Engineers on the team", "Ask for a referral", q("DevOps OR SRE OR \"platform engineer\" OR \"cloud engineer\"")],
+    ];
   }
 
   // ------------------------------------------------------------------ referral message (your format, max 5 lines)
@@ -1222,6 +1247,141 @@
         : el("div", { class: "empty" }, "Videos appear after the next scan (refreshed about twice a day)."));
   }
 
+  // ------------------------------------------------------------------ Companies + Universities & Research (directory)
+  const ACADEMIC = /universit|institute of|\biit\b|\biisc\b|\bnit\b|iiit|college|research (institute|centre|center|council|organi[sz]ation|foundation|establishment|laborator)|laborator|\bcern\b|c-dac|\bcdac\b|isro|drdo|\bnic\b|\btifr\b|\bbarc\b|max planck|fraunhofer|national lab|\bembl\b|european space|\besa\b|eumetsat|ecmwf|\bdesy\b|helmholtz|inria|\bcnrs\b|supercomput|sanger|crick|weizmann|\bepfl\b|eth z|forschungs|akademie|hochschule|\btu\b|polytechn/i;
+  const COMPANY_SUFFIX = /\b(private limited|pvt|ltd|limited|inc|llc|gmbh|corp|technologies|solutions|services)\b/i; // a company, not an institution
+  const normCo = (s) => String(s || "").toLowerCase().replace(/\b(inc|llc|ltd|limited|pvt|private|corp|corporation|gmbh|group|plc|s\.?a\.?|ag|technologies|technology|india|co)\b/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  const flagOf = (iso2) => (iso2 && /^[A-Z]{2}$/.test(iso2) ? String.fromCodePoint(...[...iso2].map((c) => 0x1f1a5 + c.charCodeAt(0))) : "");
+  const people = (n) => (!n ? "" : n >= 100000 ? `${Math.round(n / 1000)}k+ people` : n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k people` : `${n} people`);
+  function logoNode(item) {
+    const fallback = () => el("span", { class: "co-logo ph", "aria-hidden": "true" }, initials(item.n));
+    if (!item.lg) return fallback();
+    const img = el("img", { class: "co-logo", src: item.lg, alt: "", loading: "lazy", width: "44", height: "44", referrerpolicy: "no-referrer" });
+    img.addEventListener("error", () => img.replaceWith(fallback()), { once: true });
+    return img;
+  }
+  async function loadDirectory() {
+    if (!S.dir) {
+      try { S.dir = await decryptBlob(await fetchBlob("data/directory.enc.json"), S.pass); } catch (_) { S.dir = { companies: [], institutions: [], categories: [] }; }
+    }
+    return S.dir;
+  }
+  function renderCompanies(root) {
+    const host = el("div", {}, el("div", { class: "empty" }, "Loading the company directory…"));
+    S.co = S.co || { tab: "companies", q: "", cat: "", country: "", hiring: false, yc: false, tracked: false, li: false, type: "", india: false, limit: 60 };
+    put(root, host);
+    loadDirectory().then((d) => { if (S.view === "companies" && host.isConnected) host.replaceWith(companiesBody(d)); });
+  }
+  function companiesBody(d) {
+    const st = S.co;
+    // Your open matching jobs per company, to show "hiring now" and jump to them.
+    const open = new Map();
+    for (const j of S.jobs) if (statusOf(j) === "new" && isOpen(j)) { const k = normCo(j.company); open.set(k, (open.get(k) || 0) + 1); }
+    const box = el("div", { class: "dir" });
+    const redraw = () => { st.limit = Math.max(60, st.limit); box.replaceWith(companiesBody(d)); };
+    const hiringInst = hiringInstitutions(d);
+    const tabs = el("div", { class: "seg-group", role: "group", "aria-label": "Directory" },
+      [["companies", `Companies (${fmtInt(d.companies.length)})`], ["institutions", `Universities & research hiring (${fmtInt(hiringInst.length)})`]].map(([k, t]) =>
+        el("button", { type: "button", class: "seg", "aria-pressed": String(st.tab === k), onclick: () => { st.tab = k; st.q = ""; st.country = ""; st.limit = 60; redraw(); } }, t)));
+    const search = el("input", { type: "search", class: "search", placeholder: st.tab === "companies" ? "Search companies, cities, what they do…" : "Search universities, institutes, cities…", value: st.q, "aria-label": "Search directory" });
+    let typing = null;
+    search.addEventListener("input", () => { clearTimeout(typing); typing = setTimeout(() => { st.q = search.value; st.limit = 60; redraw(); const s = $(".dir .search"); if (s) { s.focus(); s.selectionStart = s.selectionEnd = s.value.length; } }, 180); });
+    // Institutions: only the ones with live openings that match you; abroad unless "Include India" is on.
+    const list = st.tab === "companies" ? d.companies : hiringInst.filter((x) => st.india || x.cc !== "IN");
+    const countries = [...new Set(list.map((x) => x.cc).filter(Boolean))].sort();
+    const terms = st.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    const rows = list.filter((x) => {
+      if (st.country && x.cc !== st.country) return false;
+      if (terms.length) { const hay = `${x.n} ${x.ct || ""} ${x.b || ""} ${(x.c || []).join(" ")}`.toLowerCase(); if (!terms.every((t) => hay.includes(t))) return false; }
+      if (st.tab === "institutions") return !st.type || x.ty === st.type;
+      if (st.cat && !(x.c || []).includes(st.cat)) return false;
+      if (st.hiring && !open.get(normCo(x.n)) && !x.h) return false;
+      if (st.yc && !x.yc) return false;
+      if (st.tracked && !x.t) return false;
+      if (st.li && !x.li) return false;
+      return true;
+    });
+    // Hiring for you first; within an industry, companies whose main industry it is before conglomerates tagged with it.
+    if (st.tab === "companies") rows.sort((a, b) => ((open.get(normCo(b.n)) || 0) - (open.get(normCo(a.n)) || 0))
+      || (st.cat ? ((a.c || [])[0] !== st.cat) - ((b.c || [])[0] !== st.cat) : 0));
+    const chip = (label, key, value) => el("button", { type: "button", class: `fpill toggle${st[key] === value || (value === true && st[key]) ? " on" : ""}`,
+      onclick: () => { st[key] = st[key] === value ? (value === true ? false : "") : value; st.limit = 60; redraw(); } }, label);
+    const catCounts = new Map();
+    for (const x of d.companies) for (const c of x.c || []) catCounts.set(c, (catCounts.get(c) || 0) + 1);
+    const filters = st.tab === "companies"
+      ? [el("div", { class: "fpills" }, chip(`All (${fmtInt(d.companies.length)})`, "cat", ""), (d.categories || []).filter((c) => catCounts.get(c)).map((c) => chip(`${c} (${fmtInt(catCounts.get(c))})`, "cat", c))),
+        el("div", { class: "fpills" }, chip("Hiring now", "hiring", true), chip("YC", "yc", true), chip("Career site tracked", "tracked", true), chip("Has LinkedIn", "li", true), countrySelect(countries, st, redraw))]
+      : [el("div", { class: "fpills" }, chip("All", "type", ""), chip("Universities", "type", "university"), chip("Research institutes", "type", "research"), chip("Government & public", "type", "government"), chip("Include India", "india", true), countrySelect(countries, st, redraw))];
+    const grid = el("div", { class: "co-grid" }, rows.slice(0, st.limit).map((x) => st.tab === "companies" ? companyCard(x, open.get(normCo(x.n)) || 0) : institutionCard(x)));
+    put(box, pageHead(st.tab === "companies" ? "Companies" : "Universities & research",
+        st.tab === "companies" ? "Employers for DevOps, SRE, cloud and ML infrastructure roles, by industry. Logos and links open the company's own pages."
+          : "Universities, research institutes and public bodies: they hire HPC, GPU cluster, research computing and DevOps engineers.", tabs),
+      el("div", { class: "filterbar" }, search, filters),
+      el("div", { class: "sub dir-count" }, `${fmtInt(rows.length)} shown`),
+      rows.length ? grid : el("div", { class: "empty" }, st.tab === "institutions"
+        ? (hiringInst.length && !st.india
+          ? `No openings abroad right now; ${hiringInst.length} institution${hiringInst.length > 1 ? "s" : ""} in India ${hiringInst.length > 1 ? "are" : "is"} hiring. Turn on "Include India" to see ${hiringInst.length > 1 ? "them" : "it"}.`
+          : "No university or research openings matching your profile right now. The scanner checks every 4 hours (CERN, Leiden and university postings on Indeed's country sites).")
+        : d.companies.length ? "Nothing matches these filters." : "The directory appears after the next scan."),
+      rows.length > st.limit ? el("button", { class: "btn more", type: "button", onclick: () => { st.limit += 120; redraw(); } }, `Show ${fmtInt(Math.min(120, rows.length - st.limit))} more`) : null);
+    return box;
+  }
+  function countrySelect(countries, st, redraw) {
+    return el("label", { class: `fpill${st.country ? " on" : ""}` }, el("span", { class: "fl" }, "Country"),
+      el("select", { "aria-label": "Country", onchange: (e) => { st.country = e.target.value; st.limit = 60; redraw(); } },
+        el("option", { value: "" }, "All"), countries.map((c) => el("option", { value: c, selected: st.country === c }, `${flagOf(c)} ${c}`))));
+  }
+  function companyCard(x, openRoles) {
+    const li = x.li || `https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(x.n)}`;
+    const careers = x.cr || `https://www.google.com/search?q=${encodeURIComponent(`${x.n} careers DevOps OR SRE OR cloud`)}`;
+    return el("article", { class: "co-card" },
+      el("div", { class: "co-head" }, logoNode(x),
+        el("div", { class: "co-id" }, el("div", { class: "co-title", title: x.n }, x.n),
+          el("div", { class: "co-where" }, [flagOf(x.cc), x.ct || x.cc].filter(Boolean).join(" "), x.e ? el("span", {}, people(x.e)) : null))),
+      x.b ? el("p", { class: "co-blurb" }, x.b) : null,
+      el("div", { class: "co-badges" },
+        openRoles ? el("button", { type: "button", class: "chip have", title: "Open matching jobs from this company",
+          onclick: () => { S.filters = { ...S.filters, q: x.n, status: "open" }; go("jobs"); } }, `● ${openRoles} open role${openRoles > 1 ? "s" : ""}`) : null,
+        x.h && !openRoles ? el("span", { class: "chip" }, "Hiring (YC)") : null,
+        x.yc ? el("span", { class: "chip yc" }, `YC ${x.yc}`) : null,
+        x.t ? el("span", { class: "chip target" }, "Career site tracked") : null,
+        (x.c || []).slice(0, 2).map((c) => el("span", { class: "chip" }, c))),
+      el("div", { class: "co-links" }, x.w ? extLink([icon("globe", 14), "Website"], x.w, "btn small") : null,
+        extLink([icon("ext", 14), x.li ? "LinkedIn" : "Find on LinkedIn"], li, "btn small"), extLink([icon("building", 14), "Careers"], careers, "btn small")));
+  }
+  // Institutions with open matching jobs, enriched with logo/website/LinkedIn from the directory when known.
+  function hiringInstitutions(d) {
+    const known = new Map((d.institutions || []).map((x) => [normCo(x.n), x]));
+    const groups = new Map();
+    for (const j of S.jobs) {
+      if (!isOpen(j) || statusOf(j) !== "new" || !ACADEMIC.test(j.company) || COMPANY_SUFFIX.test(j.company)) continue;
+      const k = normCo(j.company);
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push(j);
+    }
+    return [...groups.entries()].map(([k, jobs]) => {
+      const x = known.get(k) || {};
+      const cc = x.cc || (jobs[0].region === "india" ? "IN" : "");
+      const ty = x.ty || (/universit|college|hochschule|polytechn|\biit\b|\bnit\b|iiit/i.test(jobs[0].company) ? "university" : "research");
+      return { ...x, n: x.n || jobs[0].company, cc, ty, ct: x.ct || jobs[0].location, roles: jobs.sort((a, b) => (b.prio || 0) - (a.prio || 0)) };
+    }).sort((a, b) => b.roles.length - a.roles.length);
+  }
+  function institutionCard(x) {
+    const li = x.li || `https://www.linkedin.com/search/results/companies/?keywords=${encodeURIComponent(x.n)}`;
+    const domain = (() => { try { return new URL(x.w).hostname.replace(/^www\./, ""); } catch (_) { return ""; } })();
+    const jobs = `https://www.google.com/search?q=${encodeURIComponent(`${domain ? `site:${domain} ` : `${x.n} `}(HPC OR "research computing" OR "system administrator" OR DevOps OR "GPU cluster") jobs`)}`;
+    return el("article", { class: "co-card" },
+      el("div", { class: "co-head" }, logoNode(x),
+        el("div", { class: "co-id" }, el("div", { class: "co-title", title: x.n }, x.n),
+          el("div", { class: "co-where" }, [flagOf(x.cc), x.ct || x.cc].filter(Boolean).join(" "), x.s ? el("span", {}, `${fmtInt(x.s)} students`) : null))),
+      el("div", { class: "co-badges" }, el("span", { class: "chip have" }, `● ${x.roles.length} open role${x.roles.length > 1 ? "s" : ""}`),
+        el("span", { class: "chip target" }, { university: "University", research: "Research institute", government: "Government / public" }[x.ty] || "Institution")),
+      el("div", { class: "co-roles" }, x.roles.slice(0, 4).map((j) => el("button", { type: "button", class: "btn small ghost", onclick: () => openDrawer(j) },
+        `${j.title}${j.score != null ? ` · fit ${Number(j.score).toFixed(1)}` : ""}`))),
+      el("div", { class: "co-links" }, x.w ? extLink([icon("globe", 14), "Website"], x.w, "btn small") : null,
+        extLink([icon("ext", 14), x.li ? "LinkedIn" : "Find on LinkedIn"], li, "btn small"), extLink([icon("search", 14), "HPC & IT jobs"], jobs, "btn small")));
+  }
+
   // ------------------------------------------------------------------ Map (globe, loaded only when opened)
   const BUILD = document.querySelector('meta[name="jr-build"]')?.content || "";
   function loadScript(src) {
@@ -1394,7 +1554,7 @@
     if (e.key === "Escape") { $("#drawer-root").replaceChildren(); return; }
     if (e.key === "g") { gPrefix = Date.now(); return; }
     if (Date.now() - gPrefix < 900) {
-      const to = { t: "today", j: "jobs", p: "board", m: "map", l: "learn", i: "insights", s: "settings" }[e.key];
+      const to = { t: "today", j: "jobs", p: "board", c: "companies", m: "map", l: "learn", i: "insights", s: "settings" }[e.key];
       gPrefix = 0;
       if (to) { go(to); return; }
     }

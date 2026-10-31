@@ -30,10 +30,11 @@ FONTS = {f"fonts/lato-{w}.woff2" for w in ("400", "700", "400-italic", "700-ital
 # Third-party libraries, pinned and served from the dashboard itself (see dashboard/vendor/README.md).
 VENDOR = {f"vendor/{n}" for n in ("d3-array.min.js", "d3-geo.min.js", "topojson-client.min.js", "countries-50m.json",
                                   "countries-110m.json", "earth-2k.jpg", "earth-4k.jpg", "pdf.min.mjs", "pdf.worker.min.mjs")}
-ENCRYPTED = {"data/jobs.enc.json", "data/world.enc.json"}
+ENCRYPTED = {"data/jobs.enc.json", "data/world.enc.json", "data/directory.enc.json"}
 PUBLIC_FILES = {"index.html", "app.js", "map.js", "crypto.js", "app.css", "manifest.webmanifest", "sw.js", "icon.svg",
                 "autofill.user.js", *ENCRYPTED, *FONTS, *VENDOR}
 WORLD_FILE = ROOT / "state" / "world.json"
+DIRECTORY_FILE = ROOT / "state" / "directory.json"
 MAX_JOBS = 900
 SNIPPET = 900
 SHORT_SNIPPET = 260
@@ -203,8 +204,10 @@ def export(jobs: list[Job], meta: dict[str, Any], passphrase: str, dist: Path = 
     stamp_build(dist)
     out = dist / "data" / "jobs.enc.json"
     out.write_text(json.dumps(encrypt_json(payload, passphrase)), encoding="utf-8")
-    if WORLD_FILE.exists():  # employers by country for the Map tab, encrypted like everything else
-        world = json.loads(WORLD_FILE.read_text(encoding="utf-8"))
-        (dist / "data" / "world.enc.json").write_text(json.dumps(encrypt_json(world, passphrase)), encoding="utf-8")
+    # Map and Companies tabs: separate files, loaded only when those tabs open; encrypted like everything else.
+    for src, name in ((WORLD_FILE, "world.enc.json"), (DIRECTORY_FILE, "directory.enc.json")):
+        if src.exists():
+            data = json.loads(src.read_text(encoding="utf-8"))
+            (dist / "data" / name).write_text(json.dumps(encrypt_json(data, passphrase)), encoding="utf-8")
     assert_publishable(dist)
     return out
