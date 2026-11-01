@@ -7,10 +7,10 @@
   }
  },
  "2026-11": {
-  "minutes": 6,
+  "minutes": 7,
   "runs": {
    "scan": 1,
-   "status": 1
+   "status": 2
   }
  }
 }
