@@ -1,67 +1,67 @@
 {
- "finished_at": "2026-11-01T15:13:03+00:00",
- "duration_seconds": 294.0,
- "raw": 2317,
- "unique": 1353,
- "fresh": 1158,
- "kept": 16,
- "kept_india": 3,
- "kept_remote": 0,
- "kept_abroad": 13,
+ "finished_at": "2026-11-01T20:33:52+00:00",
+ "duration_seconds": 208.0,
+ "raw": 2270,
+ "unique": 1329,
+ "fresh": 1136,
+ "kept": 17,
+ "kept_india": 5,
+ "kept_remote": 1,
+ "kept_abroad": 11,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
    "jobs": 13,
-   "seconds": 72.0,
+   "seconds": 72.2,
    "error": ""
   },
   {
    "name": "lever",
    "jobs": 13,
-   "seconds": 30.8,
+   "seconds": 26.5,
    "error": ""
   },
   {
    "name": "ashby",
-   "jobs": 85,
-   "seconds": 110.6,
+   "jobs": 83,
+   "seconds": 110.2,
    "error": ""
   },
   {
    "name": "smartrecruiters",
    "jobs": 84,
-   "seconds": 193.3,
+   "seconds": 193.6,
    "error": ""
   },
   {
    "name": "workday",
-   "jobs": 25,
-   "seconds": 26.8,
+   "jobs": 26,
+   "seconds": 25.6,
    "error": ""
   },
   {
    "name": "workable",
    "jobs": 0,
-   "seconds": 2.4,
+   "seconds": 1.8,
    "error": ""
   },
   {
    "name": "recruitee",
    "jobs": 1,
-   "seconds": 2.4,
+   "seconds": 2.2,
    "error": ""
   },
   {
    "name": "bamboohr",
    "jobs": 1,
-   "seconds": 4.0,
+   "seconds": 2.8,
    "error": ""
   },
   {
    "name": "teamtailor",
    "jobs": 3,
-   "seconds": 2.9,
+   "seconds": 5.3,
    "error": ""
   },
   {
@@ -72,56 +72,56 @@
   },
   {
    "name": "microsoft",
-   "jobs": 2,
-   "seconds": 6.6,
-   "error": ""
+   "jobs": 0,
+   "seconds": 7.7,
+   "error": "RetryError: HTTPSConnectionPool(host='apply.careers.microsoft.com', port=443): Max retries exceeded with url: /api/pcsx/search?domain=microsoft.com&query=site+reliability+engineer+devops&location=India&start=0&sort_by=relevance (Caused by ResponseError('too many 429 error responses'))"
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 1.2,
+   "seconds": 1.1,
    "error": ""
   },
   {
    "name": "remoteok",
    "jobs": 2,
-   "seconds": 1.2,
+   "seconds": 0.9,
    "error": ""
   },
   {
    "name": "weworkremotely",
    "jobs": 5,
-   "seconds": 2.2,
+   "seconds": 0.8,
    "error": ""
   },
   {
    "name": "himalayas",
-   "jobs": 39,
-   "seconds": 1.6,
+   "jobs": 38,
+   "seconds": 16.1,
    "error": ""
   },
   {
    "name": "jobicy",
    "jobs": 3,
-   "seconds": 2.1,
+   "seconds": 2.0,
    "error": ""
   },
   {
    "name": "arbeitnow",
    "jobs": 8,
-   "seconds": 1.8,
+   "seconds": 1.0,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 4,
-   "seconds": 3.3,
+   "seconds": 8.5,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 1376,
-   "seconds": 32.5,
+   "jobs": 1288,
+   "seconds": 32.6,
    "error": ""
   },
   {
@@ -132,60 +132,60 @@
   },
   {
    "name": "linkedin",
-   "jobs": 40,
-   "seconds": 10.8,
+   "jobs": 70,
+   "seconds": 14.7,
    "error": ""
   },
   {
    "name": "glassdoor",
    "jobs": 0,
-   "seconds": 6.6,
+   "seconds": 7.5,
    "error": ""
   },
   {
    "name": "bayt",
-   "jobs": 0,
-   "seconds": 4.9,
+   "jobs": 25,
+   "seconds": 8.4,
    "error": ""
   },
   {
    "name": "indeed_world",
    "jobs": 583,
-   "seconds": 50.8,
+   "seconds": 48.6,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 30,
-   "seconds": 12.2,
+   "jobs": 20,
+   "seconds": 16.5,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 765,
-  "title_excluded": 130,
-  "too_much_experience": 91,
-  "needs_local_language": 77,
+  "title_not_target": 753,
+  "title_excluded": 121,
+  "too_much_experience": 86,
+  "needs_local_language": 83,
   "abroad_country_not_listed": 35,
   "description_excluded": 12,
-  "abroad_no_sponsorship": 11,
-  "too_old": 7
+  "abroad_no_sponsorship": 9,
+  "too_old": 5
  },
  "companies_learned": 0,
  "reposts_flagged": 9,
- "repeats_skipped": 14,
- "sources_ok": 24,
+ "repeats_skipped": 15,
+ "sources_ok": 23,
  "sources_total": 25,
- "sources_failed": "naukri",
- "llm_scored": 5,
+ "sources_failed": "microsoft, naukri",
+ "llm_scored": 9,
  "llm_cached": 0,
  "closed_found": 0,
  "gmail_updated": 0,
  "letters": 0,
  "kept_by_source": {
-  "indeed": 2,
-  "linkedin": 1,
-  "linkedin_world": 12,
-  "indeed_world": 1
+  "indeed": 1,
+  "himalayas": 1,
+  "linkedin": 4,
+  "linkedin_world": 11
  }
 }
