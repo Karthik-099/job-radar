@@ -152,6 +152,10 @@ companies:
   ats: ashby
   slug: alephalpha
   jobs_at_discovery: 4
+- name: Aleroy
+  ats: ashby
+  slug: aleroy
+  learned_from: indeed_world
 - name: Algolia
   ats: greenhouse
   slug: algolia
@@ -1977,6 +1981,10 @@ companies:
   ats: ashby
   slug: neura-robotics-gmbh
   learned_from: indeed_world
+- name: Neural Concept
+  ats: ashby
+  slug: neuralconcept
+  learned_from: indeed_world
 - name: New Relic
   ats: greenhouse
   slug: newrelic
@@ -2470,6 +2478,10 @@ companies:
   slug: retell-ai
   yc: Winter 2024
   jobs_at_discovery: 27
+- name: Revantage Global Services India Private Limited
+  ats: workday
+  url: https://revantage.wd1.myworkdayjobs.com/Revantage
+  learned_from: indeed
 - name: RevenueCat
   ats: ashby
   slug: revenuecat
@@ -2692,6 +2704,10 @@ companies:
   ats: lever
   slug: sonatype
   jobs_at_discovery: 15
+- name: Sopra Steria
+  ats: smartrecruiters
+  slug: SopraSteria1
+  learned_from: indeed_world
 - name: Spacelift
   ats: teamtailor
   slug: spacelift
