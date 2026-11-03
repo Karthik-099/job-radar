@@ -720,6 +720,10 @@ companies:
 - name: Coinbase
   ats: greenhouse
   slug: coinbase
+- name: Comcast India Engineering Center I, LLP
+  ats: workday
+  url: https://comcast.wd115.myworkdayjobs.com/Comcast_Careers
+  learned_from: indeed
 - name: Commonwealth Bank of Australia
   ats: workday
   url: https://cba.wd3.myworkdayjobs.com/commbank_careers
@@ -2394,6 +2398,10 @@ companies:
   slug: radar
   yc: Winter 2013
   jobs_at_discovery: 18
+- name: Radius
+  ats: smartrecruiters
+  slug: RadiusLimited
+  learned_from: indeed_world
 - name: Railway
   ats: ashby
   slug: railway
@@ -2502,6 +2510,10 @@ companies:
 - name: Robco
   ats: ashby
   slug: robco
+  learned_from: indeed_world
+- name: Robin Radar Systems
+  ats: ashby
+  slug: robin-radar
   learned_from: indeed_world
 - name: Robinhood
   ats: greenhouse
@@ -2656,6 +2668,10 @@ companies:
 - name: Smallest
   ats: ashby
   slug: smallest
+  learned_from: indeed
+- name: Smart Working Solutions
+  ats: lever
+  slug: smart-working-solutions
   learned_from: indeed
 - name: Smartsheet
   ats: greenhouse
