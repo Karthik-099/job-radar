@@ -14,6 +14,10 @@ companies:
   ats: workday
   url: https://8x8inc.wd5.myworkdayjobs.com/8x8_External_Careers
   learned_from: indeed_world
+- name: Aareon AG
+  ats: workday
+  url: https://aareon.wd103.myworkdayjobs.com/Aareon
+  learned_from: indeed_world
 - name: Abacum
   ats: ashby
   slug: abacum
@@ -981,6 +985,10 @@ companies:
 - name: DXC Technology
   ats: workday
   url: https://dxctechnology.wd1.myworkdayjobs.com/DXCJobs
+  learned_from: indeed_world
+- name: Eagle Eye Solutions
+  ats: workable
+  slug: eagle-eye-2
   learned_from: indeed_world
 - name: Eight Sleep
   ats: ashby
