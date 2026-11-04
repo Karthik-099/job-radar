@@ -65,6 +65,10 @@ companies:
 - name: Adyen
   ats: greenhouse
   slug: adyen
+- name: AECOM
+  ats: smartrecruiters
+  slug: AECOM2
+  learned_from: indeed
 - name: Affirm
   ats: greenhouse
   slug: affirm
@@ -1619,6 +1623,10 @@ companies:
 - name: Kyndryl
   ats: workday
   url: https://kyndryl.wd5.myworkdayjobs.com/KyndrylProfessionalCareers
+- name: Kyndryl
+  ats: workday
+  url: https://kyndryl.wd5.myworkdayjobs.com/KyndrylEarlyCareers
+  learned_from: indeed
 - name: Lago
   ats: ashby
   slug: lago
@@ -2917,6 +2925,10 @@ companies:
   ats: greenhouse
   slug: tigera
   jobs_at_discovery: 7
+- name: Tipico
+  ats: smartrecruiters
+  slug: Tipico
+  learned_from: indeed_world
 - name: Titan
   ats: ashby
   slug: titan

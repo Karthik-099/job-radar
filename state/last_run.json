@@ -1,195 +1,195 @@
 {
- "finished_at": "2026-11-04T12:12:57+00:00",
- "duration_seconds": 268.9,
- "raw": 2802,
- "unique": 1664,
- "fresh": 1476,
- "kept": 64,
- "kept_india": 28,
- "kept_remote": 1,
- "kept_abroad": 34,
+ "finished_at": "2026-11-04T19:50:53+00:00",
+ "duration_seconds": 339.4,
+ "raw": 3964,
+ "unique": 2261,
+ "fresh": 2028,
+ "kept": 44,
+ "kept_india": 18,
+ "kept_remote": 0,
+ "kept_abroad": 25,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
    "jobs": 13,
-   "seconds": 70.8,
+   "seconds": 71.6,
    "error": ""
   },
   {
    "name": "lever",
    "jobs": 14,
-   "seconds": 62.1,
+   "seconds": 55.6,
    "error": ""
   },
   {
    "name": "ashby",
-   "jobs": 95,
-   "seconds": 111.1,
+   "jobs": 96,
+   "seconds": 112.2,
    "error": ""
   },
   {
    "name": "smartrecruiters",
-   "jobs": 96,
-   "seconds": 194.7,
+   "jobs": 99,
+   "seconds": 193.1,
    "error": ""
   },
   {
    "name": "workday",
-   "jobs": 22,
-   "seconds": 26.2,
+   "jobs": 20,
+   "seconds": 29.5,
    "error": ""
   },
   {
    "name": "workable",
    "jobs": 0,
-   "seconds": 1.7,
+   "seconds": 2.2,
    "error": ""
   },
   {
    "name": "recruitee",
    "jobs": 1,
-   "seconds": 1.7,
+   "seconds": 2.5,
    "error": ""
   },
   {
    "name": "bamboohr",
    "jobs": 1,
-   "seconds": 2.6,
+   "seconds": 3.7,
    "error": ""
   },
   {
    "name": "teamtailor",
    "jobs": 2,
-   "seconds": 1.8,
+   "seconds": 2.4,
    "error": ""
   },
   {
    "name": "amazon",
    "jobs": 0,
-   "seconds": 3.8,
+   "seconds": 5.5,
    "error": ""
   },
   {
    "name": "microsoft",
-   "jobs": 3,
-   "seconds": 12.8,
-   "error": ""
+   "jobs": 0,
+   "seconds": 7.0,
+   "error": "RetryError: HTTPSConnectionPool(host='apply.careers.microsoft.com', port=443): Max retries exceeded with url: /api/pcsx/search?domain=microsoft.com&query=site+reliability+engineer+devops&location=India&start=0&sort_by=relevance (Caused by ResponseError('too many 429 error responses'))"
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 0.9,
+   "seconds": 1.7,
    "error": ""
   },
   {
    "name": "remoteok",
    "jobs": 2,
-   "seconds": 0.8,
+   "seconds": 1.5,
    "error": ""
   },
   {
    "name": "weworkremotely",
    "jobs": 5,
-   "seconds": 0.7,
+   "seconds": 3.8,
    "error": ""
   },
   {
    "name": "himalayas",
    "jobs": 38,
-   "seconds": 2.7,
+   "seconds": 5.3,
    "error": ""
   },
   {
    "name": "jobicy",
-   "jobs": 4,
-   "seconds": 3.6,
+   "jobs": 5,
+   "seconds": 5.2,
    "error": ""
   },
   {
    "name": "arbeitnow",
    "jobs": 5,
-   "seconds": 1.5,
+   "seconds": 3.3,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 5,
-   "seconds": 3.1,
+   "seconds": 3.7,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 1649,
-   "seconds": 31.7,
+   "jobs": 1673,
+   "seconds": 35.0,
    "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 0,
-   "seconds": 195.2,
-   "error": "timeout"
+   "jobs": 1051,
+   "seconds": 180.8,
+   "error": ""
   },
   {
    "name": "linkedin",
    "jobs": 150,
-   "seconds": 29.0,
+   "seconds": 26.6,
    "error": ""
   },
   {
    "name": "glassdoor",
    "jobs": 0,
-   "seconds": 6.2,
+   "seconds": 7.2,
    "error": ""
   },
   {
    "name": "bayt",
-   "jobs": 1,
-   "seconds": 6.6,
+   "jobs": 84,
+   "seconds": 62.3,
    "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 596,
-   "seconds": 57.7,
+   "jobs": 600,
+   "seconds": 91.5,
    "error": ""
   },
   {
    "name": "linkedin_world",
    "jobs": 100,
-   "seconds": 25.4,
+   "seconds": 28.8,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 923,
-  "title_excluded": 190,
-  "needs_local_language": 106,
-  "too_much_experience": 99,
-  "abroad_country_not_listed": 58,
-  "description_excluded": 11,
-  "abroad_no_sponsorship": 7,
+  "title_not_target": 1393,
+  "title_excluded": 249,
+  "too_much_experience": 151,
+  "needs_local_language": 105,
+  "abroad_country_not_listed": 40,
+  "description_excluded": 13,
+  "abroad_no_sponsorship": 8,
   "too_old": 2
  },
- "companies_learned": 1,
+ "companies_learned": 3,
  "reposts_flagged": 13,
- "repeats_skipped": 16,
+ "repeats_skipped": 23,
  "sources_ok": 24,
  "sources_total": 25,
- "sources_failed": "naukri",
- "llm_scored": 44,
+ "sources_failed": "microsoft",
+ "llm_scored": 30,
  "llm_cached": 0,
  "closed_found": 0,
  "gmail_updated": 0,
- "letters": 2,
+ "letters": 5,
  "kept_by_source": {
-  "workday": 5,
-  "indeed": 19,
-  "linkedin": 8,
   "smartrecruiters": 2,
-  "jobicy": 1,
-  "ashby": 2,
-  "indeed_world": 10,
-  "linkedin_world": 19
+  "linkedin": 6,
+  "naukri": 8,
+  "indeed": 6,
+  "ashby": 1,
+  "indeed_world": 7,
+  "workday": 2,
+  "linkedin_world": 15
  }
 }
