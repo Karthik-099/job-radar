@@ -1202,6 +1202,10 @@ companies:
   ats: workday
   url: https://genmills.wd1.myworkdayjobs.com/GMI_External_Careers
   learned_from: indeed
+- name: Genesis
+  ats: ashby
+  slug: genesis
+  learned_from: indeed_world
 - name: Genpact
   ats: workday
   url: https://genpact.wd108.myworkdayjobs.com/External_Careers
