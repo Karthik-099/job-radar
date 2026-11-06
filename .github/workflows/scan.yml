@@ -64,22 +64,25 @@ jobs:
           path: .inbox-repo
 
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: py
         if: steps.budget.outputs.skip != 'true'
         with:
           python-version: "3.11"
 
-      # The whole virtualenv is cached: an install takes ~2 s instead of ~25 s on most runs.
+      # The whole virtualenv is cached: an install takes ~2 s instead of ~25 s on most runs. Keyed on the exact Python
+      # version: a venv links to its interpreter's path, which disappears when the runner image updates Python.
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: venv
         if: steps.budget.outputs.skip != 'true'
         with:
           path: .venv-ci
-          key: venv-${{ runner.os }}-py311-${{ hashFiles('requirements.txt') }}
+          key: venv-${{ runner.os }}-py${{ steps.py.outputs.python-version }}-${{ hashFiles('requirements.txt') }}
 
       - name: Install
         if: steps.budget.outputs.skip != 'true'
         run: |
-          if [ "${{ steps.venv.outputs.cache-hit }}" != "true" ]; then
+          if [ "${{ steps.venv.outputs.cache-hit }}" != "true" ] || ! .venv-ci/bin/python -c "import yaml" 2>/dev/null; then
+            rm -rf .venv-ci
             python -m venv .venv-ci
             .venv-ci/bin/pip install --disable-pip-version-check -q -r requirements.txt
           fi
