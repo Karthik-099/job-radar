@@ -1166,6 +1166,10 @@ companies:
   slug: formance
   yc: Summer 2021
   jobs_at_discovery: 4
+- name: Formelio
+  ats: recruitee
+  slug: formelio
+  learned_from: indeed_world
 - name: Freshfields
   ats: workday
   url: https://freshfields.wd3.myworkdayjobs.com/FBD_101
@@ -1612,6 +1616,10 @@ companies:
   ats: smartrecruiters
   slug: koreai
   jobs_at_discovery: 1
+- name: Korton Computer Communication (KCC) B.V.
+  ats: recruitee
+  slug: korton
+  learned_from: indeed_world
 - name: KPN
   ats: smartrecruiters
   slug: KPN
@@ -1892,6 +1900,10 @@ companies:
 - name: MongoDB
   ats: greenhouse
   slug: mongodb
+- name: Monolithic Power Systems
+  ats: workday
+  url: https://monolithicpower.wd12.myworkdayjobs.com/MPS_Careers
+  learned_from: indeed_world
 - name: Monzo
   ats: greenhouse
   slug: monzo
@@ -2001,6 +2013,10 @@ companies:
 - name: Netskope
   ats: greenhouse
   slug: netskope
+- name: Neuphonic
+  ats: ashby
+  slug: neuphonic
+  learned_from: indeed_world
 - name: NEURA Robotics
   ats: ashby
   slug: neura-robotics-gmbh
@@ -2017,6 +2033,10 @@ companies:
   slug: new-story
   yc: Summer 2015
   jobs_at_discovery: 2
+- name: Nexcade AI
+  ats: ashby
+  slug: nexcade
+  learned_from: indeed_world
 - name: NextPower
   ats: workday
   url: https://nextracker.wd5.myworkdayjobs.com/nextpower_careers
@@ -2670,6 +2690,10 @@ companies:
   ats: smartrecruiters
   slug: SIXT
   learned_from: indeed
+- name: SkinVision
+  ats: recruitee
+  slug: skinvision1
+  learned_from: indeed_world
 - name: Skip Loans
   ats: ashby
   slug: skip-loans
@@ -2765,6 +2789,10 @@ companies:
 - name: Spotify
   ats: lever
   slug: spotify
+- name: Sprinklr
+  ats: workday
+  url: https://sprinklr.wd1.myworkdayjobs.com/careers
+  learned_from: indeed_world
 - name: SpruceID
   ats: ashby
   slug: spruceid
@@ -2879,6 +2907,10 @@ companies:
 - name: Tekion
   ats: ashby
   slug: tekion
+- name: Telstra
+  ats: workday
+  url: https://telstra.wd3.myworkdayjobs.com/Telstra_Careers
+  learned_from: indeed
 - name: Tempo
   ats: ashby
   slug: tempo
