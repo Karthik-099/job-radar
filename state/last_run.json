@@ -1,139 +1,139 @@
 {
- "finished_at": "2026-11-06T21:35:19+00:00",
- "duration_seconds": 327.4,
- "raw": 3745,
- "unique": 2016,
- "fresh": 1809,
- "kept": 80,
- "kept_india": 51,
- "kept_remote": 2,
- "kept_abroad": 26,
+ "finished_at": "2026-11-07T06:02:27+00:00",
+ "duration_seconds": 268.5,
+ "raw": 3836,
+ "unique": 1975,
+ "fresh": 1717,
+ "kept": 16,
+ "kept_india": 6,
+ "kept_remote": 1,
+ "kept_abroad": 9,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
    "jobs": 12,
-   "seconds": 72.8,
+   "seconds": 72.0,
    "error": ""
   },
   {
    "name": "lever",
    "jobs": 14,
-   "seconds": 47.0,
+   "seconds": 36.5,
    "error": ""
   },
   {
    "name": "ashby",
-   "jobs": 96,
-   "seconds": 112.8,
+   "jobs": 99,
+   "seconds": 113.1,
    "error": ""
   },
   {
    "name": "smartrecruiters",
    "jobs": 94,
-   "seconds": 191.7,
+   "seconds": 193.3,
    "error": ""
   },
   {
    "name": "workday",
-   "jobs": 38,
-   "seconds": 49.2,
+   "jobs": 31,
+   "seconds": 27.4,
    "error": ""
   },
   {
    "name": "workable",
    "jobs": 0,
-   "seconds": 2.3,
+   "seconds": 2.8,
    "error": ""
   },
   {
    "name": "recruitee",
-   "jobs": 1,
-   "seconds": 3.0,
+   "jobs": 5,
+   "seconds": 3.2,
    "error": ""
   },
   {
    "name": "bamboohr",
    "jobs": 1,
-   "seconds": 4.2,
+   "seconds": 3.0,
    "error": ""
   },
   {
    "name": "teamtailor",
    "jobs": 2,
-   "seconds": 3.0,
+   "seconds": 2.8,
    "error": ""
   },
   {
    "name": "amazon",
    "jobs": 0,
-   "seconds": 4.8,
+   "seconds": 5.3,
    "error": ""
   },
   {
    "name": "microsoft",
    "jobs": 3,
-   "seconds": 13.3,
+   "seconds": 7.9,
    "error": ""
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 1.7,
+   "seconds": 2.3,
    "error": ""
   },
   {
    "name": "remoteok",
    "jobs": 2,
-   "seconds": 0.9,
+   "seconds": 2.5,
    "error": ""
   },
   {
    "name": "weworkremotely",
    "jobs": 5,
-   "seconds": 1.4,
+   "seconds": 2.1,
    "error": ""
   },
   {
    "name": "himalayas",
    "jobs": 37,
-   "seconds": 3.4,
+   "seconds": 3.0,
    "error": ""
   },
   {
    "name": "jobicy",
    "jobs": 11,
-   "seconds": 1.6,
+   "seconds": 2.5,
    "error": ""
   },
   {
    "name": "arbeitnow",
-   "jobs": 7,
-   "seconds": 1.2,
+   "jobs": 6,
+   "seconds": 3.1,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 6,
-   "seconds": 3.5,
+   "seconds": 4.2,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 1608,
-   "seconds": 36.0,
+   "jobs": 1606,
+   "seconds": 31.0,
    "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 978,
-   "seconds": 189.7,
+   "jobs": 1096,
+   "seconds": 187.1,
    "error": ""
   },
   {
    "name": "linkedin",
    "jobs": 150,
-   "seconds": 26.2,
+   "seconds": 27.8,
    "error": ""
   },
   {
@@ -145,53 +145,49 @@
   {
    "name": "bayt",
    "jobs": 0,
-   "seconds": 4.7,
+   "seconds": 5.1,
    "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 595,
-   "seconds": 61.4,
+   "jobs": 592,
+   "seconds": 61.3,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 85,
-   "seconds": 24.7,
+   "jobs": 64,
+   "seconds": 17.8,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 1127,
-  "title_excluded": 229,
-  "too_much_experience": 156,
-  "needs_local_language": 96,
-  "abroad_country_not_listed": 81,
-  "description_excluded": 14,
-  "abroad_no_sponsorship": 8,
+  "title_not_target": 1129,
+  "title_excluded": 215,
+  "too_much_experience": 152,
+  "needs_local_language": 99,
+  "abroad_country_not_listed": 66,
+  "description_excluded": 15,
+  "abroad_no_sponsorship": 7,
   "too_old": 1
  },
- "companies_learned": 8,
+ "companies_learned": 3,
  "reposts_flagged": 14,
  "repeats_skipped": 17,
  "sources_ok": 25,
  "sources_total": 25,
  "sources_failed": "",
- "llm_scored": 40,
+ "llm_scored": 44,
  "llm_cached": 0,
  "closed_found": 0,
  "gmail_updated": 0,
- "letters": 6,
+ "letters": 4,
  "kept_by_source": {
-  "naukri": 11,
-  "workday": 9,
-  "indeed": 15,
-  "jobicy": 2,
-  "himalayas": 1,
-  "arbeitnow": 3,
-  "ashby": 1,
-  "smartrecruiters": 1,
-  "indeed_world": 18,
-  "linkedin": 19
+  "naukri": 1,
+  "ashby": 2,
+  "arbeitnow": 1,
+  "indeed": 2,
+  "indeed_world": 8,
+  "linkedin": 2
  }
 }

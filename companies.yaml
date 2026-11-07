@@ -1724,6 +1724,10 @@ companies:
   slug: livingcarbon
   yc: Winter 2020
   jobs_at_discovery: 1
+- name: Lloyds Banking Group
+  ats: workday
+  url: https://lbg.wd3.myworkdayjobs.com/LBG_Careers
+  learned_from: indeed_world
 - name: Lloyds Technology Centre
   ats: workday
   url: https://lbg.wd3.myworkdayjobs.com/Lloyds_Technology_Centre
@@ -2040,6 +2044,10 @@ companies:
 - name: NextPower
   ats: workday
   url: https://nextracker.wd5.myworkdayjobs.com/nextpower_careers
+  learned_from: indeed
+- name: Nexus One
+  ats: ashby
+  slug: nexus-cognitive
   learned_from: indeed
 - name: NielsenIQ
   ats: smartrecruiters
@@ -2924,6 +2932,10 @@ companies:
   slug: tennr
   yc: Winter 2023
   jobs_at_discovery: 27
+- name: The Gym Group
+  ats: workday
+  url: https://thegymgroup.wd3.myworkdayjobs.com/TGG_External_Career_Site
+  learned_from: indeed_world
 - name: Thera
   ats: ashby
   slug: thera
