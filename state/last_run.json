@@ -1,193 +1,192 @@
 {
- "finished_at": "2026-11-07T06:02:27+00:00",
- "duration_seconds": 268.5,
- "raw": 3836,
- "unique": 1975,
- "fresh": 1717,
- "kept": 16,
- "kept_india": 6,
- "kept_remote": 1,
- "kept_abroad": 9,
+ "finished_at": "2026-11-07T14:57:52+00:00",
+ "duration_seconds": 235.6,
+ "raw": 2626,
+ "unique": 1525,
+ "fresh": 1308,
+ "kept": 14,
+ "kept_india": 9,
+ "kept_remote": 0,
+ "kept_abroad": 3,
  "dry_run": false,
  "sources": [
   {
    "name": "greenhouse",
-   "jobs": 12,
-   "seconds": 72.0,
+   "jobs": 11,
+   "seconds": 72.4,
    "error": ""
   },
   {
    "name": "lever",
-   "jobs": 14,
-   "seconds": 36.5,
+   "jobs": 12,
+   "seconds": 24.1,
    "error": ""
   },
   {
    "name": "ashby",
-   "jobs": 99,
-   "seconds": 113.1,
+   "jobs": 97,
+   "seconds": 112.8,
    "error": ""
   },
   {
    "name": "smartrecruiters",
-   "jobs": 94,
-   "seconds": 193.3,
+   "jobs": 92,
+   "seconds": 191.8,
    "error": ""
   },
   {
    "name": "workday",
-   "jobs": 31,
+   "jobs": 30,
    "seconds": 27.4,
    "error": ""
   },
   {
    "name": "workable",
    "jobs": 0,
-   "seconds": 2.8,
+   "seconds": 3.3,
    "error": ""
   },
   {
    "name": "recruitee",
    "jobs": 5,
-   "seconds": 3.2,
+   "seconds": 2.8,
    "error": ""
   },
   {
    "name": "bamboohr",
    "jobs": 1,
-   "seconds": 3.0,
+   "seconds": 3.3,
    "error": ""
   },
   {
    "name": "teamtailor",
    "jobs": 2,
-   "seconds": 2.8,
+   "seconds": 2.6,
    "error": ""
   },
   {
    "name": "amazon",
    "jobs": 0,
-   "seconds": 5.3,
+   "seconds": 4.5,
    "error": ""
   },
   {
    "name": "microsoft",
-   "jobs": 3,
-   "seconds": 7.9,
+   "jobs": 2,
+   "seconds": 8.1,
    "error": ""
   },
   {
    "name": "remotive",
    "jobs": 0,
-   "seconds": 2.3,
+   "seconds": 1.2,
    "error": ""
   },
   {
    "name": "remoteok",
    "jobs": 2,
-   "seconds": 2.5,
+   "seconds": 1.2,
    "error": ""
   },
   {
    "name": "weworkremotely",
    "jobs": 5,
-   "seconds": 2.1,
+   "seconds": 1.3,
    "error": ""
   },
   {
    "name": "himalayas",
-   "jobs": 37,
-   "seconds": 3.0,
+   "jobs": 36,
+   "seconds": 3.1,
    "error": ""
   },
   {
    "name": "jobicy",
-   "jobs": 11,
-   "seconds": 2.5,
+   "jobs": 13,
+   "seconds": 1.8,
    "error": ""
   },
   {
    "name": "arbeitnow",
-   "jobs": 6,
-   "seconds": 3.1,
+   "jobs": 4,
+   "seconds": 1.2,
    "error": ""
   },
   {
    "name": "hn",
    "jobs": 6,
-   "seconds": 4.2,
+   "seconds": 3.1,
    "error": ""
   },
   {
    "name": "indeed",
-   "jobs": 1606,
-   "seconds": 31.0,
+   "jobs": 1457,
+   "seconds": 32.7,
    "error": ""
   },
   {
    "name": "naukri",
-   "jobs": 1096,
-   "seconds": 187.1,
-   "error": ""
+   "jobs": 0,
+   "seconds": 195.1,
+   "error": "timeout"
   },
   {
    "name": "linkedin",
    "jobs": 150,
-   "seconds": 27.8,
+   "seconds": 26.5,
    "error": ""
   },
   {
    "name": "glassdoor",
    "jobs": 0,
-   "seconds": 6.6,
+   "seconds": 6.5,
    "error": ""
   },
   {
    "name": "bayt",
    "jobs": 0,
-   "seconds": 5.1,
+   "seconds": 5.9,
    "error": ""
   },
   {
    "name": "indeed_world",
-   "jobs": 592,
-   "seconds": 61.3,
+   "jobs": 601,
+   "seconds": 60.1,
    "error": ""
   },
   {
    "name": "linkedin_world",
-   "jobs": 64,
-   "seconds": 17.8,
+   "jobs": 100,
+   "seconds": 26.2,
    "error": ""
   }
  ],
  "rejections": {
-  "title_not_target": 1129,
-  "title_excluded": 215,
-  "too_much_experience": 152,
+  "title_not_target": 778,
+  "title_excluded": 185,
   "needs_local_language": 99,
-  "abroad_country_not_listed": 66,
-  "description_excluded": 15,
+  "abroad_country_not_listed": 97,
+  "too_much_experience": 90,
+  "description_excluded": 17,
   "abroad_no_sponsorship": 7,
   "too_old": 1
  },
- "companies_learned": 3,
+ "companies_learned": 1,
  "reposts_flagged": 14,
- "repeats_skipped": 17,
- "sources_ok": 25,
+ "repeats_skipped": 20,
+ "sources_ok": 24,
  "sources_total": 25,
- "sources_failed": "",
- "llm_scored": 44,
+ "sources_failed": "naukri",
+ "llm_scored": 27,
  "llm_cached": 0,
  "closed_found": 0,
  "gmail_updated": 0,
- "letters": 4,
+ "letters": 1,
  "kept_by_source": {
-  "naukri": 1,
-  "ashby": 2,
+  "indeed": 4,
   "arbeitnow": 1,
-  "indeed": 2,
-  "indeed_world": 8,
-  "linkedin": 2
+  "indeed_world": 2,
+  "linkedin": 5,
+  "linkedin_world": 2
  }
 }

@@ -3297,6 +3297,10 @@ companies:
   ats: ashby
   slug: zapier
   jobs_at_discovery: 11
+- name: ZDHC Foundation
+  ats: recruitee
+  slug: zdhcfoundation
+  learned_from: indeed_world
 - name: Zebra Technologies
   ats: workday
   url: https://zebra.wd501.myworkdayjobs.com/Zebra_careers
